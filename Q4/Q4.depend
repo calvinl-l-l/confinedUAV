@@ -1,0 +1,697 @@
+# depslib dependency file v1.0
+1484463613 source:/home/calvon/code/Q4/main.cpp
+	<iostream>
+	"src/MSP.h"
+	"src/scheduler.h"
+	"src/utility.h"
+
+1480098271 /home/calvon/code/Q4/src/MSP.h
+	<errno.h>
+	<iostream>
+	<fcntl.h>
+	<string.h>
+	<termios.h>
+	<unistd.h>
+	<stdint.h>
+	<wiringSerial.h>
+	"utility.h"
+
+1484464357 source:/home/calvon/code/Q4/src/MSP.cpp
+	"MSP.h"
+
+1479292030 source:/home/calvon/code/Q4/src/control.cpp
+	"control.h"
+
+1479292143 /home/calvon/code/Q4/src/control.h
+
+1480098513 source:/home/calvon/code/Q4/src/localisation.cpp
+	"localisation.h"
+
+1484458067 source:/home/calvon/code/Q4/src/utility.cpp
+	"utility.h"
+
+1484458375 /home/calvon/code/Q4/src/utility.h
+	<iostream>
+	<unistd.h>
+
+1484482950 /home/calvon/code/Q4/src/scheduler.h
+	<stdio.h>
+	"utility.h"
+	"MSP.h"
+	<iostream>
+	<wiringSerial.h>
+	<thread>
+	<ctime>
+	<unistd.h>
+	<sys/time.h>
+
+1484482188 source:/home/calvon/code/Q4/src/scheduler.cpp
+	"scheduler.h"
+
+1480098674 /home/calvon/code/Q4/src/localisation.h
+
+1484238728 source:/home/pi/code/Q4/src/localisation.cpp
+	"localisation.h"
+
+1484238728 /home/pi/code/Q4/src/localisation.h
+
+1484708180 source:/home/pi/code/Q4/src/MSP.cpp
+	"MSP.h"
+
+1484630835 /home/pi/code/Q4/src/MSP.h
+	<errno.h>
+	<iostream>
+	<fcntl.h>
+	<string.h>
+	<termios.h>
+	<unistd.h>
+	<stdint.h>
+	<wiringSerial.h>
+	"utility.h"
+
+1484500556 /home/pi/code/Q4/src/utility.h
+	<iostream>
+	<unistd.h>
+	<fstream>
+
+1484500556 source:/home/pi/code/Q4/src/utility.cpp
+	"utility.h"
+
+1484615578 source:/home/pi/code/Q4/main.cpp
+	<iostream>
+	"src/MSP.h"
+	"src/scheduler.h"
+	"src/utility.h"
+	<wiringPi.h>
+
+1484705013 /home/pi/code/Q4/src/scheduler.h
+	<wiringPi.h>
+	<stdio.h>
+	<iostream>
+	<wiringSerial.h>
+	<thread>
+	<mutex>
+	<condition_variable>
+	<chrono>
+	<ctime>
+	<unistd.h>
+	<sys/time.h>
+	"utility.h"
+	"MSP.h"
+	"lidar.h"
+
+1484510621 /home/pi/code/Q4/src/lidar.h
+	<iostream>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	"urg_cpp/Lidar.h"
+	"urg_cpp/Urg_driver.h"
+
+1484658035 source:/home/pi/code/Q4/src/lidar.cpp
+	"lidar.h"
+
+1484705418 source:/home/pi/code/Q4/src/scheduler.cpp
+	"scheduler.h"
+
+1455208620 source:/home/odroid/code/Q4/main.cpp
+	<iostream>
+	<wiringPi.h>
+	"src/pixhawk_interface.h"
+	"src/scheduler.h"
+	"src/utility.h"
+	"src/mavlink/serial_port.h"
+
+1455208278 /home/odroid/code/Q4/src/MSP.h
+	<errno.h>
+	<iostream>
+	<fcntl.h>
+	<string.h>
+	<termios.h>
+	<unistd.h>
+	<stdint.h>
+	<wiringSerial.h>
+	"utility.h"
+
+1455208278 /home/odroid/code/Q4/src/utility.h
+	<iostream>
+	<unistd.h>
+	<fstream>
+
+1485797798 /home/odroid/code/Q4/src/scheduler.h
+	<wiringPi.h>
+	<stdio.h>
+	<iostream>
+	<wiringSerial.h>
+	<thread>
+	<mutex>
+	<condition_variable>
+	<chrono>
+	<ctime>
+	<unistd.h>
+	<sys/time.h>
+	"utility.h"
+	"pixhawk_interface.h"
+	"lidar.h"
+	"AP_controller.h"
+
+1455208368 /home/odroid/code/Q4/src/lidar.h
+	<iostream>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	"urg_cpp/Lidar.h"
+	"urg_cpp/Urg_driver.h"
+	"MedianFilter.h"
+
+1455208379 source:/home/odroid/code/Q4/src/lidar.cpp
+	"lidar.h"
+
+1455208278 source:/home/odroid/code/Q4/src/localisation.cpp
+	"localisation.h"
+
+1455208278 /home/odroid/code/Q4/src/localisation.h
+
+1455208278 source:/home/odroid/code/Q4/src/MSP.cpp
+	"MSP.h"
+
+1455209506 source:/home/odroid/code/Q4/src/scheduler.cpp
+	"scheduler.h"
+
+1455208278 source:/home/odroid/code/Q4/src/utility.cpp
+	"utility.h"
+
+1455209463 /home/odroid/code/Q4/src/AP_controller.h
+	<math.h>
+	<string>
+	<iostream>
+	"utility.h"
+	"MedianFilter.h"
+
+1455209550 source:/home/odroid/code/Q4/src/AP_controller.cpp
+	"AP_controller.h"
+	"utility.h"
+
+1455208278 /home/odroid/code/Q4/src/MedianFilter.h
+
+1455208278 source:/home/odroid/code/Q4/src/MedianFilter.cpp
+	"MedianFilter.h"
+	<stdio.h>
+	<stdlib.h>
+
+1455209446 /home/odroid/code/Q4/src/pixhawk_interface.h
+	"mavlink/pixhawk/mavlink.h"
+	"mavlink/serial_port.h"
+	<time.h>
+	<sys/time.h>
+	<math.h>
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink.h
+	"version.h"
+	"pixhawk.h"
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/version.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/pixhawk.h
+	"../protocol.h"
+	"../common/common.h"
+	"./mavlink_msg_set_cam_shutter.h"
+	"./mavlink_msg_image_triggered.h"
+	"./mavlink_msg_image_trigger_control.h"
+	"./mavlink_msg_image_available.h"
+	"./mavlink_msg_set_position_control_offset.h"
+	"./mavlink_msg_position_control_setpoint.h"
+	"./mavlink_msg_marker.h"
+	"./mavlink_msg_raw_aux.h"
+	"./mavlink_msg_watchdog_heartbeat.h"
+	"./mavlink_msg_watchdog_process_info.h"
+	"./mavlink_msg_watchdog_process_status.h"
+	"./mavlink_msg_watchdog_command.h"
+	"./mavlink_msg_pattern_detected.h"
+	"./mavlink_msg_point_of_interest.h"
+	"./mavlink_msg_point_of_interest_connection.h"
+	"./mavlink_msg_brief_feature.h"
+	"./mavlink_msg_attitude_control.h"
+	"./mavlink_msg_detection_stats.h"
+	"./mavlink_msg_onboard_health.h"
+
+1475453904 /home/odroid/code/Q4/src/mavlink/protocol.h
+	"string.h"
+	"mavlink_types.h"
+	"mavlink_helpers.h"
+
+1475453906 /home/odroid/code/Q4/src/mavlink/mavlink_types.h
+	<stdint.h>
+
+1475453904 /home/odroid/code/Q4/src/mavlink/mavlink_helpers.h
+	"string.h"
+	"checksum.h"
+	"mavlink_types.h"
+	"mavlink_conversions.h"
+	"mavlink_types.h"
+
+1475453904 /home/odroid/code/Q4/src/mavlink/checksum.h
+	<stdint.h>
+
+1475453906 /home/odroid/code/Q4/src/mavlink/mavlink_conversions.h
+	<math.h>
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/common.h
+	"../protocol.h"
+	"./mavlink_msg_heartbeat.h"
+	"./mavlink_msg_sys_status.h"
+	"./mavlink_msg_system_time.h"
+	"./mavlink_msg_ping.h"
+	"./mavlink_msg_change_operator_control.h"
+	"./mavlink_msg_change_operator_control_ack.h"
+	"./mavlink_msg_auth_key.h"
+	"./mavlink_msg_set_mode.h"
+	"./mavlink_msg_param_request_read.h"
+	"./mavlink_msg_param_request_list.h"
+	"./mavlink_msg_param_value.h"
+	"./mavlink_msg_param_set.h"
+	"./mavlink_msg_gps_raw_int.h"
+	"./mavlink_msg_gps_status.h"
+	"./mavlink_msg_scaled_imu.h"
+	"./mavlink_msg_raw_imu.h"
+	"./mavlink_msg_raw_pressure.h"
+	"./mavlink_msg_scaled_pressure.h"
+	"./mavlink_msg_attitude.h"
+	"./mavlink_msg_attitude_quaternion.h"
+	"./mavlink_msg_local_position_ned.h"
+	"./mavlink_msg_global_position_int.h"
+	"./mavlink_msg_rc_channels_scaled.h"
+	"./mavlink_msg_rc_channels_raw.h"
+	"./mavlink_msg_servo_output_raw.h"
+	"./mavlink_msg_mission_request_partial_list.h"
+	"./mavlink_msg_mission_write_partial_list.h"
+	"./mavlink_msg_mission_item.h"
+	"./mavlink_msg_mission_request.h"
+	"./mavlink_msg_mission_set_current.h"
+	"./mavlink_msg_mission_current.h"
+	"./mavlink_msg_mission_request_list.h"
+	"./mavlink_msg_mission_count.h"
+	"./mavlink_msg_mission_clear_all.h"
+	"./mavlink_msg_mission_item_reached.h"
+	"./mavlink_msg_mission_ack.h"
+	"./mavlink_msg_set_gps_global_origin.h"
+	"./mavlink_msg_gps_global_origin.h"
+	"./mavlink_msg_param_map_rc.h"
+	"./mavlink_msg_safety_set_allowed_area.h"
+	"./mavlink_msg_safety_allowed_area.h"
+	"./mavlink_msg_attitude_quaternion_cov.h"
+	"./mavlink_msg_nav_controller_output.h"
+	"./mavlink_msg_global_position_int_cov.h"
+	"./mavlink_msg_local_position_ned_cov.h"
+	"./mavlink_msg_rc_channels.h"
+	"./mavlink_msg_request_data_stream.h"
+	"./mavlink_msg_data_stream.h"
+	"./mavlink_msg_manual_control.h"
+	"./mavlink_msg_rc_channels_override.h"
+	"./mavlink_msg_mission_item_int.h"
+	"./mavlink_msg_vfr_hud.h"
+	"./mavlink_msg_command_int.h"
+	"./mavlink_msg_command_long.h"
+	"./mavlink_msg_command_ack.h"
+	"./mavlink_msg_manual_setpoint.h"
+	"./mavlink_msg_set_attitude_target.h"
+	"./mavlink_msg_attitude_target.h"
+	"./mavlink_msg_set_position_target_local_ned.h"
+	"./mavlink_msg_position_target_local_ned.h"
+	"./mavlink_msg_set_position_target_global_int.h"
+	"./mavlink_msg_position_target_global_int.h"
+	"./mavlink_msg_local_position_ned_system_global_offset.h"
+	"./mavlink_msg_hil_state.h"
+	"./mavlink_msg_hil_controls.h"
+	"./mavlink_msg_hil_rc_inputs_raw.h"
+	"./mavlink_msg_optical_flow.h"
+	"./mavlink_msg_global_vision_position_estimate.h"
+	"./mavlink_msg_vision_position_estimate.h"
+	"./mavlink_msg_vision_speed_estimate.h"
+	"./mavlink_msg_vicon_position_estimate.h"
+	"./mavlink_msg_highres_imu.h"
+	"./mavlink_msg_optical_flow_rad.h"
+	"./mavlink_msg_hil_sensor.h"
+	"./mavlink_msg_sim_state.h"
+	"./mavlink_msg_radio_status.h"
+	"./mavlink_msg_file_transfer_protocol.h"
+	"./mavlink_msg_timesync.h"
+	"./mavlink_msg_camera_trigger.h"
+	"./mavlink_msg_hil_gps.h"
+	"./mavlink_msg_hil_optical_flow.h"
+	"./mavlink_msg_hil_state_quaternion.h"
+	"./mavlink_msg_scaled_imu2.h"
+	"./mavlink_msg_log_request_list.h"
+	"./mavlink_msg_log_entry.h"
+	"./mavlink_msg_log_request_data.h"
+	"./mavlink_msg_log_data.h"
+	"./mavlink_msg_log_erase.h"
+	"./mavlink_msg_log_request_end.h"
+	"./mavlink_msg_gps_inject_data.h"
+	"./mavlink_msg_gps2_raw.h"
+	"./mavlink_msg_power_status.h"
+	"./mavlink_msg_serial_control.h"
+	"./mavlink_msg_gps_rtk.h"
+	"./mavlink_msg_gps2_rtk.h"
+	"./mavlink_msg_scaled_imu3.h"
+	"./mavlink_msg_data_transmission_handshake.h"
+	"./mavlink_msg_encapsulated_data.h"
+	"./mavlink_msg_distance_sensor.h"
+	"./mavlink_msg_terrain_request.h"
+	"./mavlink_msg_terrain_data.h"
+	"./mavlink_msg_terrain_check.h"
+	"./mavlink_msg_terrain_report.h"
+	"./mavlink_msg_scaled_pressure2.h"
+	"./mavlink_msg_att_pos_mocap.h"
+	"./mavlink_msg_set_actuator_control_target.h"
+	"./mavlink_msg_actuator_control_target.h"
+	"./mavlink_msg_altitude.h"
+	"./mavlink_msg_resource_request.h"
+	"./mavlink_msg_scaled_pressure3.h"
+	"./mavlink_msg_control_system_state.h"
+	"./mavlink_msg_battery_status.h"
+	"./mavlink_msg_autopilot_version.h"
+	"./mavlink_msg_landing_target.h"
+	"./mavlink_msg_vibration.h"
+	"./mavlink_msg_home_position.h"
+	"./mavlink_msg_set_home_position.h"
+	"./mavlink_msg_message_interval.h"
+	"./mavlink_msg_extended_sys_state.h"
+	"./mavlink_msg_v2_extension.h"
+	"./mavlink_msg_memory_vect.h"
+	"./mavlink_msg_debug_vect.h"
+	"./mavlink_msg_named_value_float.h"
+	"./mavlink_msg_named_value_int.h"
+	"./mavlink_msg_statustext.h"
+	"./mavlink_msg_debug.h"
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_heartbeat.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_sys_status.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_system_time.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_ping.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_change_operator_control.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_change_operator_control_ack.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_auth_key.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_mode.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_param_request_read.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_param_request_list.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_param_value.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_param_set.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps_raw_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps_status.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_imu.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_raw_imu.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_raw_pressure.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_pressure.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_attitude.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_attitude_quaternion.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_local_position_ned.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_global_position_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_rc_channels_scaled.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_rc_channels_raw.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_servo_output_raw.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_request_partial_list.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_write_partial_list.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_item.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_request.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_set_current.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_current.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_request_list.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_count.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_clear_all.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_item_reached.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_ack.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_gps_global_origin.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps_global_origin.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_param_map_rc.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_safety_set_allowed_area.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_safety_allowed_area.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_attitude_quaternion_cov.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_nav_controller_output.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_global_position_int_cov.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_local_position_ned_cov.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_rc_channels.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_request_data_stream.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_data_stream.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_manual_control.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_rc_channels_override.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_mission_item_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_vfr_hud.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_command_int.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_command_long.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_command_ack.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_manual_setpoint.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_attitude_target.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_attitude_target.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_position_target_local_ned.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_position_target_local_ned.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_position_target_global_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_position_target_global_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_local_position_ned_system_global_offset.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_state.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_controls.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_rc_inputs_raw.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_optical_flow.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_global_vision_position_estimate.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_vision_position_estimate.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_vision_speed_estimate.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_vicon_position_estimate.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_highres_imu.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_optical_flow_rad.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_sensor.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_sim_state.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_radio_status.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_file_transfer_protocol.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_timesync.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_camera_trigger.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_gps.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_optical_flow.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_hil_state_quaternion.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_imu2.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_request_list.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_entry.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_request_data.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_data.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_erase.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_log_request_end.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps_inject_data.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps2_raw.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_power_status.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_serial_control.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps_rtk.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_gps2_rtk.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_imu3.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_data_transmission_handshake.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_encapsulated_data.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_distance_sensor.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_terrain_request.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_terrain_data.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_terrain_check.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_terrain_report.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_pressure2.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_att_pos_mocap.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_actuator_control_target.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_actuator_control_target.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_altitude.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_resource_request.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_scaled_pressure3.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_control_system_state.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_battery_status.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_autopilot_version.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_landing_target.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_vibration.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_home_position.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_set_home_position.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_message_interval.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_extended_sys_state.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_v2_extension.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_memory_vect.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_debug_vect.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_named_value_float.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_named_value_int.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_statustext.h
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink_msg_debug.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_set_cam_shutter.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_image_triggered.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_image_trigger_control.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_image_available.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_set_position_control_offset.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_position_control_setpoint.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_marker.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_raw_aux.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_watchdog_heartbeat.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_watchdog_process_info.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_watchdog_process_status.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_watchdog_command.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_pattern_detected.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_point_of_interest.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_point_of_interest_connection.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_brief_feature.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_attitude_control.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_detection_stats.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/pixhawk/mavlink_msg_onboard_health.h
+
+1475453904 /home/odroid/code/Q4/src/mavlink/serial_port.h
+	<cstdlib>
+	<stdio.h>
+	<unistd.h>
+	<fcntl.h>
+	<termios.h>
+	<pthread.h>
+	<signal.h>
+	"common/mavlink.h"
+
+1475453902 /home/odroid/code/Q4/src/mavlink/common/mavlink.h
+	"version.h"
+	"common.h"
+
+1475453904 /home/odroid/code/Q4/src/mavlink/common/version.h
+
+1455209444 source:/home/odroid/code/Q4/src/pixhawk_interface.cpp
+	"pixhawk_interface.h"
+	"wiringPi.h"
+

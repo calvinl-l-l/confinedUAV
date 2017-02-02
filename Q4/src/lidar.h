@@ -27,10 +27,14 @@ class Hokuyo_lidar
         float area;
         float start_area;
         int alt_floor;
+        float dist_wallR;  // distance to right wall
+        float dist_wallL;  // distance to left wall
+
 
         Hokuyo_lidar();
         void read();
         void get_centroid();
+        void get_dist2wall(float roll);
         int lidar_check_boundary();
         void get_altitude();
         void sleep();

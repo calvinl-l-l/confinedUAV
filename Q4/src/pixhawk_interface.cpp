@@ -187,8 +187,9 @@ void Pixhawk_Interface::write_RC_command(int roll, int thr, int yaw)
 
 	// MSG: #70 RC_CHANNELS_OVERRIDE
 	//									                       target ID             pitch  throttle      ch5  6  7  8
-	mavlink_msg_rc_channels_override_pack(SYSTEM_ID, COMP_ID, &msg,   1, 1,    roll,  0,       thr,    yaw,  0, 0, 0, 0);
-
+	//mavlink_msg_rc_channels_override_pack(SYSTEM_ID, COMP_ID, &msg,   1, 1,    roll,  0,       thr,    yaw,  0, 0, 0, 0);
+//									                       target ID             THR   roll  pitch   yaw
+	mavlink_msg_rc_channels_override_pack(SYSTEM_ID, COMP_ID, &msg,   1, 1,      thr,  roll,   0,    yaw,  0, 0, 0, 0);
 	serial_port->write_message(msg);
 
 
@@ -226,14 +227,16 @@ int Pixhawk_Interface::update_arm_status()
 
     if ((ch7 > 1700) && (!prev_status))
     {
-        arm_quad(msg, 1);
+        arm_quad(msg, 1);	// arm
         prev_status = 1;
+        cout << "arm" << endl;
         return 1;
     }
     else if ((ch7 < 1700) && (prev_status))
     {
-        arm_quad(msg, 0);
-        prev_status = 1;
+        arm_quad(msg, 0);	// disarm
+        prev_status = 0;
+        cout << "disarm" << endl;
         return 0;
     }
 

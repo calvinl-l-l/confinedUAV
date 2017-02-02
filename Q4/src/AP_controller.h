@@ -50,6 +50,7 @@ public:
 	float kp_pos_y;
 	float ki_pos_y;
 	float kd_pos_y;
+    float kp_pos_y_nw;
 
 	float kp_pos_z;
 	float ki_pos_z;
@@ -60,7 +61,7 @@ public:
 	// FUNCTIONS
 	position_controller();
 
-	void update_controller_input(float y, float z, int CH_mode);
+	void update_controller_input(float y, float z, float wallL, float wallR, int CH_mode);
 	int update_y_pos_controller();
 	int update_z_pos_controller();
 	int arm();
@@ -74,7 +75,8 @@ private:
 
 	float _pos_y;
 	float _pos_z;
-
+    float _d_wallR;
+    float _d_wallL;
 
 	// flags
 	int _flag_set_target_alt;
@@ -86,7 +88,7 @@ private:
 	//LowPassFilterFloat _vel_error_LPF;   // low-pass-filter on z-axis velocity error
 
 	// FUNCTIONS
-    float mode_switch_output_damping();
+    float mode_switch_output_damping(int signal_out);
 	float range_limiter(float in, float min_value, float max_value);
 };
 

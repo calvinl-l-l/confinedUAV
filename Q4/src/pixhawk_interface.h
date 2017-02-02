@@ -13,11 +13,13 @@
 #include <time.h>
 #include <sys/time.h>
 #include <math.h>
+#include <iostream>
 
 #define COMMAND_ACK 77
 #define SYSTEM_ID 255
 #define COMP_ID 1
 
+using namespace std;
 
 
 //helper functions

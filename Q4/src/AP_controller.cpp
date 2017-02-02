@@ -10,19 +10,30 @@ MedianFilter vel_z_filter(5,0);
 // public functions
 position_controller::position_controller()
 {
-    kp_pos_y = 1;
-	ki_pos_y = 0;
+    kp_pos_y = 0.1;
+	ki_pos_y = 0.03;
 	kd_pos_y = 0;
+    kp_pos_y_nw = 0;
+
+
+	kp_pos_z = 1;
+
     _dt = 0.025;
 }
 
 
-void position_controller::update_controller_input(float y, float z, int CH_mode)
+void position_controller::update_controller_input(float y, float z, float wallL, float wallR, int CH_mode)
 {
 
     _pos_y = y;
     _pos_z = z;
 
+    _d_wallR = wallR;
+    _d_wallL = wallL;
+
+
+	// save previous mode
+	if (_flag_prev_mode != _flag_auto_mode)	_flag_prev_mode = _flag_auto_mode;
 
     // mode
     if (CH_mode > 1200) _flag_auto_mode = 1;
@@ -33,11 +44,10 @@ int position_controller::update_y_pos_controller()
 {
     float error = 0 - _pos_y;
 
-
+    int kp;
     static float i_sum = 0;
     float i_term = 0;
     static float prev_error = 0;
-
 
     // integral
     if (!_flag_auto_mode)   i_sum = 0;  // reset integral when in manual mode
@@ -50,16 +60,41 @@ int position_controller::update_y_pos_controller()
     prev_error = error;
 
 
-    if (_flag_auto_mode)    return (int) 1500 + kp_pos_y * error + i_term + d_term;
+    // near wall condition
+    if (_d_wallL <= 300 || _d_wallR <= 300) kp = kp_pos_y + kp_pos_y_nw;
+    else                                    kp = kp_pos_y;
+
+
+	int output = range_limiter((int) 1500 + kp * error + i_term + d_term, 1100, 1900);
+
+
+	if (_flag_auto_mode)    return mode_switch_output_damping(output);
     else                    return 0;
 }
 
 int position_controller::update_z_pos_controller()
 {
+    float error = _pos_z;
+
+    int output = 1500;
+
+    if (error > 100)
+    {
+        output += error * kp_pos_z;
+    }
+    else if (error < -100)
+    {
+        output -= error * kp_pos_z;
+    }
+    else    {output = 0;}   // within deadzone then dont do anything
 
 
-    if (_flag_auto_mode)    return (int) 1500;
-    else                    return 0;
+    if (_flag_auto_mode)
+    {
+        if (output==0)  return 0;
+        else            return (int) range_limiter(output, 1100, 1900);
+    }
+    else                return 0;
 }
 
 
@@ -71,9 +106,41 @@ float position_controller::range_limiter(float in, float min_value, float max_va
 	else                return in;
 }
 
-float position_controller::mode_switch_output_damping()
+float position_controller::mode_switch_output_damping(int signal_out)
 {
+	static int hold_PID = 0;
+	static char dir = 'R';
+	static int output = 1500;
 
+	if (!_flag_prev_mode && _flag_auto_mode && !hold_PID)
+	{
+		if (1500 > signal_out)	dir = 'R';
+		else					dir = 'L';
+	}
+
+	if (hold_PID)
+	{
+		if (dir == 'R')
+		{
+			output += 10;
+
+			if (output >= signal_out)	hold_PID = 0;
+
+		}
+		else if (dir == 'L')
+		{
+			output -= 10;
+
+			if (output <= signal_out)	hold_PID = 0;
+		}
+
+		return output;
+	}
+	else
+	{
+		output = 1500;
+		return signal_out;
+	}
 
 }
 

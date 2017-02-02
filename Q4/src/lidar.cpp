@@ -60,7 +60,7 @@ void Hokuyo_lidar::read()
         if ((range[i] > 0) && (range[i] <= 10000))
         {
             z.push_back((long) (range[i] * cos(rad)));
-            y.push_back((long) (-range[i] * sin(rad)));
+            y.push_back((long) (range[i] * sin(rad)));
             n++;
         }
     }
@@ -163,6 +163,41 @@ void Hokuyo_lidar::get_altitude()
 }
 
 
+void Hokuyo_lidar::get_dist2wall(float roll)
+{
+    int nl = 0;
+    int nr = 0;
+    float i = 80;
+    float distR = 0;
+    float distL = 0;
+
+
+    while (i <= 100)
+    {
+        // distance to right wall
+        float temp_R = range[urg.deg2index(-i+roll)] * cos(M_PI*(90-i)/180);
+
+        if ((temp_R != 0) && (temp_R <= 10000))
+        {
+            nr++;
+            distR += temp_R;
+        }
+
+        // distance to left wall
+        float temp_L = range[urg.deg2index(i+roll)] * cos(M_PI*(90-i)/180);
+
+        if ((temp_L != 0) && (temp_L <= 10000))
+        {
+            nl++;
+            distL += temp_L;
+        }
+
+        i += 0.25;
+    }
+
+    dist_wallR = distR/nr;
+    dist_wallL = distL/nl;
+}
 
 int Hokuyo_lidar::lidar_check_boundary()
 {

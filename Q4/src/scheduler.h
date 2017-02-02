@@ -9,6 +9,8 @@
 #include <ctime>
 #include <unistd.h>
 #include <sys/time.h>
+#include <iomanip>
+
 
 #include "utility.h"
 #include "pixhawk_interface.h"
@@ -31,4 +33,4 @@
 using namespace std;
 
 void start_scheduler(Pixhawk_Interface &quad, Hokuyo_lidar &lidar, position_controller &fc);
-//void write_data2file(int w, MSP *Q, Hokuyo_lidar *L, unsigned long time_stamp);
+void write_data2file(int w, Pixhawk_Interface *Q, Hokuyo_lidar *L, position_controller *fc, unsigned long time_stamp);

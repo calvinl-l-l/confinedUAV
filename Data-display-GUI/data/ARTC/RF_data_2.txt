@@ -1,2 +1,0 @@
-Print out format:
-y, z, rf1, rf2, rf3, time

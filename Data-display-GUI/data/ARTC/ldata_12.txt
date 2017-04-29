@@ -1,4 +1,0 @@
-PID values => kp: 0.15 ki: 0.01 kd: 0.085
-Print out format:
-yc, zc, alt, CH1, CH3, is_manual?, roll, yaw, area, system time, x
--1526.48,425.664,3229,1250,1395,0,12.697,-145.294,27.4204,0,0

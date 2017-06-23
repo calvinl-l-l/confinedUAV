@@ -59,7 +59,7 @@ int position_controller::update_y_pos_controller()
     prev_error = derror;
 
     d_term = range_limiter(d_term, MIN_D_ROLL, MAX_D_ROLL);
-  
+  
     if (fabs(d_term) < 15)	d_term = 0;
 
 	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_term, MIN_ROLL_OUT, MAX_ROLL_OUT);

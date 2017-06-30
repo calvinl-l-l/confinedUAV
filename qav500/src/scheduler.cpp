@@ -1,5 +1,6 @@
 #include "scheduler.h"
 
+int debug_print;
 
 void RC_control_thread(void* p1, void* p2, void* p3)
 {
@@ -63,6 +64,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         // Compute control output ***
 
         fc->update_controller_input(lidar->pos_loc_y2, lidar->pos_loc_z2, lidar->dist_wallL, lidar->dist_wallR, qdata.ch6, qdata.ch8);
+        fc->flag_outside_scan_boundary = lidar->lidar_check_outof_boundary();
         //fc->update_controller_input(quad->ch3 - 1500, lidar->alt.dist, lidar->dist_wallL, lidar->dist_wallR, quad->ch6);  // debug use onlyt
 
         fc->roll_PWMout = fc->update_y_pos_controller();
@@ -82,7 +84,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         write_data2file(wr, qdata, lidar, fc);
 
         // Debug printout
-        DEBUG_PRINT(qdata, lidar, fc);
+        if (debug_print)  DEBUG_PRINT(qdata, lidar, fc);
 
         dt = millis() - t0;
 
@@ -109,27 +111,50 @@ void UI_thread(void* p1, void* p2)
         {
             cin >> input;
             fc->kp_pos_y = stof(input);
+            cout << "Current PID: " << fc->kp_pos_y << ' ' << fc->ki_pos_y << ' ' << fc->kd_pos_y << endl;
         }
         else if (input == "i")
         {
             cin >> input;
             fc->ki_pos_y = stof(input);
+            cout << "Current PID: " << fc->kp_pos_y << ' ' << fc->ki_pos_y << ' ' << fc->kd_pos_y << endl;
         }
         else if (input == "d")
         {
             cin >> input;
             fc->kd_pos_y = stof(input);
+            cout << "Current PID: " << fc->kp_pos_y << ' ' << fc->ki_pos_y << ' ' << fc->kd_pos_y << endl;
         }
         else if (input == "pnw")
         {
             cin >> input;
             fc->kp_pos_y_nw = stof(input);
         }
+        else if (input == "s")
+        {
+          debug_print = 0;
+        }
+        else if (input == "stream")
+        {
+          cout << "start to stream data ..." << endl;
+          debug_print = 1;
+        }
         else if (input == "q")
         {
             quad->close_sp();
         }
-
+        else if (input == "setpt")
+        {
+          cin >> input;
+          fc->pos_y_setpoint = stof(input);
+          cout << "Lateral setpoint changed to: " << fc->pos_y_setpoint << endl;
+        }
+        else if (input == "trim")
+        {
+          cin >> input;
+          fc->roll_trim = stoi(input);
+          cout << "roll trim = " << fc->roll_trim << endl;
+        }
         delay(1000);
     }
 
@@ -149,6 +174,7 @@ void read_quad_thread(void *p)
 
 void start_scheduler(AP_interface &quad, Hokuyo_lidar &lidar, position_controller &fc)
 {
+    debug_print = 0;
 
     thread rc_control(RC_control_thread, &quad, &lidar, &fc);
     thread read_sensors(read_sensors_thread, &lidar, &quad, &fc);
@@ -172,9 +198,9 @@ void DEBUG_PRINT(mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc)
 {
     cout << fixed << setprecision(3);
     cout << "pos_y " << setw(10) << L->pos_loc_y2 << " PWM " << setw(6) << fc->roll_PWMout
-         << " CH_roll " << qdata.ch1 << " kp: " << fc->kp_pos_y << " ki: " << fc->ki_pos_y
-         << " kd: " << fc->kd_pos_y << " i-term " << setw(8) << fc->i_term << "    d-term "
-         << setw(8) << fc->d_term << " CH8:" << qdata.ch8 << endl;
+         << " CH_r " << qdata.ch1 << " p: " << fc->kp_pos_y << " i: " << fc->ki_pos_y
+         << " d: " << fc->kd_pos_y << " i-val " << setw(8) << fc->i_term << "    d-val "
+         << setw(8) << fc->d_term << " out " << fc->flag_outside_scan_boundary << endl;
 }
 
 
@@ -208,7 +234,7 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
         ldata_log << "PID values => kp: " << fc->kp_pos_y << " ki: " <<  fc->ki_pos_y << " kd: " << fc->kd_pos_y << endl;
         ldata_log << "Print out format:" << endl;
         //ldata_log << "yc, zc, alt, CH2, CH1, is_manual?, roll, yaw, area, system time, RF, pitch, CH2, CH4" << endl;    //ch2 = roll ch3 = thr
-	ldata_log << "pos_y, pos_z, CH_roll, control_PWMoutput, CH_thr, CH_8, roll, yaw, area, i-term, d-term, Ts_lidar, Ts_PH, pos_y3" << endl;
+	ldata_log << "pos_y, pos_z, CH_roll, control_PWMoutput, CH_thr, CH_8, roll, yaw, area, i-term, d-term, Ts_lidar, Ts_PH, pos_y3, battery" << endl;
 
         snprintf(filename, sizeof filename, "scan_%d.txt", nlog);
         scan_log.open(filename);
@@ -231,7 +257,7 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
         ldata_log << fixed
         << setprecision(3) << setw(10)<< L->pos_loc_y2 << ',' << setw(10)<< L->pos_loc_z2 << ',' << qdata.ch1 << ',' << fc->roll_PWMout << ',' << qdata.ch3 << ',' << qdata.ch8 << ','
         << setw(10)<< qdata.roll << ',' << setw(10)<< qdata.yaw << ',' << setw(10)<< L->area << ',' << setw(10)<< fc->i_term << ',' << setw(10)<< fc->d_term << ',' << L->ts << ','
-        << qdata.ts_attitude << ',' << L->pos_loc_y3 << endl;
+        << qdata.ts_attitude << ',' << L->pos_loc_y3 << ',' << qdata.batt_volt << endl;
 
         for (int i=0;i<540*2;i++)
         {
@@ -256,5 +282,3 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
 
 
 }
-
-

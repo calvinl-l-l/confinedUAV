@@ -201,7 +201,7 @@ void Hokuyo_lidar::get_centroid2()
     //cout << pos_loc_y2 << endl;
 
     A /= -(1000.0f*1000.0f);
-
+    area = A;
     //cout << pos_loc_y2 << ' ' <<  A << endl;
 }
 
@@ -350,7 +350,7 @@ void Hokuyo_lidar::get_dist2wall(float roll)
     //cout << "L: " << dist_wallL << " R: " << dist_wallR << " totall " << dist_wallL + dist_wallR << endl;
 }
 
-int Hokuyo_lidar::lidar_check_boundary()
+int Hokuyo_lidar::lidar_check_outof_boundary()
 {
 /*
     TO DO:
@@ -362,7 +362,7 @@ int Hokuyo_lidar::lidar_check_boundary()
     float dA = fabs(start_area - area) / start_area*100;
 
     //if (dA > 50)    return 0;
-    if (area > 9)    return 1;
+    if (area > 15)    return 1;
     else                return 0;
 
 }
@@ -381,4 +381,3 @@ void Hokuyo_lidar::close()
 {
     urg.close();
 }
-

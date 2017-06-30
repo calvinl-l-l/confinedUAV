@@ -44,17 +44,20 @@ public:
 	float kp_pos_y;
 	float ki_pos_y;
 	float kd_pos_y;
-    float kp_pos_y_nw;
+  float kp_pos_y_nw;
 
 	float kp_pos_z;
 	float ki_pos_z;
 	float kd_pos_z;
 
-    float alt_target;
+	int roll_trim;
+	float pos_y_setpoint;
 
-    double i_term;
-    double d_term;
-    int   roll_PWMout;
+  float alt_target;
+
+	double i_term;
+  double d_term;
+  int   roll_PWMout;
 
 	// FUNCTIONS
 	position_controller();
@@ -66,7 +69,7 @@ public:
 
 	// flags
 	int flag_outside_scan_boundary;
-    int _flag_auto_mode;
+
 
 private:
 	// VARIABLES
@@ -76,23 +79,23 @@ private:
 
 	double _pos_y;
 	double _pos_z;
-    float _d_wallR;
-    float _d_wallL;
+  float _d_wallR;
+  float _d_wallL;
 
 	int _ch8;
 	// 982,flags
 	int _flag_set_target_alt;
-
+	int _flag_auto_mode;
 	int _flag_arm;
 	char _flag_prev_mode;
-
+	int _flag_set_setpoint;
 	//PID PID_vel_z(kp_pos_z, 0, kd_pos_z, _dt, 0, 0, MAX_ASCEND_VEL, MAX_DESCEND_VEL);
 	//LowPassFilterFloat _vel_error_LPF;   // low-pass-filter on z-axis velocity error
 
 	// FUNCTIONS
-    int manual_override(int ctrl_output);
-    int mode_switch_output_damping(int signal_out);
-    double range_limiter(double in, double min_value, double max_value);
+  int manual_override(int ctrl_output);
+  int mode_switch_output_damping(int signal_out);
+  double range_limiter(double in, double min_value, double max_value);
 };
 
 

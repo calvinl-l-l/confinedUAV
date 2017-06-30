@@ -26,52 +26,72 @@ position_controller::position_controller()
 void position_controller::update_controller_input(double y, double z, float wallL, float wallR, int CH_mode, int ch8)
 {
 
-    _pos_y = y;
-    _pos_z = z;
+  _pos_y = y;
+  _pos_z = z;
 
-    _d_wallR = wallR;
-    _d_wallL = wallL;
+  _d_wallR = wallR;
+  _d_wallL = wallL;
 
-    _ch8 = ch8;
-	// save previous mode
+  _ch8 = ch8;
+// save previous mode
 	if (_flag_prev_mode != _flag_auto_mode)	_flag_prev_mode = _flag_auto_mode;
 
-    // mode
-    if (CH_mode > 1200) _flag_auto_mode = 1;
-    else                _flag_auto_mode = 0;
+  //  mode switching
+  // > up pos   = manual mode
+  // > mid pos  = change lateral setpoint
+  // > down pos = auto mode
+  if (CH_mode > 1650)
+  {
+    _flag_auto_mode = 1;
+    _flag_set_setpoint = 0;
+  }
+  else if ((CH_mode > 1200)&&(CH_mode <= 1650))
+  {
+    _flag_auto_mode = 0;
+    _flag_set_setpoint = 1;
+  }
+  else if (CH_mode <= 1200)
+  {
+    _flag_auto_mode = 0;
+    _flag_set_setpoint = 0;
+  }
 }
 
 int position_controller::update_y_pos_controller()
 {
-    double error = 0 - _pos_y;
+  // changing position setpoint
+  if (_flag_set_setpoint) pos_y_setpoint = _pos_y;
 
-    static double prev_error = 0;
+  double error = pos_y_setpoint - _pos_y;
 
-    // integral
-    i_term += (double) ki_pos_y * error * _dt;
-    i_term = range_limiter(i_term, MIN_I_ROLL, MAX_I_ROLL);
+  static double prev_error = 0;
 
-    if (!_flag_auto_mode || flag_outside_scan_boundary)   i_term = 0;  // reset integral when in manual mode
+  // integral
+  i_term += (double) ki_pos_y * error * _dt;
+  i_term = range_limiter(i_term, MIN_I_ROLL, MAX_I_ROLL);
 
-    // derivative
-    double derror = error;//pos_y_error_filter.in(error);
-    d_term = (double) kd_pos_y * (derror - prev_error) / _dt;
-    prev_error = derror;
+  if (!_flag_auto_mode || flag_outside_scan_boundary)   i_term = 0;  // reset integral when in manual mode
 
-    d_term = range_limiter(d_term, MIN_D_ROLL, MAX_D_ROLL);
-  
-    if (fabs(d_term) < 15)	d_term = 0;
+  // derivative
+  double derror = error;//pos_y_error_filter.in(error);
+  d_term = (double) kd_pos_y * (derror - prev_error) / _dt;
+  prev_error = derror;
+
+  d_term = range_limiter(d_term, MIN_D_ROLL, MAX_D_ROLL);
+
+  if (fabs(d_term) < 15)	d_term = 0;
 
 	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_term, MIN_ROLL_OUT, MAX_ROLL_OUT);
-	//roll_PWMout = output;
+  output += roll_trim;
+  //roll_PWMout = output;
 
 
 	if (_flag_auto_mode && !flag_outside_scan_boundary)
-    {
-        roll_PWMout = manual_override(mode_switch_output_damping(output));
-        return manual_override(mode_switch_output_damping(output));
-    }
-    else                    return 0;
+  {
+    roll_PWMout = manual_override(mode_switch_output_damping(output));
+    return manual_override(mode_switch_output_damping(output));
+  }
+  else                    return 0;
 }
 
 int position_controller::update_z_pos_controller()

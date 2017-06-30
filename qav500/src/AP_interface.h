@@ -2,7 +2,7 @@
 #define AP_INTERFACE_H_
 
 #include "../include/mavlink/c_library_v1/common/mavlink.h"
-#include "mavlink_sp.h" 
+#include "mavlink_sp.h"
 #include <time.h>
 #include <sys/time.h>
 #include <math.h>
@@ -34,10 +34,13 @@ struct mavlink_data_t
     float roll;
     float yaw;
 
-
     unsigned long ts_startup;
     unsigned long ts_attitude;
     unsigned long ts_CH;
+
+    float batt_volt;
+    float batt_current;
+    float batt_remain;
 };
 
 

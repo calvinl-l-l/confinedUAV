@@ -23,14 +23,9 @@
 #define dt_sock     100
 #define dt_UI       100
 
-// common
-
-
-// RC thread
-
-
-
 using namespace std;
+
+extern int debug_print;
 
 void start_scheduler(AP_interface &quad, Hokuyo_lidar &lidar, position_controller &fc);
 void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc);

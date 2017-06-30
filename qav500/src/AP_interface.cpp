@@ -93,6 +93,9 @@ void AP_interface::read_msg()
 				mavlink_sys_status_t sys_status;
 				mavlink_msg_sys_status_decode(&msg, &sys_status);
 
+				mavlink_data.batt_volt = sys_status.voltage_battery/1000.0f;
+				mavlink_data.batt_current = sys_status.current_battery;
+				mavlink_data.batt_remain = sys_status.battery_remaining;
 				//print
 
 				break;
@@ -211,4 +214,3 @@ void AP_interface::request_pixhawk_info_msg()
     mavlink_msg_request_data_stream_pack(SYSTEM_ID, COMP_ID, &msg, 1, 1,MAV_DATA_STREAM_ALL,200,1);
 	serial_port->write_message(msg);
 }
-

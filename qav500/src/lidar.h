@@ -64,6 +64,10 @@ class Hokuyo_lidar
     int yz_start_pt;    // start point on the left, index 0
     int yz_end_pt;      // end point on the right, index end
 
+    float _data_loss;
+
+    int _flag_lidar_error;
+
     void get_centroid1();
     void get_centroid2();
     void get_symmetry_pt();

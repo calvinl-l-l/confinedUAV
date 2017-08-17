@@ -81,7 +81,9 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
             time_stamp = 0;
         }
 
-        write_data2file(wr, qdata, lidar, fc);
+        signal_LED(fc->_flag_auto_mode, fc->flag_outside_scan_boundary);
+
+        write_data2file(0, qdata, lidar, fc);
 
         // Debug printout
         if (debug_print)  DEBUG_PRINT(qdata, lidar, fc);

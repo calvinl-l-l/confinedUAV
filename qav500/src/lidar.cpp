@@ -50,7 +50,16 @@ void Hokuyo_lidar::read(float roll)
     y.clear();
 
     long t_temp;
-    if (!urg.get_distance(range, &t_temp)) cout << "Error reading lidar scan!" << endl;
+    if (!urg.get_distance(range, &t_temp))
+    {
+      _flag_lidar_error  = 1;
+      cout << "Error reading lidar scan!" << endl;
+    }
+    else
+    {
+      _flag_lidar_error = 0;
+    }
+
     ts = t_temp - ts_startup;
     // NULL = no geting time stamp
 
@@ -86,6 +95,9 @@ void Hokuyo_lidar::read(float roll)
 
 
     nyz = n;
+
+    _data_loss = (float) n/1080;  // calc data loss
+
    // cout << "nyz " << nyz << endl;
     // rotation (y,z)
     for (int i=0; i < nyz; i++)
@@ -362,9 +374,16 @@ int Hokuyo_lidar::lidar_check_outof_boundary()
     float dA = fabs(start_area - area) / start_area*100;
 
     //if (dA > 50)    return 0;
-    if (area > 15)    return 1;
-    else                return 0;
 
+    if ( (_data_loss <= 0.38f) || (area > 15) || _flag_lidar_error )
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+    //cout << _data_loss << "  a" << area << endl;
 }
 
 void Hokuyo_lidar::wake()

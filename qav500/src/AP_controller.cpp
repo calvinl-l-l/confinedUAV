@@ -74,10 +74,15 @@ int position_controller::update_y_pos_controller()
 
   // derivative
   double derror = error;//pos_y_error_filter.in(error);
+
+  _prev_d_term = d_term;
+
   d_term = (double) kd_pos_y * (derror - prev_error) / _dt;
   prev_error = derror;
 
   d_term = range_limiter(d_term, MIN_D_ROLL, MAX_D_ROLL);
+
+  d_term = (1-D_smoothing_factor) * _prev_d_term + D_smoothing_factor * d_term;
 
   if (fabs(d_term) < 15)	d_term = 0;
 

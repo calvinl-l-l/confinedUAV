@@ -30,6 +30,7 @@
 
 #define GROUND_ALT       40		// mm
 
+#define D_smoothing_factor 0.7
 // position controller class -------------------------------------------------------
 
 
@@ -69,7 +70,7 @@ public:
 
 	// flags
 	int flag_outside_scan_boundary;
-
+	int _flag_auto_mode;
 
 private:
 	// VARIABLES
@@ -82,10 +83,12 @@ private:
   float _d_wallR;
   float _d_wallL;
 
+	double _prev_d_term;
+
 	int _ch8;
 	// 982,flags
 	int _flag_set_target_alt;
-	int _flag_auto_mode;
+	//int _flag_auto_mode;
 	int _flag_arm;
 	char _flag_prev_mode;
 	int _flag_set_setpoint;

@@ -33,3 +33,36 @@ void signal_LED(int fd, int boundary, int mode)
   b = tunnel_boundary;
   f = flight_mode;
 }
+
+void signal_LED(int flag_auto_mode, int outside)
+{
+  // A B
+  // 0 0 = manual
+  // 0 1 = auto
+  // 1 0 = low battery in auto
+  // 1 1 = low battery in manual
+
+  if (flag_auto_mode) // auto
+  {
+    digitalWrite(LED_LOGIC_A, HIGH);
+    digitalWrite(LED_LOGIC_B, LOW);
+
+    if (outside)
+    {
+      digitalWrite(LED_LOGIC_A, LOW);
+      digitalWrite(LED_LOGIC_B, LOW);
+    }
+  }
+  else if (!flag_auto_mode) // manual
+  {
+    digitalWrite(LED_LOGIC_A, LOW);
+    digitalWrite(LED_LOGIC_B, LOW);
+
+    if (outside)
+    {
+//      digitalWrite(LED_LOGIC_A, HIGH);
+//      digitalWrite(LED_LOGIC_B, HIGH);
+    }
+  }
+
+}

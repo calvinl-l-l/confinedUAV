@@ -68,6 +68,8 @@ class Hokuyo_lidar
 
     int _flag_lidar_error;
 
+    long t_temp;
+
     void get_centroid1();
     void get_centroid2();
     void get_symmetry_pt();

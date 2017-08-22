@@ -51,7 +51,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
 
         int  dt = 0;
         static unsigned long time_stamp = 0;
-        int wr = 0;
+        static int wr = 0;
 
         // sample pixhawk data ***
         qdata = quad->get_mavlink_data();
@@ -72,21 +72,35 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         //  Logging file ***
         if (qdata.ch6 > 1200)
         {
-            time_stamp += 25;
+          // logging data or auto flight mode
+          digitalWrite(22, HIGH); // trigger reset
+
+          if (!wr)
+          {
+            quad->set_startup_time(); // reset
+            lidar->set_startup_time();  // reset
             wr = 1;
+          }
+
+          time_stamp += 25;
+
         }
         else
         {
-            wr = 0;
-            time_stamp = 0;
+          // no logging + manual
+          digitalWrite(22, LOW);
+          wr = 0;
+          time_stamp = 0;
         }
 
         signal_LED(fc->_flag_auto_mode, fc->flag_outside_scan_boundary);
 
-        write_data2file(0, qdata, lidar, fc);
+        write_data2file(wr, qdata, lidar, fc);
 
         // Debug printout
         if (debug_print)  DEBUG_PRINT(qdata, lidar, fc);
+
+        cout << qdata.ts_attitude << " lidar: " << lidar->ts << endl;
 
         dt = millis() - t0;
 
@@ -135,6 +149,7 @@ void UI_thread(void* p1, void* p2)
         else if (input == "s")
         {
           debug_print = 0;
+          //digitalWrite(22, HIGH); testing
         }
         else if (input == "stream")
         {
@@ -143,7 +158,8 @@ void UI_thread(void* p1, void* p2)
         }
         else if (input == "q")
         {
-            quad->close_sp();
+          //digitalWrite(22, LOW); testing
+          quad->reboot();
         }
         else if (input == "setpt")
         {

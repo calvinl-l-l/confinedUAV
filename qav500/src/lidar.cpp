@@ -26,7 +26,7 @@ Hokuyo_lidar::Hokuyo_lidar()
 
 void Hokuyo_lidar::set_startup_time()
 {
-    ts_startup = urg.get_sensor_time_stamp();
+    ts_startup = t_temp;
 
 }
 
@@ -49,7 +49,7 @@ void Hokuyo_lidar::read(float roll)
     z.clear();
     y.clear();
 
-    long t_temp;
+    //long t_temp;
     if (!urg.get_distance(range, &t_temp))
     {
       _flag_lidar_error  = 1;

@@ -48,7 +48,10 @@ void position_controller::update_controller_input(double y, double z, float wall
   else if ((CH_mode > 1200)&&(CH_mode <= 1650))
   {
     _flag_auto_mode = 0;
-    _flag_set_setpoint = 1;
+
+    _flag_set_setpoint = 0;
+    // set to 1 for changing lateral setpoint
+    // set to 0 for manual mode but logging 
   }
   else if (CH_mode <= 1200)
   {

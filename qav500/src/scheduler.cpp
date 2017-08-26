@@ -100,8 +100,6 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         // Debug printout
         if (debug_print)  DEBUG_PRINT(qdata, lidar, fc);
 
-        cout << qdata.ts_attitude << " lidar: " << lidar->ts << endl;
-
         dt = millis() - t0;
 
         if (dt < 25)    delay(25-dt);

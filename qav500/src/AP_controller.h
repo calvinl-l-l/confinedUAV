@@ -30,7 +30,7 @@
 
 #define GROUND_ALT       40		// mm
 
-#define D_smoothing_factor 0.7
+#define D_smoothing_factor 0.6
 // position controller class -------------------------------------------------------
 
 

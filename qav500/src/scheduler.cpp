@@ -52,7 +52,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         int  dt = 0;
         static unsigned long time_stamp = 0;
         static int wr = 0;
-
+        static int p = 0;
         // sample pixhawk data ***
         qdata = quad->get_mavlink_data();
 
@@ -98,7 +98,13 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         write_data2file(wr, qdata, lidar, fc);
 
         // Debug printout
-        if (debug_print)  DEBUG_PRINT(qdata, lidar, fc);
+
+        if (debug_print && p%2==0)
+        {
+          DEBUG_PRINT(qdata, lidar, fc);
+          p = 0;
+        }
+        p++;
 
         dt = millis() - t0;
 
@@ -212,11 +218,31 @@ void start_scheduler(AP_interface &quad, Hokuyo_lidar &lidar, position_controlle
 // ========== HELPER FUNCTIONS ======================
 void DEBUG_PRINT(mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc)
 {
+    //for (int i=0; i<4;i++) cout << endl;
+
+
     cout << fixed << setprecision(3);
     cout << "pos_y " << setw(10) << L->pos_loc_y2 << " PWM " << setw(6) << fc->roll_PWMout
          << " CH_r " << qdata.ch1 << " p: " << fc->kp_pos_y << " i: " << fc->ki_pos_y
          << " d: " << fc->kd_pos_y << " i-val " << setw(8) << fc->i_term << "    d-val "
          << setw(8) << fc->d_term << " out " << fc->flag_outside_scan_boundary << endl;
+
+/*
+    int map[2500];
+    fill_n(map, 2500, 0);
+    scan2pixelmap(L->y, L->z, L->pos_loc_y2, L->pos_loc_z2, map);
+
+    for (int r=45;r>=10;r--){
+      for (int c=0;c<50;c++)
+      {
+        if (map[r*50+c] > 1 && map[r*50+c] < 100) printf("o");
+        else if (map[r*50+c] == 999)              printf("x");
+        else if (map[r*50+c] == 9999)             printf("O");
+        else                                      printf("  ");
+      }
+      cout << endl;
+    }
+*/
 }
 
 
@@ -228,7 +254,7 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
     static ofstream ldata_log;
     static ofstream scan_log;   // needs to be outside
 
-    //static ofstream yz_log;
+    static ofstream yz_log;
 
     int nlog;
     char filename[20];
@@ -256,8 +282,8 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
         scan_log.open(filename);
 
 
-        //snprintf(filename, sizeof filename, "yz_%d.txt", nlog);
-        //yz_log.open(filename);
+        snprintf(filename, sizeof filename, "yz_%d.txt", nlog);
+        yz_log.open(filename);
 
         file_is_open = 1;
         cout << "file created" << endl;
@@ -280,6 +306,11 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
             scan_log << i+1 << ',' << L->angle[i] << ',' << L->range[i] << ',' << L->ts << endl;
         }
 
+        for (int i =0; i < L->y.size();i++)
+        {
+          yz_log << i + 1 << ',' << L->y[i] << ',' << L->z[i] << ',' << L->nyz << endl;
+        }
+
 
     }
     else if (!w)
@@ -288,7 +319,7 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
         {
             ldata_log.close();
             scan_log.close();
-            //yz_log.close();
+            yz_log.close();
 
 
             file_is_open = 0;

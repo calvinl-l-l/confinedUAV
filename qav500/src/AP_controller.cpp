@@ -9,17 +9,19 @@
 // public functions
 position_controller::position_controller()
 {
-    kp_pos_y = 0.21;
+  kp_pos_y = 0.21;
 	ki_pos_y = 0;
 	kd_pos_y = 0.22;
-    kp_pos_y_nw = 0;
-
+  kp_pos_y_nw = 0;
 
 	kp_pos_z = 1;
 
-    _dt = 0.025;
+  _dt = 0.025;
 
 	i_term = 0;
+  d_term = 0;
+  _prev_d_term = 0;
+  roll_trim = 0;
 }
 
 
@@ -51,7 +53,7 @@ void position_controller::update_controller_input(double y, double z, float wall
 
     _flag_set_setpoint = 0;
     // set to 1 for changing lateral setpoint
-    // set to 0 for manual mode but logging 
+    // set to 0 for manual mode but logging
   }
   else if (CH_mode <= 1200)
   {
@@ -65,7 +67,7 @@ int position_controller::update_y_pos_controller()
   // changing position setpoint
   if (_flag_set_setpoint) pos_y_setpoint = _pos_y;
 
-  double error = pos_y_setpoint - _pos_y;
+  double error = 0 - _pos_y;  // can replae 0 with pos_y_setpoint
 
   static double prev_error = 0;
 
@@ -87,7 +89,7 @@ int position_controller::update_y_pos_controller()
 
   d_term = (1-D_smoothing_factor) * _prev_d_term + D_smoothing_factor * d_term;
 
-  if (fabs(d_term) < 15)	d_term = 0;
+  //if (fabs(d_term) < 15)	d_term = 0;
 
 	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_term, MIN_ROLL_OUT, MAX_ROLL_OUT);
   output += roll_trim;

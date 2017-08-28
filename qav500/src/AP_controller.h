@@ -25,12 +25,12 @@
 #define MIN_ROLL_OUT	 1100//1380
 #define MAX_I_ROLL       15
 #define MIN_I_ROLL       -15
-#define MAX_D_ROLL       250
-#define MIN_D_ROLL       -250
+#define MAX_D_ROLL       200
+#define MIN_D_ROLL       -200
 
 #define GROUND_ALT       40		// mm
 
-#define D_smoothing_factor 0.6
+#define D_smoothing_factor 0.3
 // position controller class -------------------------------------------------------
 
 

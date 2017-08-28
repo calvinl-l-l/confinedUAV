@@ -5,11 +5,13 @@
 #include "urg_cpp/Lidar.h"
 #include "urg_cpp/Urg_driver.h"
 #include <iomanip>
+#include "utility.h"
 
 using namespace std;
 using namespace qrk;
 
 #define MAX_SCAN_AREA 10
+#define LONELY_THRESHOLD 50;
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -23,7 +25,9 @@ class Hokuyo_lidar
 
 
     vector<long> range;
+    vector<long> range_f;
     vector<double> angle;
+    vector<double> angle_f;
     vector<double> y;
     vector<double> z;
 
@@ -70,6 +74,7 @@ class Hokuyo_lidar
 
     long t_temp;
 
+    vector<int> lonely_pts_detector();
     void get_centroid1();
     void get_centroid2();
     void get_symmetry_pt();

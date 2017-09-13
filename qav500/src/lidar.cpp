@@ -64,7 +64,7 @@ void Hokuyo_lidar::read(float roll)
 
     // removing outliers
     //vector<int> idx = lonely_pts_detector();
-    vector<int> idx;
+    vector<int> idx;  // for disabling lonely point detector, need to comment out the lonely function too
 
     // converting raw data to cartesian
     int i2 = 0; // index for removing idx vector

@@ -99,7 +99,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
 
         // Debug printout
 
-        if (debug_print && p%2==0)
+        if (debug_print && p%4==0)
         {
           DEBUG_PRINT(qdata, lidar, fc);
           p = 0;
@@ -224,8 +224,8 @@ void DEBUG_PRINT(mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc)
     cout << fixed << setprecision(3);
     cout << "pos_y " << setw(10) << L->pos_loc_y2 << " PWM " << setw(6) << fc->roll_PWMout
          << " CH_r " << qdata.ch1 << " p: " << fc->kp_pos_y << " i: " << fc->ki_pos_y
-         << " d: " << fc->kd_pos_y << " i-val " << setw(8) << fc->i_term << "    d-val "
-         << setw(8) << fc->d_term << " out " << fc->flag_outside_scan_boundary << endl;
+         << " d: " << fc->kd_pos_y << "    d-val "
+         << setw(8) << fc->d_term << endl;
 
 /*
     int map[2500];
@@ -243,6 +243,7 @@ void DEBUG_PRINT(mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc)
       cout << endl;
     }
 */
+
 }
 
 

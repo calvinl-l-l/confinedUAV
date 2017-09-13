@@ -89,9 +89,10 @@ int position_controller::update_y_pos_controller()
 
   d_term = (1-D_smoothing_factor) * _prev_d_term + D_smoothing_factor * d_term;
 
-  //if (fabs(d_term) < 15)	d_term = 0;
+  double d_out = d_term;
+  if (fabs(d_term) < 15)	d_out = 0;
 
-	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_term, MIN_ROLL_OUT, MAX_ROLL_OUT);
+	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_out, MIN_ROLL_OUT, MAX_ROLL_OUT);
   output += roll_trim;
   //roll_PWMout = output;
 

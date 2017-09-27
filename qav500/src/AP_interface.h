@@ -16,9 +16,37 @@
 
 using namespace std;
 
+struct IMU_data_t
+{
+  // msg #27 raw imu
+  int16_t xacc_r;
+  int16_t yacc_r;
+  int16_t zacc_r;
+  int16_t xgyro_r;
+  int16_t ygyro_r;
+  int16_t zgyro_r;
+  int16_t xmag_r;
+  int16_t ymag_r;
+  int16_t zmag_r;
+  uint64_t ts_imu_raw;
+
+  // msg #105 highres
+  float xacc_h;
+  float yacc_h;
+  float zacc_h;
+  float xgyro_h;
+  float ygyro_h;
+  float zgyro_h;
+  float xmag_h;
+  float ymag_h;
+  float zmag_h;
+  uint64_t ts_imu_highres;
+};
+
 struct mavlink_data_t
 {
     //rc channels
+    int ch1_PPM;
     int ch1;
     int ch2;
     int ch3;
@@ -27,6 +55,7 @@ struct mavlink_data_t
     int ch6;
     int ch7;
     int ch8;
+    int ch9;
     int prev_ch5;
 
     //attitude in degree
@@ -41,6 +70,8 @@ struct mavlink_data_t
     float batt_volt;
     float batt_current;
     float batt_remain;
+
+    IMU_data_t imu;
 };
 
 
@@ -59,6 +90,7 @@ public:
     void set_startup_time();
     void arm(int is_arm);
     void close_sp();
+    void reboot();
 
 private:
 	Serial_Port *serial_port;

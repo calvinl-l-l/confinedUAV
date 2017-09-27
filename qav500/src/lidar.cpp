@@ -26,7 +26,7 @@ Hokuyo_lidar::Hokuyo_lidar()
 
 void Hokuyo_lidar::set_startup_time()
 {
-    ts_startup = urg.get_sensor_time_stamp();
+    ts_startup = t_temp;
 
 }
 
@@ -49,12 +49,25 @@ void Hokuyo_lidar::read(float roll)
     z.clear();
     y.clear();
 
-    long t_temp;
-    if (!urg.get_distance(range, &t_temp)) cout << "Error reading lidar scan!" << endl;
-    ts = t_temp - ts_startup;
-    // NULL = no geting time stamp
+    //long t_temp;
+    if (!urg.get_distance(range, &t_temp))
+    {
+      _flag_lidar_error  = 1;
+      cout << "Error reading lidar scan!" << endl;
+    }
+    else
+    {
+      _flag_lidar_error = 0;
+    }
+
+    ts = t_temp - ts_startup;    // NULL = no geting time stamp
+
+    // removing outliers
+    //vector<int> idx = lonely_pts_detector();
+    vector<int> idx;  // for disabling lonely point detector, need to comment out the lonely function too
 
     // converting raw data to cartesian
+    int i2 = 0; // index for removing idx vector
     int n = 0;
     for (int i=0; i < 540*2; i++)
     {
@@ -62,30 +75,36 @@ void Hokuyo_lidar::read(float roll)
         double rad = urg.index2rad(i);
         angle.push_back(urg.index2deg(i));
 
-        // only store meaningfull data
-        if ((fabs(angle[i]) > 81.0f && fabs(angle[i]) < 95.0f) || angle[i] > 125.0f)
+        if (idx.size() > 0 && idx[i2] == i && i2 < idx.size())
         {
-            // condition is for the QAV500 frame
+          i2++;
+          continue;
         }
         else
         {
-            if ((range[i] > 350) && (range[i] <= 10000))
+          // only store meaningfull data
+          if ((fabs(angle[i]) > 81.0f && fabs(angle[i]) < 95.0f) || angle[i] > 125.0f)
+          {
+              // condition is for the QAV500 frame
+              // redundant: can rely on lonely_pts_detector
+          }
+          else
+          {
+            if ((range[i] > 350) && (range[i] <= 10000))  // redundant
             {
-                double ztemp = range[i] * cos(rad);
-                // cutting off top and bottom scan. Only use side walls for now
-                if (1) //((fabs(ztemp) <= 700)
-                {
-                	z.push_back((double) (range[i] * cos(rad)));
-                	y.push_back((double) (range[i] * sin(rad)));
-                	n++;
-                }
-
+            	z.push_back((double) (range[i] * cos(rad)));
+              y.push_back((double) (range[i] * sin(rad)));
+            	n++;
             }
+          }
         }
     }
 
 
     nyz = n;
+
+    _data_loss = (float) n/1080;  // calc data loss
+
    // cout << "nyz " << nyz << endl;
     // rotation (y,z)
     for (int i=0; i < nyz; i++)
@@ -362,10 +381,58 @@ int Hokuyo_lidar::lidar_check_outof_boundary()
     float dA = fabs(start_area - area) / start_area*100;
 
     //if (dA > 50)    return 0;
-    if (area > 15)    return 1;
-    else                return 0;
 
+    if ( (_data_loss <= 0.38f) || (area > 15) || _flag_lidar_error )
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+    //cout << _data_loss << "  a" << area << endl;
 }
+
+vector<int> Hokuyo_lidar::lonely_pts_detector()
+{
+  // output
+  vector<int> I;
+
+  // finding quantiles
+  int m = median(range);
+
+  vector<long> temp = range;
+
+  sort(temp.begin(), temp.end());
+
+  int m_idx = 0;
+
+  for (int i=0;i<range.size();i++)
+  {
+    if (abs(temp[i]-m) < 10)  m_idx = i;// 10 is threshold
+  }
+
+  vector<long> v2(temp.begin(), temp.begin() + m_idx);
+  vector<long> v3(temp.begin() + m_idx + 1, temp.end());
+
+  int q2 = median(v2);
+  int q3 = median(v3);
+  int IQR = q3 - q2;
+
+  int rmax = 1.5 * IQR + q3;
+  int rmin = q2 - 1.5 * IQR;
+
+  // removing the lonely points
+  int c = 0;
+
+  for (int i=0;i<range.size();i++)
+  {
+    if (range[i] > rmax || range[i] < rmin) I.push_back(i);
+  }
+
+  return I;
+}
+
 
 void Hokuyo_lidar::wake()
 {

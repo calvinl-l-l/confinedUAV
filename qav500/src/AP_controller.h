@@ -23,13 +23,14 @@
 
 #define MAX_ROLL_OUT     1900//1620
 #define MIN_ROLL_OUT	 1100//1380
-#define MAX_I_ROLL       15
-#define MIN_I_ROLL       -15
-#define MAX_D_ROLL       250
-#define MIN_D_ROLL       -250
+#define MAX_I_ROLL       30
+#define MIN_I_ROLL       -30
+#define MAX_D_ROLL       200
+#define MIN_D_ROLL       -200
 
 #define GROUND_ALT       40		// mm
 
+#define D_smoothing_factor 0.3
 // position controller class -------------------------------------------------------
 
 
@@ -69,7 +70,7 @@ public:
 
 	// flags
 	int flag_outside_scan_boundary;
-
+	int _flag_auto_mode;
 
 private:
 	// VARIABLES
@@ -82,10 +83,12 @@ private:
   float _d_wallR;
   float _d_wallL;
 
+	double _prev_d_term;
+
 	int _ch8;
 	// 982,flags
 	int _flag_set_target_alt;
-	int _flag_auto_mode;
+	//int _flag_auto_mode;
 	int _flag_arm;
 	char _flag_prev_mode;
 	int _flag_set_setpoint;

@@ -9,17 +9,19 @@
 // public functions
 position_controller::position_controller()
 {
-    kp_pos_y = 0.21;
-	ki_pos_y = 0;
-	kd_pos_y = 0.22;
-    kp_pos_y_nw = 0;
-
+  kp_pos_y = 0.2;
+	ki_pos_y = 0.01;
+	kd_pos_y = 0.15;
+  kp_pos_y_nw = 0;
 
 	kp_pos_z = 1;
 
-    _dt = 0.025;
+  _dt = 0.025;
 
 	i_term = 0;
+  d_term = 0;
+  _prev_d_term = 0;
+  roll_trim = 0;
 }
 
 
@@ -48,7 +50,10 @@ void position_controller::update_controller_input(double y, double z, float wall
   else if ((CH_mode > 1200)&&(CH_mode <= 1650))
   {
     _flag_auto_mode = 0;
-    _flag_set_setpoint = 1;
+
+    _flag_set_setpoint = 0;
+    // set to 1 for changing lateral setpoint
+    // set to 0 for manual mode but logging
   }
   else if (CH_mode <= 1200)
   {
@@ -62,7 +67,7 @@ int position_controller::update_y_pos_controller()
   // changing position setpoint
   if (_flag_set_setpoint) pos_y_setpoint = _pos_y;
 
-  double error = pos_y_setpoint - _pos_y;
+  double error = 0 - _pos_y;  // can replae 0 with pos_y_setpoint
 
   static double prev_error = 0;
 
@@ -74,19 +79,25 @@ int position_controller::update_y_pos_controller()
 
   // derivative
   double derror = error;//pos_y_error_filter.in(error);
+
+  _prev_d_term = d_term;
+
   d_term = (double) kd_pos_y * (derror - prev_error) / _dt;
   prev_error = derror;
 
   d_term = range_limiter(d_term, MIN_D_ROLL, MAX_D_ROLL);
 
-  if (fabs(d_term) < 15)	d_term = 0;
+  d_term = (1-D_smoothing_factor) * _prev_d_term + D_smoothing_factor * d_term;
 
-	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_term, MIN_ROLL_OUT, MAX_ROLL_OUT);
+  double d_out = d_term;
+  if (fabs(d_term) < 15)	d_out = 0;
+
+	int output = range_limiter((int) 1500 + kp_pos_y * error + i_term + d_out, MIN_ROLL_OUT, MAX_ROLL_OUT);
   output += roll_trim;
   //roll_PWMout = output;
 
 
-	if (_flag_auto_mode && !flag_outside_scan_boundary)
+	if (_flag_auto_mode)// && !flag_outside_scan_boundary)
   {
     roll_PWMout = manual_override(mode_switch_output_damping(output));
     return manual_override(mode_switch_output_damping(output));

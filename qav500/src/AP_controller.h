@@ -23,8 +23,8 @@
 
 #define MAX_ROLL_OUT     1900//1620
 #define MIN_ROLL_OUT	 1100//1380
-#define MAX_I_ROLL       15
-#define MIN_I_ROLL       -15
+#define MAX_I_ROLL       30
+#define MIN_I_ROLL       -30
 #define MAX_D_ROLL       200
 #define MIN_D_ROLL       -200
 

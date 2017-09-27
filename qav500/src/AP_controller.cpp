@@ -9,9 +9,9 @@
 // public functions
 position_controller::position_controller()
 {
-  kp_pos_y = 0.21;
-	ki_pos_y = 0;
-	kd_pos_y = 0.22;
+  kp_pos_y = 0.2;
+	ki_pos_y = 0.01;
+	kd_pos_y = 0.15;
   kp_pos_y_nw = 0;
 
 	kp_pos_z = 1;
@@ -97,7 +97,7 @@ int position_controller::update_y_pos_controller()
   //roll_PWMout = output;
 
 
-	if (_flag_auto_mode && !flag_outside_scan_boundary)
+	if (_flag_auto_mode)// && !flag_outside_scan_boundary)
   {
     roll_PWMout = manual_override(mode_switch_output_damping(output));
     return manual_override(mode_switch_output_damping(output));

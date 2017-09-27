@@ -139,7 +139,7 @@ void AP_interface::read_msg()
 			}
 			case MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE:
 			{
-				
+
 				break;
 			}
 			case MAVLINK_MSG_ID_HIGHRES_IMU:
@@ -160,6 +160,16 @@ void AP_interface::read_msg()
 
 				mavlink_data.imu.ts_imu_highres = himu.time_usec;
 
+				break;
+			}
+			case MAVLINK_MSG_ID_RC_CHANNELS:
+			{
+				mavlink_rc_channels_t rc;
+				mavlink_msg_rc_channels_decode(&msg, &rc);
+
+				mavlink_data.ch9 = rc.chan9_raw;
+				mavlink_data.ch1_PPM = rc.chan1_raw;
+				
 				break;
 			}
 			case MAVLINK_MSG_ID_RC_CHANNELS_RAW:

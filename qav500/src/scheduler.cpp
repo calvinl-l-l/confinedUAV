@@ -93,7 +93,7 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
           time_stamp = 0;
         }
 
-        signal_LED(fc->_flag_auto_mode, fc->flag_outside_scan_boundary);
+        //signal_LED(fc->_flag_auto_mode, fc->flag_outside_scan_boundary);
 
         write_data2file(wr, qdata, lidar, fc);
 
@@ -223,9 +223,8 @@ void DEBUG_PRINT(mavlink_data_t qdata, Hokuyo_lidar *L, position_controller *fc)
 
     cout << fixed << setprecision(3);
     cout << "pos_y " << setw(10) << L->pos_loc_y2 << " PWM " << setw(6) << fc->roll_PWMout
-         << " CH_r " << qdata.ch1 << " p: " << fc->kp_pos_y << " i: " << fc->ki_pos_y
-         << " d: " << fc->kd_pos_y << "    d-val "
-         << setw(8) << fc->d_term << endl;
+         << " CH_r " << qdata.ch1 << "    d-val " << setw(8) << fc->d_term
+         << " i-val " << fc->i_term << " rollIN " << qdata.ch1_PPM << endl;
 
 /*
     int map[2500];
@@ -300,7 +299,7 @@ void write_data2file(int w, mavlink_data_t qdata, Hokuyo_lidar *L, position_cont
         ldata_log << fixed
         << setprecision(3) << setw(10)<< L->pos_loc_y2 << ',' << setw(10)<< L->pos_loc_z2 << ',' << qdata.ch1 << ',' << fc->roll_PWMout << ',' << qdata.ch3 << ',' << qdata.ch8 << ','
         << setw(10)<< qdata.roll << ',' << setw(10)<< qdata.yaw << ',' << setw(10)<< L->area << ',' << setw(10)<< fc->i_term << ',' << setw(10)<< fc->d_term << ',' << L->ts << ','
-        << qdata.ts_attitude << ',' << L->pos_loc_y3 << ',' << qdata.batt_volt << endl;
+        << qdata.ts_attitude << ',' << L->pos_loc_y3 << ',' << qdata.batt_volt << ',' << qdata.ch1_PPM << endl;
 
         for (int i=0;i<540*2;i++)
         {

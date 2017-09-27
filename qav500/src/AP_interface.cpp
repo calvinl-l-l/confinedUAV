@@ -169,7 +169,7 @@ void AP_interface::read_msg()
 
 				mavlink_data.ch9 = rc.chan9_raw;
 				mavlink_data.ch1_PPM = rc.chan1_raw;
-				
+
 				break;
 			}
 			case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
@@ -273,6 +273,9 @@ void AP_interface::request_pixhawk_info_msg()
 {
   mavlink_message_t msg;
   //mavlink_msg_attitude_pack(SYSTEM_ID, COMP_ID, &msg, 0, 1,1,1,1,1,1);
-	mavlink_msg_request_data_stream_pack(SYSTEM_ID, COMP_ID, &msg, 1, 1,MAV_DATA_STREAM_ALL,200,1);
+	mavlink_msg_request_data_stream_pack(SYSTEM_ID, COMP_ID, &msg, 1, 1,MAV_DATA_STREAM_RC_CHANNELS,200,1);
+	serial_port->write_message(msg);
+
+	mavlink_msg_request_data_stream_pack(SYSTEM_ID, COMP_ID, &msg, 1, 1,MAV_DATA_STREAM_RAW_SENSORS,200,1);
 	serial_port->write_message(msg);
 }

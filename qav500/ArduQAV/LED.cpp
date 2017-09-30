@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "LED.h"
 
 LED::LED()
@@ -20,10 +16,6 @@ void LED::init()
 	LED_L.begin();
 	LED_R.begin();
 	LED_M.begin();
-	
-	// initial show, for coolness and awesome
-	//sigBuzzer(2, 1);	// buzz
-  //digitalWrite(PIN_BUZZER, LOW); // make sure buzzer is mute after init
 }
 
 void LED::signalSwitcher(char sig)
@@ -50,10 +42,15 @@ void LED::signalSwitcher(char sig)
 			sigBuzzer(4, 2);
 		}
 	}
-	else if (mode = 'i')
-	{
-		awesome_rainbow();
-	}
+  else if (mode == 's')
+  {
+    mode_manual();
+    prev_mode = 's';
+  }
+  else if (mode = 'i')
+  {
+    awesome_rainbow();
+  }
 
 }
 
@@ -77,7 +74,7 @@ void LED::awesome_rainbow()
 		
 		LED_M.show();
 
-		chThdSleepMilliseconds(10);
+		chThdSleepMilliseconds(5);
 	}
 
 	// mid LED

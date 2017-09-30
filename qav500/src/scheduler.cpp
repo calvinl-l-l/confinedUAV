@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include <wiringSerial.h>
 
 int debug_print;
 
@@ -43,8 +44,14 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
     position_controller *fc = (position_controller*) p3;
 
     unsigned long t0 = millis();
-
     mavlink_data_t qdata;
+    int flag_ardu = 0;
+    int flag_servo = 0;
+
+    // init serial com to arduino
+    int fd_ardu = serialOpen("/dev/ttySAC2", 9600);
+
+    if (!fd_ardu) cout << "Error connecting to Arduino!! Restart needed" << endl;
 
     while (1)
     {
@@ -73,7 +80,24 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         if (qdata.ch6 > 1200)
         {
           // logging data or auto flight mode
-          digitalWrite(22, HIGH); // trigger reset
+          if (qdata.ch6 > 1700) // auto mode
+          {
+            if (!flag_ardu)
+            {
+              serialPutchar(fd_ardu, 'a');
+              flag_ardu = 1;
+              flag_servo = 0;
+            }
+          }
+          else  // just recording, also move servo
+          {
+            if (!flag_servo)
+            {
+              serialPutchar(fd_ardu, 's');
+              flag_servo = 1;
+              flag_ardu = 1;
+            }
+          }
 
           if (!wr)
           {
@@ -88,12 +112,16 @@ void read_sensors_thread(void *p1, void *p2, void *p3)
         else
         {
           // no logging + manual
-          digitalWrite(22, LOW);
+          if ((flag_ardu) || (qdata.ch4 > 1800))
+          {
+            serialPutchar(fd_ardu, 'm');
+            flag_ardu = 0;
+            flag_servo = 0;
+          }
+
           wr = 0;
           time_stamp = 0;
         }
-
-        //signal_LED(fc->_flag_auto_mode, fc->flag_outside_scan_boundary);
 
         write_data2file(wr, qdata, lidar, fc);
 
@@ -153,7 +181,6 @@ void UI_thread(void* p1, void* p2)
         else if (input == "s")
         {
           debug_print = 0;
-          //digitalWrite(22, HIGH); testing
         }
         else if (input == "stream")
         {

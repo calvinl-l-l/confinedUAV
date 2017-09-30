@@ -6,7 +6,7 @@
 
 
 ChNilSerialClass ChNilSerial;
-#define Serial ChNilSerial
+//#define Serial ChNilSerial
 
 #define PIN_WEBCAM_SERVO 9  // PIN for servo 
 
@@ -20,6 +20,7 @@ THD_WORKING_AREA(waThd_serial, 64);
 THD_WORKING_AREA(waThd_servo, 64);
 THD_WORKING_AREA(waThd_signal, 64);
 
+SEMAPHORE_DECL(sem, 0);
 
 THD_FUNCTION(thd_serial, arg) 
 {
@@ -27,6 +28,8 @@ THD_FUNCTION(thd_serial, arg)
   while (TRUE) 
   {
     if (Serial.available()) cmd = Serial.read();
+    //Serial.print(cmd);
+    chSemSignal(&sem);
     chThdSleepMilliseconds(5);
   }
 }
@@ -40,12 +43,15 @@ THD_FUNCTION(thd_servo, arg)
   {
     static int pos = 30;
     static char dir = '+';
+
+    chSemWait(&sem);
     
     if (pos > 110)     dir = '-';
     else if (pos < 50) dir = '+';
 
-    if (cmd != 'i') webcam.write(pos);
-
+    if ((cmd == 's')||(cmd == 'a')) webcam.write(pos);
+    else                            webcam.write(80);
+    
     if (dir == '+')      pos += 10;
     else if (dir == '-') pos -= 10;
     chThdSleepMilliseconds(500);
@@ -58,6 +64,8 @@ THD_FUNCTION(thd_signal, arg)
   (void)arg;
   while (TRUE) 
   {
+    chSemWait(&sem);
+    
     coolness.signalSwitcher(cmd);    
     chThdSleepMilliseconds(50);
   }
@@ -74,7 +82,7 @@ void setup()
   Serial.begin(9600);
 
   webcam.attach(PIN_WEBCAM_SERVO);
-  webcam.write(90); // init pos
+  webcam.write(80); // init pos
   
   coolness.init();
     

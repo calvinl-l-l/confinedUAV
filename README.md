@@ -1,23 +1,21 @@
-# ConfinedUAV
+# Project Swiftlet
 
-QAV500 for tunnel inspection
+UAV for tunnel inspection. Newer version of quadcopter platform based on the QAV500 branch. This code runs alongside with custom Arducopter firmware. 
 
-30/9/2017 note
+## Program structure:
+### Odroid
+- read lidar data
+- send lidar data as "fake" sensor data to Pixhawk 2
+- control arduino to GPIO (LED signalling)
 
-merged every back for railway tunnel
+### Arducopter 3.6-dev (5/8/2018 ver)
+- receive fake sensor data from Odroid
+- added new "tunnel" flight mode 
+	- run an integral backstepping position controller
+	- auto takeoff (future TODO)
+	- constant forward speed/angle for "auto" mission in tunnel (future TODO)
 
-added Chibios nil on Arduino Nano to control LED + servo
-
-ISSUED FIXED:
-
-Slow mavlink issuse - cannot stream all data, only stream channels and raw sensors
-
-	TO DO:
-	> work on time avg filter bug: need to handle massive loss of data point
-	> implement orb slam2 GPU: fix compilation issue
-
-17/8/2017 note
-
-added reboot function to remove second runtime lag - DONE
-
-
+### Arduino
+- runs ChibiOS
+- LED signalling 
+- servo control

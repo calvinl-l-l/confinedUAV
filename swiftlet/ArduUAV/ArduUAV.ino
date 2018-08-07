@@ -28,6 +28,8 @@ THD_FUNCTION(thd_serial, arg)
   while (TRUE)
   {
     if (Serial.available()) cmd = Serial.read();
+    if (Serial1.available()) cmd = Serial1.read();
+    
     //Serial.print(cmd);
     chSemSignal(&sem);
     chThdSleepMilliseconds(5);
@@ -71,9 +73,7 @@ THD_TABLE_END
 void setup()
 {
   Serial.begin(9600);
-
-
-
+  Serial1.begin(57600);
 
   coolness.init();
 

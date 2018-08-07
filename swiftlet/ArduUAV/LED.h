@@ -15,9 +15,10 @@
 #include <Adafruit_NeoPixel.h>
 #include <ChNil.h>
 
+#define NUM_REAR_PIXEL 40
+
 // pin assignments
 #define PIN_LED_rear 46
-
 
 class LED
 {

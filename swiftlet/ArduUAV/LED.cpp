@@ -54,13 +54,13 @@ void LED::awesome_rainbow()
 
 	// left and right LED
 	for (j = 0; j<256; j++) {
-		for (i = 0; i<4; i++)
+		for (i = 0; i<NUM_REAR_PIXEL; i++)
 		{
-			LED_L.setPixelColor(i, Wheel((i + j) & 255));
+			LED_rear.setPixelColor(i, Wheel((i + j) & 255));
 
 		}
 
-    LED_L.show();
+    LED_rear.show();
 
 
 		chThdSleepMilliseconds(5);
@@ -78,11 +78,12 @@ void LED::mode_auto()
 	// showing left and right indicator
 	if (prev_mode != mode)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_REAR_PIXEL; i++)
 		{
-			LED_L.setPixelColor(i, LED_L.Color(255, 30, 30));
+			LED_rear.setPixelColor(i, LED_rear.Color(255, 30, 30));
 		}
-		LED_L.show();
+   
+		LED_rear.show();
 	}
 
 
@@ -93,11 +94,11 @@ void LED::mode_manual()
 {
 	if (prev_mode != mode)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_REAR_PIXEL; i++)
 		{
-			LED_L.setPixelColor(i, LED_L.Color(0, 255, 70));
+			LED_rear.setPixelColor(i, LED_rear.Color(0, 255, 70));
 		}
-		LED_L.show();
+		LED_rear.show();
 
 	}
 }

@@ -3,7 +3,7 @@
 LED::LED()
 {
 	LED_rear = Adafruit_NeoPixel(40, PIN_LED_rear, NEO_GRB + NEO_KHZ800);
-
+  LED_front = Adafruit_NeoPixel(32, PIN_LED_rear, NEO_GRB + NEO_KHZ800);
 	prev_mode = 'i';
 }
 
@@ -60,6 +60,13 @@ void LED::awesome_rainbow()
 
 		}
 
+    for (i = 0; i<NUM_REAR_PIXEL; i++)
+    {
+      LED_front.setPixelColor(i, Wheel((i + j) & 255));
+
+    }
+
+    LED_front.show();
     LED_rear.show();
 
 
@@ -82,7 +89,13 @@ void LED::mode_auto()
 		{
 			LED_rear.setPixelColor(i, LED_rear.Color(255, 30, 30));
 		}
-   
+
+    for (int i = 0; i < NUM_REAR_PIXEL; i++)
+    {
+      LED_front.setPixelColor(i, LED_rear.Color(0, 255, 70));
+    }
+
+    LED_front.show();
 		LED_rear.show();
 	}
 
@@ -98,6 +111,12 @@ void LED::mode_manual()
 		{
 			LED_rear.setPixelColor(i, LED_rear.Color(0, 255, 70));
 		}
+    for (int i = 0; i < NUM_REAR_PIXEL; i++)
+    {
+      LED_front.setPixelColor(i, LED_rear.Color(255, 255, 255));
+    }
+
+    LED_front.show();
 		LED_rear.show();
 
 	}

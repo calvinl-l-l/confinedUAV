@@ -1,7 +1,7 @@
 #include <ChNil.h>
 #include <ChNilSerial.h>
 #include "LED.h"
-
+#include <avr/wdt.h>
 
 
 ChNilSerialClass ChNilSerial;
@@ -72,9 +72,15 @@ THD_TABLE_END
 
 void setup()
 {
+  wdt_disable();
+
+  delay(2000);
+
+  wdt_enable(WDTO_4S);
+  
   Serial.begin(9600);
   Serial1.begin(57600);
-
+  
   coolness.init();
 
   chFillStacks();

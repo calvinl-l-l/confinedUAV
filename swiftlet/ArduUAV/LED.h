@@ -16,9 +16,11 @@
 #include <ChNil.h>
 
 #define NUM_REAR_PIXEL 40
+#define NUM_FRONT_PIXEL 32
 
 // pin assignments
 #define PIN_LED_rear 46
+#define PIN_LED_front 44
 
 class LED
 {
@@ -29,6 +31,7 @@ public:
 
 private:
 	Adafruit_NeoPixel LED_rear;
+  Adafruit_NeoPixel LED_front;
 
 
 	char prev_mode;

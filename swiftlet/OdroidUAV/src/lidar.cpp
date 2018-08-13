@@ -6,7 +6,7 @@ Hokuyo_lidar::Hokuyo_lidar()
 
 
     // open ethernet com
-    if (!urg.open(connect_address, connect_port, Urg_driver::Ethernet)) cout << "error" << endl;
+    if (!urg.open(connect_address, connect_port, Urg_driver::Ethernet)) cout << "Error: unable to connect to lidar!!" << endl;
 
     // start measurement
     urg.start_measurement(Urg_driver::Distance, Urg_driver::Infinity_times, 0);
@@ -42,7 +42,7 @@ void Hokuyo_lidar::read(float roll)
     v +z
 
 */
-
+    //cout << "starting to read" << endl;
     // Clear old data vector
     range.clear();
     angle.clear();
@@ -130,6 +130,8 @@ void Hokuyo_lidar::read(float roll)
     get_centroid2();
 
     pos_loc_y3 = (dist_wallL - dist_wallR)/2.0f;
+
+    //cout << "done reading lidar ... " << range[540] << endl;
     //cout << "y2  " << setw(10) << pos_loc_y2 << " y3 " << setw(10) << pos_loc_y3 << " R " << setw(10) << dist_wallR << endl;
 }  // end of lidar read();
 

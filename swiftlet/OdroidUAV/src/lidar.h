@@ -1,3 +1,6 @@
+#ifndef _LIDAR_
+#define _LIDAR_
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -79,3 +82,4 @@ class Hokuyo_lidar
     void get_centroid2();
     void get_symmetry_pt();
 };
+#endif

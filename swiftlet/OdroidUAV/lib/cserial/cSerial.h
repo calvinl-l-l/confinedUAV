@@ -20,7 +20,8 @@
  *    along with wiringPi.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************
  */
-
+#ifndef _CSERIAL_
+#define _CSERIAL_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,3 +56,4 @@ private:
 
   int   cOpen(const char *device, const int baud);
 };
+#endif

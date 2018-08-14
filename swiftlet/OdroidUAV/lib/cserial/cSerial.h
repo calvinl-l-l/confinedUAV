@@ -41,6 +41,7 @@ class cSerial
 public:
 
   // constructor
+  cSerial();
   cSerial(const char* device, const int baud);
 
   void  Close(void);

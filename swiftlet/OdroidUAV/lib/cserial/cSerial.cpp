@@ -30,6 +30,8 @@
  *********************************************************************************
  */
 
+cSerial::cSerial()  {}
+
 cSerial::cSerial(const char* device, const int baud)
 {
   _fd = cOpen(device, baud);

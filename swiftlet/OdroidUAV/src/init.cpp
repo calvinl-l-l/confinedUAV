@@ -1,9 +1,7 @@
 #include <iostream>
 #include "../lib/Scheduler/Scheduler.h"
-#include <wiringPi.h>
-#include "lidar.h"
 #include "utility.h"
-
+#include "UI.h"
 
 using namespace std;
 
@@ -18,20 +16,28 @@ int main()
 
     unsigned int max_n_threads = 4; // max number of concurrent tasks
 
-    // init class objects
-    Bosma::Scheduler schedule(max_n_threads);
-    Hokuyo_lidar lidar;
-    UI ui;
-
-    ui.start_log();
-    ui.end_log();
-
-
     // init serial communicaitons
     cSerial FS_sp(FS_PORT, FS_BAUD);
     cSerial Ardu_sp(arudino_PORT, arduino_BAUD);
     FS_sp.flush();
     Ardu_sp.flush();
+
+    // init class objects
+    Bosma::Scheduler schedule(max_n_threads);
+    Hokuyo_lidar lidar;
+    messenger PH2(FS_sp);
+    UI ui;
+
+    // initialise system time
+    lidar.set_startup_time(millis());
+    ui.set_startup_time(millis());
+    PH2.set_startup_time(millis());
+
+
+    // setup
+    ui.init_log();
+
+static int a = 0;
 
 
 //**************************************************************************
@@ -75,10 +81,30 @@ int main()
     });
 
 // Logging --------------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(100), []()
+    schedule.interval(std::chrono::milliseconds(100), [&ui, &lidar, &PH2]()
     {
 
+
+        if (a < 10)
+        {
+            ui.start_log(lidar.ldata_q, PH2.ph2_data_q);
+            a++;
+        }
+        else
+        {
+            ui.end_log();
+        }
     });
+
+
+
+
+
+
+
+
+
+
 
 // main while loop
     while (1)
@@ -89,5 +115,3 @@ int main()
     cout << "Hello world! This is the end gg!" << endl;
     std::this_thread::sleep_for(std::chrono::minutes(10));
 }
-
-//PH2_sp.puts("$0234+1089-0#");

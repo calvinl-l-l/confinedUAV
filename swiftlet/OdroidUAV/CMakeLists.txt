@@ -14,6 +14,8 @@ file(
   "${PROJECT_SOURCE_DIR}/src/*.cpp"
   "${PROJECT_SOURCE_DIR}/lib/cserial/*.cpp"
   "${PROJECT_SOURCE_DIR}/lib/Scheduler/*.cpp"
+  "${PROJECT_SOURCE_DIR}/lib/reckless/src/*.cpp"
+
   )
 
 file(
@@ -35,6 +37,7 @@ find_package(Boost 1.6 COMPONENTS program_options thread system REQUIRED)
 include_directories("${PROJECT_SOURCE_DIR}/src/")
 include_directories("${PROJECT_SOURCE_DIR}/lib/cserial")
 include_directories("${PROJECT_SOURCE_DIR}/lib/Scheduler")
+include_directories("${PROJECT_SOURCE_DIR}/lib/reckless/include")
 include_directories(${Boost_INCLUDE_DIR})
 
 

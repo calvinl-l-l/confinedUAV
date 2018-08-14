@@ -11,6 +11,9 @@
 #include <algorithm>
 #include "../lib/cserial/cSerial.h"
 
+#include <reckless/policy_log.hpp>      // data logging library
+#include <reckless/file_writer.hpp>
+
 #define LED_LOGIC_A 5
 #define LED_LOGIC_B 27
 
@@ -21,11 +24,25 @@ void signal_LED(int flag_auto_mode, int outside);
 int median(vector<long> in);
 void scan2pixelmap(vector<double> x, vector<double> y, double pos_x, double pos_y, int *map);
 
+
 class UI
 {
+public:
     string input;
 
+    ofstream info_log;
+    ofstream lscan_log;
+
     UI();
+    void init_log();
+    void start_log();
+    void end_log();
+
+private:
+    int _nlog;
+    bool _flag_file_is_opened;
+
+    fstream _log_list;   // store log number
 };
 
 #endif

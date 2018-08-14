@@ -4,6 +4,7 @@
 #include "lidar.h"
 #include "utility.h"
 
+
 using namespace std;
 
 
@@ -20,6 +21,10 @@ int main()
     // init class objects
     Bosma::Scheduler schedule(max_n_threads);
     Hokuyo_lidar lidar;
+    UI ui;
+
+    ui.start_log();
+    ui.end_log();
 
 
     // init serial communicaitons

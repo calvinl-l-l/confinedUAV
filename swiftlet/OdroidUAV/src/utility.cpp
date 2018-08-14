@@ -103,4 +103,56 @@ void signal_LED(int flag_auto_mode, int outside)
 UI::UI()
 {
     input = "";
+
+    init_log();
+}
+
+void UI::init_log()
+{
+    _log_list.open("../data/_log_list.txt");
+    _log_list >> _nlog;
+    _log_list.close();
+
+    _flag_file_is_opened = false;
+
+}
+
+void UI::start_log()
+{
+    if (!_flag_file_is_opened)
+    {
+        char filename[20];
+
+        // file for info data
+        snprintf(filename, sizeof filename, "../data/info_%d.txt", _nlog);
+        info_log.open(filename);
+
+        // file for lidar scan
+        snprintf(filename, sizeof filename, "../data/lscan_%d.txt", nlog);
+        lscan_log.open(filename);
+
+        _flag_file_is_opened = true;
+    }
+    else
+    {
+        info_log << "Hello world";
+
+        lscan_log << "Hello world";
+    }
+}
+
+void UI::end_log()
+{
+    info_log.close();
+    lscan_log.cloes();
+
+    // reset file open flag
+    _flag_file_is_opened = false;
+
+    // update log number
+    _log_list.open("../data/_log_list.txt", ios::out);
+    _log_list << ++_nlog;
+    _log_list.close();
+
+    cout << "log files closed . . .\n";
 }

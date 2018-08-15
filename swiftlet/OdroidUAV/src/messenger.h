@@ -5,7 +5,7 @@
 #include "../lib/cserial/cSerial.h"
 
 #define DATA_MSG_BUF_SIZE 50
-
+#define MAX_MESSENGER_DATA_QUEUE_SIZE 50
 
 using namespace std;
 
@@ -25,8 +25,7 @@ class messenger
 {
 public:
     PH2_data_t ph2_data;
-    //boost::lockfree::spsc_queue <PH2_data_t, boost::lockfree::capacity<200> > ph2_data_q;
-    queue<PH2_data_t> ph2_data_q;
+    deque<PH2_data_t> ph2_data_q;   // ring buffer
 
     messenger(cSerial sp);
     void get_data();

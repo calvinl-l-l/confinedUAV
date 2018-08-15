@@ -15,7 +15,9 @@ using namespace std;
 using namespace qrk;
 
 #define MAX_SCAN_AREA 10
-#define LONELY_THRESHOLD 50;
+#define LONELY_THRESHOLD 50
+
+#define MAX_LDATA_QUEUE_SIZE 10
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -28,7 +30,7 @@ struct lidar_data_t
 
     // units in mm and degree
     vector<long> range;
-    vector<double> angle;
+    vector<double> angle;   // angle in radian
     vector<double> pc_y;
     vector<double> pc_z;
 
@@ -52,7 +54,7 @@ class Hokuyo_lidar
 {
 public:
     lidar_data_t ldata;
-    queue<lidar_data_t> ldata_q;
+    deque<lidar_data_t> ldata_q;    // data ring buffer
 
     bool flag_lidar_error;
     bool flag_outof_boundary;
@@ -62,6 +64,7 @@ public:
     void read();
     void pos_update();
     void get_PH2_data(PH2_data_t data);
+    double deg2r(double degree);    // convert degree to radian;
     void sleep();
     void wake();
     void close();

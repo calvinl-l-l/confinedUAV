@@ -6,7 +6,7 @@
 UI::UI()
 {
     _input = "";
-    data_log_density = 2;   // default
+    data_log_density = 1;   // default
 
     init_log();
 }
@@ -20,7 +20,7 @@ void UI::init_log()
     flag.file_is_opened = false;
 }
 
-void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
+void UI::start_log(deque<lidar_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
 {
     flag.file_is_closed = false;
 
@@ -72,7 +72,7 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
         while (!ldata_q.empty())
         {
             ldata = ldata_q.front();
-            ldata_q.pop();
+            ldata_q.pop_front();
 
             lscan_log.write((char*) &ldata.ts_odroid, sizeof(int));
             lscan_log.write((char*) &ldata.ts_lidar, sizeof(int));
@@ -215,7 +215,7 @@ void UI::run()
 void UI::_print_help()
 {
     vector <string> cmd_list = {
-            "log (logd to choose log data density)",
+            "log or logd to choose log data density - default:1",
             "set_log",
             "rename_log",
             "sl: stop log",
@@ -226,10 +226,10 @@ void UI::_print_help()
 
     vector <string> debug_list; //TODO
 
-    cout << "**** list of commands ****\n";
+    cout << "******** list of commands ****************\n\n";
     for (int i=0; i<cmd_list.size(); i++)
     {
         cout << "   " << i+1 << ") " << cmd_list[i] << '\n';
     }
-    cout << "**************************\n";
+    cout << "\n******************************************\n";
 }

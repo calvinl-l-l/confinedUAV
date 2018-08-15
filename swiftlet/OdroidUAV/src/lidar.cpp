@@ -15,24 +15,12 @@ Hokuyo_lidar::Hokuyo_lidar()
 
 void Hokuyo_lidar::read()
 {
-/*
-    -----------> +y
-    |
-    |
-    |
-    |
-    |
-    v +z
-
-*/
-    //cout << "starting to read" << endl;
     // Clear old data vector
     ldata.range.clear();
     ldata.angle.clear();
     ldata.pc_z.clear();
     ldata.pc_y.clear();
 
-    //long t_temp;
     if (!urg.get_distance(ldata.range, &ldata.ts_lidar))
     {
       flag_lidar_error  = true;
@@ -48,52 +36,31 @@ void Hokuyo_lidar::read()
 
 void Hokuyo_lidar::pos_update()
 {
-    // removing outliers
-    //vector<int> idx = lonely_pts_detector();
-    vector<int> idx;  // for disabling lonely point detector, need to comment out the lonely function too
-    float roll = 0; // dummy
-    // converting raw data to cartesian
-    int i2 = 0; // index for removing idx vector
     int n = 0;
+
     for (int i=0; i < 540*2; i++)
     {
-
         // angle of the range
         double rad = urg.index2rad(i);
-        ldata.angle.push_back(urg.index2deg(i));
+        ldata.angle.push_back(rad);
 
-        if (idx.size() > 0 && idx[i2] == i && i2 < idx.size())
+        // from Polar to Cartesian
+        if (!(fabs(ldata.angle[i]) > deg2r(80) && fabs(ldata.angle[i]) < deg2r(90)) && // position of props
+            !(fabs(ldata.angle[i]) > deg2r(130)))  // end 5 degree on both side
         {
-          i2++;
-          continue;
-        }
-        else
-        {
-          // only store meaningfull data
-          if ((fabs(ldata.angle[i]) > 81.0f && fabs(ldata.angle[i]) < 95.0f) || ldata.angle[i] > 125.0f)
-          {
-              // condition is for the QAV500 frame
-              // redundant: can rely on lonely_pts_detector
-          }
-          else
-          {
-            if ((ldata.range[i] > 350) && (ldata.range[i] <= 10000))  // redundant
-            {
-                ldata.pc_z.push_back((double) (ldata.range[i] * cos(rad)));
-                ldata.pc_y.push_back((double) (ldata.range[i] * sin(rad)));
-                n++;
-            }
-          }
+            // for Swiftlet frame, skip 81.5 to 89.75 degree
+            ldata.pc_z.push_back((double) (ldata.range[i] * cos(rad)));
+            ldata.pc_y.push_back((double) (ldata.range[i] * sin(rad)));
+            n++;
         }
     }
-
 
     ldata.nyz = n;
 
     _data_loss = (float) n/1080;  // calc data loss
 
-   // cout << "ldata.nyz " << ldata.nyz << endl;
-    // rotation (y,z)
+// TODO
+/*
     for (int i=0; i < ldata.nyz; i++)
     {
         double y_temp = cos(roll*M_PI/180.0f) * ldata.pc_y[i] - sin(roll*M_PI/180.0f) * ldata.pc_z[i];
@@ -102,21 +69,14 @@ void Hokuyo_lidar::pos_update()
         ldata.pc_y[i] = y_temp;
         ldata.pc_z[i] = z_temp;
     }
-
-    //get_symmetry_pt();
-    // overriding get_symmetry_pt for QAV500
-    yz_start_pt = 0;
-    yz_end_pt = ldata.nyz;
-
-
-    //get_centroid1();
-    _get_centroid2();
+*/
 
     // pushing lidar data to the queue
-    ldata_q.push(ldata);
-
+    if (ldata_q.size() >= MAX_LDATA_QUEUE_SIZE) ldata_q.pop_front();    // limit memory usage
+    ldata_q.push_back(ldata);
 }
 
+// to be removed
 void Hokuyo_lidar::_get_centroid2()
 {
     double A = 0;
@@ -280,6 +240,11 @@ void Hokuyo_lidar::set_startup_time(unsigned int sys_time)
 void Hokuyo_lidar::get_PH2_data(PH2_data_t data)
 {
     _ph2_data = data;
+}
+
+double Hokuyo_lidar::deg2r(double degree)
+{
+    return degree*M_PI/180;
 }
 
 /*

@@ -6,6 +6,7 @@
 UI::UI()
 {
     _input = "";
+    data_log_density = 2;   // default
 
     init_log();
 }
@@ -27,21 +28,25 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
     {
         string filename;
         string dir = "../data/";
-        string fextension = ".txt";
 
         // file for info data
-        filename = dir + "info_" + to_string(nlog) + fextension;
+        filename = dir + "info_" + to_string(nlog) + ".txt";
         info_log.open(filename);
         filename = "";
 
         // file for lidar scan
-        filename = dir + "lscan_" + to_string(nlog) + fextension;
-        lscan_log.open(filename);
-        lscan_log << "lidar scan data log\n";
-        lscan_log << "************* LOG FORMAT *************\n";
-        lscan_log << "0, ts_odroid, ts_lidar\n";
-        lscan_log << "index, angle, range (for 1080 points)\n";
-        lscan_log << "************* LOG FORMAT *************\n";
+        filename = dir + "lscan_" + to_string(nlog) + ".dat";
+        lscan_log.open(filename, ios::out | ios::binary);
+
+        //*********************************************************************
+        // file format
+        //*********************************************************************
+        /*  data oder for one set:
+         *  ts_odroid ts_lidar angle1 range1 angle2 range2 . . . angle1080 range1080
+         *
+         *  note: angle is in degree, need to divide stored value by 100
+         *        angle_real = angle/100
+        */
 
         flag.file_is_opened = true;
 
@@ -53,24 +58,33 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
     //=========================================================================
     // DATA INFO LOG
     //=========================================================================
+        lidar_data_t yzdata;
+        yzdata = ldata_q.front();
 
-
+        for (int i=0; i<yzdata.nyz; i++)
+        {
+            info_log << i+1 << ',' << yzdata.pc_y[i] << ',' << yzdata.pc_z[i] << '\n';
+        }
     //=========================================================================
-    // LIDAR SCAN DATA LOG
+    // LIDAR SCAN DATA LOG - in binary
     //=========================================================================
         lidar_data_t ldata;
         while (!ldata_q.empty())
         {
             ldata = ldata_q.front();
             ldata_q.pop();
-            lscan_log << "0," << ldata.ts_odroid << ',' << ldata.ts_lidar << '\n';
-            for (int i=0;i<540*2;i++)
+
+            lscan_log.write((char*) &ldata.ts_odroid, sizeof(int));
+            lscan_log.write((char*) &ldata.ts_lidar, sizeof(int));
+
+            for (int i=0;i<540*2;i+=data_log_density)
             {
-                lscan_log << i+1 << ',' << ldata.angle[i] << ',' << ldata.range[i] << '\n';
+                lscan_log.write((char*) &ldata.range[i] , sizeof(int));
             }
         }
     }
 }
+
 
 void UI::end_log()
 {
@@ -127,8 +141,17 @@ void UI::run()
 
     }
 // log
-    else if (_input == "log")
+    else if (_input == "logd")
+    {
+        cout << "log data density (highest) 1-4 (lowest):\n";
+        cout << "1080 542 360 270 pts, select: ";
+        cin >> data_log_density;
         flag.log_data = true;
+    }
+    else if (_input == "log")
+    {
+        flag.log_data = true;
+    }
 // sl: stop log
     else if (_input == "sl")
         flag.log_data = false;
@@ -156,9 +179,9 @@ void UI::run()
         string newname;
         string newfile;
         string dir = "../data/";
-        string fextension = ".txt";
-        int n;
         string oldname;
+        int n;
+
 
         cout << "Which file set to rename: ";
         cin >> n;
@@ -168,14 +191,14 @@ void UI::run()
 
 
         // file for info data
-        oldname = dir + "info_" + to_string(n) + fextension;
-        newname = dir + "info_" + newfile + fextension;
+        oldname = dir + "info_" + to_string(n) + ".txt";
+        newname = dir + "info_" + newfile + ".txt";
         if (rename(oldname.c_str(), newname.c_str()))
             cout << "error renaming info file!";
 
         // file for lidar scan data
-        oldname = dir + "lscan_" + to_string(n) + fextension;
-        newname = dir + "lscan_" + newfile + fextension;
+        oldname = dir + "lscan_" + to_string(n) + ".dat";
+        newname = dir + "lscan_" + newfile + ".dat";
         if (rename(oldname.c_str(), newname.c_str()))
             cout << "error renaming lscan file!";
 
@@ -192,7 +215,7 @@ void UI::run()
 void UI::_print_help()
 {
     vector <string> cmd_list = {
-            "log",
+            "log (logd to choose log data density)",
             "set_log",
             "rename_log",
             "sl: stop log",

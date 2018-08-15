@@ -1,8 +1,11 @@
 #ifndef _MESSENGER_H_
 #define _MESSENGER_H_
 
-#include <queue>
+#include "utility.h"
 #include "../lib/cserial/cSerial.h"
+
+#define DATA_MSG_BUF_SIZE 50
+
 
 using namespace std;
 
@@ -26,14 +29,15 @@ public:
     queue<PH2_data_t> ph2_data_q;
 
     messenger(cSerial sp);
-    void get_info();
+    void get_data();
     void set_startup_time(unsigned int sys_time);
 
 private:
     cSerial _sp;
     unsigned int _ts_startup;
+    char _linebuf[DATA_MSG_BUF_SIZE];
+    unsigned int _linebuf_len = 0;
 
-    void msg_decoder();
 };
 
 

@@ -5,12 +5,15 @@
 
 using namespace std;
 
+#define PH2_MSG_LOOP_FREQ       100   // Hz
+#define LOGGING_LOOP_FREQ       10
+#define ARDUINO_COM_LOOP_FREQ   20
 
 int main()
 {
     // init variables
-    char* FS_PORT = "/dev/ttySAC0";         // fake sensor
-    char* arudino_PORT = "/dev/ttySAC2";    // Arduino
+    const char* FS_PORT = "/dev/ttySAC0";         // fake sensor
+    const char* arudino_PORT = "/dev/ttySAC2";    // Arduino
     int arduino_BAUD = 57600;
     int FS_BAUD = 921600;
 
@@ -34,69 +37,65 @@ int main()
     PH2.set_startup_time(millis());
 
 
-    // setup
-    ui.init_log();
-
-static int a = 0;
 
 
 //**************************************************************************
 // scheduling tasks
 //**************************************************************************
-// timer -----------------------------------------------------------------------
-    schedule.every(std::chrono::milliseconds(50), [&FS_sp]()
+// PH2 messenger ---------------------------------------------------------------
+    schedule.interval(std::chrono::milliseconds(1000/PH2_MSG_LOOP_FREQ), [&PH2]()
     {
-        //cout << "fs " << FS_sp.Getchar() << "  PH2 " << PH2_sp.Getchar() << endl;
-        while (FS_sp.DataAvail())   cout << (char) FS_sp.Getchar();
-        cout << endl;
+
     });
 
 
 // lidar read ----------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp]()
     {
-        unsigned long t0 = millis();
+        unsigned long t0 = millis();    // for debug use
 
-        lidar.read(0);
+        lidar.read();
+        lidar.pos_update();
         //FS_sp.puts("$0232-1089-0#");
 
-        unsigned long dt_lidar = millis() - t0;
+        unsigned long dt_lidar = millis() - t0; // for debug use
 
     });
 
 // Arduino com ---------------------------------------------------------------
-    schedule.every(std::chrono::milliseconds(50), [&Ardu_sp]()
+    schedule.interval(std::chrono::milliseconds(1000/ARDUINO_COM_LOOP_FREQ), [&Ardu_sp, &PH2]()
     {
         Ardu_sp.putchar('m');
     });
 
-// UI -------------------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(50), []()
+// Logging + debug ------------------------------------------------------------
+    schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &lidar, &PH2]()
     {
-        // user interface input
-        string input;
-        cin >> input;
-
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    });
-
-// Logging --------------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(100), [&ui, &lidar, &PH2]()
-    {
-
-
-        if (a < 10)
+        // logging
+        if (ui.flag.log_data)
         {
             ui.start_log(lidar.ldata_q, PH2.ph2_data_q);
-            a++;
         }
         else
         {
-            ui.end_log();
+            if (!ui.flag.file_is_closed)
+            {
+                ui.end_log();
+                ui.flag.file_is_closed = true;
+            }
         }
+
+        // debug print
+        if (ui.flag.debug_print)    ui.DEBUG_PRINT();
     });
 
-
+// UI -------------------------------------------------------------------------
+    schedule.interval(std::chrono::milliseconds(500), [&ui]()
+    {
+        // user interface input
+        ui.run();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    });
 
 
 

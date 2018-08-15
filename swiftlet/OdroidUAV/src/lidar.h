@@ -52,14 +52,16 @@ class Hokuyo_lidar
 {
 public:
     lidar_data_t ldata;
-
-    //boost::lockfree::spsc_queue <lidar_data_t, boost::lockfree::capacity<10> > ldata_q;
     queue<lidar_data_t> ldata_q;
+
+    bool flag_lidar_error;
+    bool flag_outof_boundary;
 
     Hokuyo_lidar();
     void set_startup_time(unsigned int sys_time);   // in ms
-    void read(float roll);
-    int lidar_check_outof_boundary();
+    void read();
+    void pos_update();
+    void get_PH2_data(PH2_data_t data);
     void sleep();
     void wake();
     void close();
@@ -71,16 +73,15 @@ private:
 
     float _data_loss;
 
-    int _flag_lidar_error;
-
-    long t_temp;
-
     unsigned int _ts_startup;
     float _start_area;
 
-    vector<int> lonely_pts_detector();
-    void get_centroid1();
-    void get_centroid2();
-    void get_symmetry_pt();
+    PH2_data_t _ph2_data;
+
+    //vector<int> lonely_pts_detector();
+    //void _get_centroid1();
+    void _get_centroid2();
+    void _get_symmetry_pt();
+    bool _lidar_check_outof_boundary();
 };
 #endif

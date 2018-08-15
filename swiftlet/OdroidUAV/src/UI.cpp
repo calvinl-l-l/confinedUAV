@@ -5,7 +5,7 @@
 
 UI::UI()
 {
-    input = "";
+    _input = "";
 
     init_log();
 }
@@ -13,25 +13,29 @@ UI::UI()
 void UI::init_log()
 {
     _log_list.open("../data/log_list.txt");
-    _log_list >> _nlog;
+    _log_list >> nlog;
     _log_list.close();
 
-    _flag_file_is_opened = false;
-
+    flag.file_is_opened = false;
 }
 
 void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
 {
-    if (!_flag_file_is_opened)
+    flag.file_is_closed = false;
+
+    if (!flag.file_is_opened)
     {
-        char filename[20];
+        string filename;
+        string dir = "../data/";
+        string fextension = ".txt";
 
         // file for info data
-        snprintf(filename, sizeof filename, "../data/info_%d.txt", _nlog);
+        filename = dir + "info_" + to_string(nlog) + fextension;
         info_log.open(filename);
+        filename = "";
 
         // file for lidar scan
-        snprintf(filename, sizeof filename, "../data/lscan_%d.txt", _nlog);
+        filename = dir + "lscan_" + to_string(nlog) + fextension;
         lscan_log.open(filename);
         lscan_log << "lidar scan data log\n";
         lscan_log << "************* LOG FORMAT *************\n";
@@ -39,17 +43,17 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
         lscan_log << "index, angle, range (for 1080 points)\n";
         lscan_log << "************* LOG FORMAT *************\n";
 
-        _flag_file_is_opened = true;
+        flag.file_is_opened = true;
 
-        cout << "opening\n";
+        cout << "starting to log ...\n";
     }
     else
     {
-        cout << "else\n";
+
     //=========================================================================
     // DATA INFO LOG
     //=========================================================================
-        info_log << "Hello world";
+
 
     //=========================================================================
     // LIDAR SCAN DATA LOG
@@ -59,7 +63,6 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
         {
             ldata = ldata_q.front();
             ldata_q.pop();
-            cout << "hi\n";
             lscan_log << "0," << ldata.ts_odroid << ',' << ldata.ts_lidar << '\n';
             for (int i=0;i<540*2;i++)
             {
@@ -71,25 +74,31 @@ void UI::start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q)
 
 void UI::end_log()
 {
-    info_log.close();
-    lscan_log.close();
-
     // reset file open flag
-    _flag_file_is_opened = false;
+    flag.file_is_opened = false;
 
-    // update log number
-    _log_list.open("../data/log_list.txt", ios::out);
-    _log_list << ++_nlog;
-    _log_list.close();
+    if (!flag.file_is_closed)
+    {
+        info_log.close();
+        lscan_log.close();
 
-    cout << "log files closed . . .\n";
+        // update log number
+        _log_list.open("../data/log_list.txt", ios::out);
+        _log_list << ++nlog;
+        _log_list.close();
+
+        cout << "Closed log file set: " << nlog - 1 << '\n';
+
+        flag.file_is_closed = true;
+    }
 }
 
-void UI::set_log_num(int num)
+void UI::_set_log_num(int num)
 {
     _log_list.open("../data/log_list.txt", ios::out);
     _log_list << num;
     _log_list.close();
+    nlog = num;
 }
 
 void UI::set_startup_time(unsigned int sys_time)
@@ -99,5 +108,105 @@ void UI::set_startup_time(unsigned int sys_time)
 
 void UI::DEBUG_PRINT()
 {
+    printf("hello world %d\n", millis());
+}
 
+void UI::run()
+{
+    if (!flag.startup)
+    {
+        _print_help();
+        flag.startup = true;
+    }
+
+    cin >> _input;
+// debug
+    if (_input == "debug")  //TODO can choose what to print
+    {
+        flag.debug_print = true;
+
+    }
+// log
+    else if (_input == "log")
+        flag.log_data = true;
+// sl: stop log
+    else if (_input == "sl")
+        flag.log_data = false;
+// sd: stop debug
+    else if (_input == "sd")
+        flag.debug_print = false;
+// s: stop all display
+    else if (_input == "s")       // idle the display, reset most flags
+    {
+        flag.log_data = false;
+        flag.debug_print = false;
+    }
+// set log number
+    else if (_input == "set_log")
+    {
+        int n;
+        cout << "Set log file number to: ";
+        cin >> n;
+        _set_log_num(n);
+        cout << "done\n";
+    }
+// rename log
+    else if (_input == "rename_log")
+    {
+        string newname;
+        string newfile;
+        string dir = "../data/";
+        string fextension = ".txt";
+        int n;
+        string oldname;
+
+        cout << "Which file set to rename: ";
+        cin >> n;
+
+        cout << "New file name is: ";
+        cin >> newfile;
+
+
+        // file for info data
+        oldname = dir + "info_" + to_string(n) + fextension;
+        newname = dir + "info_" + newfile + fextension;
+        if (rename(oldname.c_str(), newname.c_str()))
+            cout << "error renaming info file!";
+
+        // file for lidar scan data
+        oldname = dir + "lscan_" + to_string(n) + fextension;
+        newname = dir + "lscan_" + newfile + fextension;
+        if (rename(oldname.c_str(), newname.c_str()))
+            cout << "error renaming lscan file!";
+
+        cout << "done\n";
+    }
+// help: should always be last
+    else if (_input == "help")
+    {
+        _print_help();
+    }
+
+}
+
+void UI::_print_help()
+{
+    vector <string> cmd_list = {
+            "log",
+            "set_log",
+            "rename_log",
+            "sl: stop log",
+            "sd, stop debug print",
+            "s: stop all display",
+            "debug" //debug should always be last
+    };
+
+    vector <string> debug_list; //TODO
+
+    cout << "**** list of commands ****\n";
+    for (int i=0; i<cmd_list.size(); i++)
+    {
+        cout << "   " << i+1 << ") " << cmd_list[i] << '\n';
+    }
+    cout << "**************************\n";
 }

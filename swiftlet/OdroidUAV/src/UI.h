@@ -6,32 +6,49 @@
 #include "lidar.h"
 #include "messenger.h"
 
+struct UI_flag_t
+{
+    bool startup = false;
+    bool file_is_opened = false;
+    bool file_is_closed = true;
+    bool log_data = false;
+    bool reboot_PH2 = false;    // TODO
+
+    // debug flags
+    bool debug_print = false;
+    bool debug_gain;
+    int  debug_pos;     // 1:y  2:z  3:both
+    int  debug_attitde;  // binary sum: 4 2 1, pitch roll yaw
+};
 
 class UI
 {
 public:
-    string input;
-
     ofstream info_log;
     ofstream lscan_log;
-
+    int nlog;
     unsigned int ts_PH2;
+
+    UI_flag_t flag;
 
     UI();
     void set_startup_time(unsigned int sys_time);
     void init_log();
     void start_log(queue<lidar_data_t> ldata_q, queue<PH2_data_t> ph2_data_q);
     void end_log();
-    void set_log_num(int num);
-
+    void run();
     void DEBUG_PRINT();
 
 private:
-    int _nlog;
+    string _input;
+
     unsigned int _ts_startup;
-    bool _flag_file_is_opened;
+    UI_flag_t _flag;
 
     fstream _log_list;   // store log number
+
+    void _set_log_num(int num);
+    void _print_help();
 };
 
 

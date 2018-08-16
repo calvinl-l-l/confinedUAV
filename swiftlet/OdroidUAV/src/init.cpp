@@ -50,11 +50,12 @@ int main()
 
 
 // lidar read ----------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp]()
+    schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp, &PH2]()
     {
         unsigned long t0 = millis();    // for debug use
 
         lidar.read();
+        lidar.get_PH2_data(PH2.ph2_data);
         lidar.pos_update();
         //FS_sp.puts("$0232-1089-0#");
 

@@ -36,18 +36,34 @@ struct lidar_data_t
 
     int nyz;
 
-    float pos_y;
-    float pos_z;
+    int pos_y;  // in mm
+    int pos_z;  // in mm
 
     // distance from boundaries, unit: mm
     int dist2wallL;
     int dist2wallR;
     int dist2floor;
     int dist2ceiling;
+    int alt;
+
 
     float area;
 };
 
+// lidar flags
+struct lidar_flag_t
+{
+    bool flag.lidar_error;
+    bool flag.outof_boundary;
+    lidar_alt_type alt;
+};
+
+// altitude location: from roof or from ground
+enum lidar_alt_type
+{
+    FLOOR = 0,
+    ROOF
+}
 
 // lidar class
 class Hokuyo_lidar
@@ -56,14 +72,16 @@ public:
     lidar_data_t ldata;
     deque<lidar_data_t> ldata_q;    // data ring buffer
 
-    bool flag_lidar_error;
-    bool flag_outof_boundary;
+    lidar_flag_t flag;
 
     Hokuyo_lidar();
     void set_startup_time(unsigned int sys_time);   // in ms
     void read();
     void pos_update();
+    void calc_alt(lidar_alt_type dir);
     void get_PH2_data(PH2_data_t data);
+    void init_localisation();
+
     double deg2r(double degree);    // convert degree to radian;
     void sleep();
     void wake();
@@ -71,20 +89,25 @@ public:
 
 private:
     Urg_driver urg;
-    int yz_start_pt;    // start point on the left, index 0
-    int yz_end_pt;      // end point on the right, index end
-
     float _data_loss;
-
-    unsigned int _ts_startup;
     float _start_area;
+    unsigned int _ts_startup;
 
-    PH2_data_t _ph2_data;
+    PH2_data_t _ph2_data;       // data from Pixhawk 2
+    // spectrum localisation
+    vector<int> _specY_ref; // y reference spectrum
+    vector<int> _specZ_ref; // z reference sepctrum
+    vector<int> _specY_src; // y source spectrum
+    vector<int> _specZ_src; // z source spectrum
 
+    vector<int> _pt2spectrum(vector<double> point); // converting point to spectrum
+    void _scan_matching_sptm(); //scan matching using spectrum analysis
+
+    // centroid localisation
+    void _get_centroid2();
+    //void _get_symmetry_pt();
     //vector<int> lonely_pts_detector();
     //void _get_centroid1();
-    void _get_centroid2();
-    void _get_symmetry_pt();
-    bool _lidar_check_outof_boundary();
+    //bool _lidar_check_flag.outof_boundary();
 };
 #endif

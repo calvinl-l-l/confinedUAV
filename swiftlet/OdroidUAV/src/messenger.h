@@ -14,7 +14,7 @@ struct PH2_data_t
     unsigned int ts_PH2;
     unsigned int ts_odroid;
 
-    float pitch;
+    float pitch;  // in degree
     float roll;
     float yaw;
 

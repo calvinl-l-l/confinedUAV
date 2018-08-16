@@ -23,12 +23,12 @@ void Hokuyo_lidar::read()
 
     if (!urg.get_distance(ldata.range, &ldata.ts_lidar))
     {
-      flag_lidar_error  = true;
+      flag.lidar_error  = true;
       cout << "Error reading lidar scan!" << endl;
     }
     else
     {
-      flag_lidar_error = false;
+      flag.lidar_error = false;
     }
 
     ldata.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
@@ -59,21 +59,43 @@ void Hokuyo_lidar::pos_update()
 
     _data_loss = (float) n/1080;  // calc data loss
 
-// TODO
-/*
+
+    // apply roll rotation
     for (int i=0; i < ldata.nyz; i++)
     {
-        double y_temp = cos(roll*M_PI/180.0f) * ldata.pc_y[i] - sin(roll*M_PI/180.0f) * ldata.pc_z[i];
-        double z_temp = sin(roll*M_PI/180.0f) * ldata.pc_y[i] + cos(roll*M_PI/180.0f) * ldata.pc_z[i];
+        double y_temp = cos(deg2r(roll)) * ldata.pc_y[i] - sin(deg2r(roll)) * ldata.pc_z[i];
+        double z_temp = sin(deg2r(roll)) * ldata.pc_y[i] + cos(deg2r(roll)) * ldata.pc_z[i];
 
         ldata.pc_y[i] = y_temp;
         ldata.pc_z[i] = z_temp;
     }
-*/
+
+    // localisation algorithm
+    // TODO --> here
+
 
     // pushing lidar data to the queue
     if (ldata_q.size() >= MAX_LDATA_QUEUE_SIZE) ldata_q.pop_front();    // limit memory usage
     ldata_q.push_back(ldata);
+}
+
+
+void Hokuyo_lidar::calc_alt(lidar_alt_type dir)
+{
+    
+}
+
+vector<int> Hokuyo_lidar::_pt2spectrum(vector<double> point)
+{
+    _specY_src.clear();
+    _specZ_src.clear();
+
+}
+
+void Hokuyo_lidar::_scan_matching_sptm()
+{
+
+  // max = *max_element(vector.begin(), vector.end());
 }
 
 // to be removed
@@ -106,6 +128,38 @@ void Hokuyo_lidar::_get_centroid2()
 }
 
 
+void Hokuyo_lidar::wake()
+{
+    urg.wakeup();
+}
+
+void Hokuyo_lidar::sleep()
+{
+    urg.sleep();
+}
+
+void Hokuyo_lidar::close()
+{
+    urg.close();
+}
+
+void Hokuyo_lidar::set_startup_time(unsigned int sys_time)
+{
+    _ts_startup = sys_time;
+
+}
+
+void Hokuyo_lidar::get_PH2_data(PH2_data_t data)
+{
+    _ph2_data = data;
+}
+
+double Hokuyo_lidar::deg2r(double degree)
+{
+    return degree*M_PI/180;
+}
+
+/*
 // to be removed/updated
 void Hokuyo_lidar::_get_symmetry_pt()
 {
@@ -162,19 +216,19 @@ void Hokuyo_lidar::_get_symmetry_pt()
 }
 
 
-bool Hokuyo_lidar::_lidar_check_outof_boundary()
+bool Hokuyo_lidar::_lidar_check_flag.outof_boundary()
 {
-/*
-    TO DO:
+
+    //TODO:
         extra condition on the huge change in centroid
-*/
+
 
     // trigger flag (flag=1) when out of boundary
 
     return false;
 }
 
-/*
+
 vector<int> Hokuyo_lidar::lonely_pts_detector()
 {
   // output
@@ -214,40 +268,8 @@ vector<int> Hokuyo_lidar::lonely_pts_detector()
 
   return I;
 }
-*/
 
-void Hokuyo_lidar::wake()
-{
-    urg.wakeup();
-}
 
-void Hokuyo_lidar::sleep()
-{
-    urg.sleep();
-}
-
-void Hokuyo_lidar::close()
-{
-    urg.close();
-}
-
-void Hokuyo_lidar::set_startup_time(unsigned int sys_time)
-{
-    _ts_startup = sys_time;
-
-}
-
-void Hokuyo_lidar::get_PH2_data(PH2_data_t data)
-{
-    _ph2_data = data;
-}
-
-double Hokuyo_lidar::deg2r(double degree)
-{
-    return degree*M_PI/180;
-}
-
-/*
 // old centroid - to be removed
 void Hokuyo_lidar::_get_centroid1()
 {

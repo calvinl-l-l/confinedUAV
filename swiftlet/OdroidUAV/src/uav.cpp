@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define PH2_MSG_LOOP_FREQ       100   // Hz
+#define PH2_MSG_LOOP_FREQ       120   // Hz
 #define LOGGING_LOOP_FREQ       10
 #define ARDUINO_COM_LOOP_FREQ   20
 
@@ -45,7 +45,7 @@ int main()
 // PH2 messenger ---------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1000/PH2_MSG_LOOP_FREQ), [&PH2]()
     {
-
+        PH2.get_data();
     });
 
 

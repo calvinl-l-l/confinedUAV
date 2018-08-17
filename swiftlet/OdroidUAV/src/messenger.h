@@ -4,7 +4,7 @@
 #include "utility.h"
 #include "../lib/cserial/cSerial.h"
 
-#define DATA_MSG_BUF_SIZE 50
+#define DATA_MSG_BUF_SIZE 16    // number of variabale = 4
 #define MAX_MESSENGER_DATA_QUEUE_SIZE 50
 
 using namespace std;
@@ -14,8 +14,8 @@ struct PH2_data_t
     unsigned int ts_PH2;
     unsigned int ts_odroid;
 
-    float pitch;  // in degree
-    float roll;
+    float roll;  // in rad
+    float pitch;
     float yaw;
 
     // control output

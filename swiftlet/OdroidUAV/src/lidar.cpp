@@ -3,13 +3,25 @@
 
 Hokuyo_lidar::Hokuyo_lidar()
 {
-
-
     // open ethernet com
-    if (!urg.open(connect_address, connect_port, Urg_driver::Ethernet)) cout << "Error: unable to connect to lidar!!" << endl;
+    if (!_urg.open(connect_address, connect_port, Urg_driver::Ethernet))
+    {
+        cout << "Error: unable to connect to lidar!!" << endl;
+        exit(EXIT_FAILURE);
+    }
 
     // start measurement
-    urg.start_measurement(Urg_driver::Distance, Urg_driver::Infinity_times, 0);
+    _urg.start_measurement(Urg_driver::Distance, Urg_driver::Infinity_times, 0);
+
+    // init flag
+    flag.init_startup_block = true;
+    flag.lidar_error = false;
+    flag.outof_boundary = false;
+    flag.printed_alt_mode = false;
+    flag.alt = ROOF;
+
+    _init_alt_type();   // TODO: test open space init for alt type
+
 
 }
 
@@ -21,7 +33,7 @@ void Hokuyo_lidar::read()
     ldata.pc_z.clear();
     ldata.pc_y.clear();
 
-    if (!urg.get_distance(ldata.range, &ldata.ts_lidar))
+    if (!_urg.get_distance(ldata.range, &ldata.ts_lidar))
     {
       flag.lidar_error  = true;
       cout << "Error reading lidar scan!" << endl;
@@ -32,16 +44,17 @@ void Hokuyo_lidar::read()
     }
 
     ldata.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
-}  // end of lidar read();
+}
 
 void Hokuyo_lidar::pos_update()
 {
     int n = 0;
+    double roll = _ph2_data.roll;   // in rad, roll angle from PH2
 
     for (int i=0; i < 540*2; i++)
     {
         // angle of the range
-        double rad = urg.index2rad(i);
+        double rad = _urg.index2rad(i);
         ldata.angle.push_back(rad);
 
         // from Polar to Cartesian
@@ -59,18 +72,20 @@ void Hokuyo_lidar::pos_update()
 
     _data_loss = (float) n/1080;  // calc data loss
 
-
+    // TODO: add proper rotation matrix later
     // apply roll rotation
     for (int i=0; i < ldata.nyz; i++)
     {
-        double y_temp = cos(deg2r(roll)) * ldata.pc_y[i] - sin(deg2r(roll)) * ldata.pc_z[i];
-        double z_temp = sin(deg2r(roll)) * ldata.pc_y[i] + cos(deg2r(roll)) * ldata.pc_z[i];
+        double y_temp = cos(roll) * ldata.pc_y[i] - sin(roll) * ldata.pc_z[i];
+        double z_temp = sin(roll) * ldata.pc_y[i] + cos(roll) * ldata.pc_z[i];
 
         ldata.pc_y[i] = y_temp;
         ldata.pc_z[i] = z_temp;
     }
 
     // localisation algorithm
+    calc_alt();
+
     // TODO --> here
 
 
@@ -80,9 +95,76 @@ void Hokuyo_lidar::pos_update()
 }
 
 
-void Hokuyo_lidar::calc_alt(lidar_alt_type dir)
+void Hokuyo_lidar::calc_alt()
 {
-    
+    // angle sign use right hand rule
+    double pitch = _ph2_data.pitch;     // TODO: add proper rotation matrix later
+    double roll  = _ph2_data.roll;
+
+    unsigned int temp = 0;
+    int n = 0;
+
+    switch(flag.alt)
+    {
+        case FLOOR:
+            if (roll > ALT_FLOOR_ANGLE_RANGE/2)
+            // no -ve side
+            {
+                for (float i=135; i >= 135 - ALT_FLOOR_ANGLE_RANGE; i-=0.25)
+                {
+                    int idx = _urg.deg2index(i);
+                    temp += ldata.range[idx] * cos(deg2r(i)+roll);
+                    n++;
+                }
+            }
+            else if (roll < -ALT_FLOOR_ANGLE_RANGE/2)
+            // no +ve side
+            {
+                for (float i=-135; i <= -135 + ALT_FLOOR_ANGLE_RANGE; i+=0.25)
+                {
+                    int idx = _urg.deg2index(i);
+                    temp += ldata.range[idx] * cos(deg2r(i)+roll);
+                    n++;
+                }
+            }
+            else
+            {
+                // +ve side
+                for (float i=135; i >= 135 - ALT_FLOOR_ANGLE_RANGE/2 - fabs(r2deg(roll)); i-=0.25)
+                {
+                    int idx = _urg.deg2index(i);
+                    temp += fabs(ldata.range[idx] * cos(deg2r(i)+roll));
+                    n++;
+                }
+
+                // -ve side
+                for (float i=-135; i <= -135 + ALT_FLOOR_ANGLE_RANGE/2 + fabs(r2deg(roll)); i+=0.25)
+                {
+                    int idx = _urg.deg2index(i);
+                    temp += fabs(ldata.range[idx] * cos(deg2r(i)+roll));
+                    n++;
+                }
+
+            }
+
+            break;
+
+        case ROOF:
+            for (float i=-ALT_ROOF_ANGLE_RANGE/2; i<=ALT_ROOF_ANGLE_RANGE/2; i+=0.25)
+            {
+                int idx = _urg.rad2index(deg2r(i)-roll);
+                temp += ldata.range[idx] * cos(deg2r(i));
+                n++;
+            }
+            break;
+
+        case BOTH:
+            cout << "Not available yet!!\n";
+            break;
+    }
+
+    ldata.alt = temp/n;
+    printf("alt: %d\n", ldata.alt);
 }
 
 vector<int> Hokuyo_lidar::_pt2spectrum(vector<double> point)
@@ -105,7 +187,7 @@ void Hokuyo_lidar::_get_centroid2()
     double cy = 0;
     double cz = 0;
 
-    for (int i=yz_start_pt; i <= yz_end_pt; i++)
+    for (int i=0; i <= ldata.nyz; i++)
     {
         A +=  (ldata.pc_y[i] * ldata.pc_z[i+1]) - (ldata.pc_y[i+1] * ldata.pc_z[i]);
 
@@ -127,20 +209,100 @@ void Hokuyo_lidar::_get_centroid2()
     //cout << pos_loc_y2 << ' ' <<  A << endl;
 }
 
+void Hokuyo_lidar::print_alt_type()
+{
+    if (!flag.printed_alt_mode)
+    {
+        string a;
+
+        switch (flag.alt)
+        {
+            case 0:  a = "floor";
+                break;
+            case 1:  a = "roof";
+                break;
+            case 2:  a = "both";
+                break;
+        }
+
+        cout << "\n\n";
+        cout << "========================================\n";
+        cout << "   altitude type is: " << a << '\n';
+        cout << "========================================\n\n";
+
+        flag.printed_alt_mode = true; // reset flag
+    }
+}
+
+void Hokuyo_lidar::_init_alt_type()
+{
+    cout << "Computing altitude type . . .\n";
+
+    int d0;
+    int d45;
+    int d_45;
+
+    deque<lidar_data_t> temp_q;
+    lidar_data_t temp;
+
+    for (int i=0; i < 20; i++)
+    {
+        read();
+        if (i >= 10)    // discard the first 10 scan just incase
+        {
+            temp_q.push_back(ldata);
+        }
+    }
+
+    // averge the 10 scan
+    for (int i=0; i < 10; i++)
+    {
+        // picking -45 0 45 degree to check if a roof is in range
+        temp = temp_q.front();
+        temp_q.pop_front();
+
+        d0 += temp.range[_urg.deg2index(0)];
+        d45 += temp.range[_urg.deg2index(45)];
+        d_45 += temp.range[_urg.deg2index(-45)];
+    }
+
+    d0 /= 10;
+    d45 /= 10;
+    d_45 /= 10;
+
+    d45 /= sin(deg2r(45));
+    d_45 /= sin(deg2r(45));
+
+    unsigned int score = 0;
+    if (d0 > ROOF_THRESHOLD)    score++;
+    if (d45 > ROOF_THRESHOLD)    score++;
+    if (d_45 > ROOF_THRESHOLD)    score++;
+
+    if (score >= 2) flag.alt = FLOOR;
+    else            flag.alt = ROOF;
+
+    flag.init_startup_block = false;
+    print_alt_type();   // done
+}
+
+void Hokuyo_lidar::set_alt_type(lidar_alt_type dir)
+{
+    flag.alt = dir;
+}
 
 void Hokuyo_lidar::wake()
 {
-    urg.wakeup();
+    _urg.wakeup();
 }
 
 void Hokuyo_lidar::sleep()
 {
-    urg.sleep();
+    _urg.sleep();
 }
 
 void Hokuyo_lidar::close()
 {
-    urg.close();
+    _urg.close();
 }
 
 void Hokuyo_lidar::set_startup_time(unsigned int sys_time)
@@ -157,6 +319,11 @@ void Hokuyo_lidar::get_PH2_data(PH2_data_t data)
 double Hokuyo_lidar::deg2r(double degree)
 {
     return degree*M_PI/180;
+}
+
+double Hokuyo_lidar::r2deg(double radian)
+{
+    return radian*M_PI/180;
 }
 
 /*

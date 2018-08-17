@@ -52,6 +52,8 @@ int main()
 // lidar read ----------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp, &PH2]()
     {
+        while (lidar.flag.init_startup_block)   {}  // wait for lidar to initialise
+
         unsigned long t0 = millis();    // for debug use
 
         lidar.read();

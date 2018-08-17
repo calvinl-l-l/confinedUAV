@@ -14,10 +14,12 @@
 using namespace std;
 using namespace qrk;
 
-#define MAX_SCAN_AREA 10
-#define LONELY_THRESHOLD 50
-
-#define MAX_LDATA_QUEUE_SIZE 10
+#define MAX_SCAN_AREA           10      // not used for now
+#define LONELY_THRESHOLD        50      // retired
+#define ROOF_THRESHOLD          8000    // at least within 8m to be consider has roof
+#define ALT_ROOF_ANGLE_RANGE    40      // in degree, total range
+#define ALT_FLOOR_ANGLE_RANGE   20      // in degree
+#define MAX_LDATA_QUEUE_SIZE    10
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -25,6 +27,17 @@ const long connect_port = 10940;
 // lidar data type
 struct lidar_data_t
 {
+//  scan orientation
+//
+//   *** top view ***
+//           *
+//           *
+//           *
+//        *     *
+//      *         *
+//    +ve         -ve
+//idx:1080          0
+//
     unsigned int ts_odroid;    // odroid system timestamp
     long         ts_lidar;     // lidar onboard ts
 
@@ -44,26 +57,30 @@ struct lidar_data_t
     int dist2wallR;
     int dist2floor;
     int dist2ceiling;
-    int alt;
+    unsigned int alt;
 
 
     float area;
-};
-
-// lidar flags
-struct lidar_flag_t
-{
-    bool flag.lidar_error;
-    bool flag.outof_boundary;
-    lidar_alt_type alt;
 };
 
 // altitude location: from roof or from ground
 enum lidar_alt_type
 {
     FLOOR = 0,
-    ROOF
-}
+    ROOF,
+    BOTH
+};
+
+// lidar flags
+struct lidar_flag_t
+{
+    bool lidar_error;
+    bool outof_boundary;
+    bool printed_alt_mode;        // whether alt mode is printed
+    bool init_startup_block;    // block lidar thread until false
+
+    enum lidar_alt_type alt;
+};
 
 // lidar class
 class Hokuyo_lidar
@@ -78,22 +95,31 @@ public:
     void set_startup_time(unsigned int sys_time);   // in ms
     void read();
     void pos_update();
-    void calc_alt(lidar_alt_type dir);
+    void calc_alt();
     void get_PH2_data(PH2_data_t data);
     void init_localisation();
 
+    void set_alt_type(lidar_alt_type dir);
+    void print_alt_type();
     double deg2r(double degree);    // convert degree to radian;
+    double r2deg(double radian);   // convert radian to degree;
     void sleep();
     void wake();
     void close();
 
 private:
-    Urg_driver urg;
+    Urg_driver _urg;
     float _data_loss;
     float _start_area;
     unsigned int _ts_startup;
 
     PH2_data_t _ph2_data;       // data from Pixhawk 2
+
+    // altitude calc
+    unsigned int _tunnel_height;
+
+    void _init_alt_type();
+
     // spectrum localisation
     vector<int> _specY_ref; // y reference spectrum
     vector<int> _specZ_ref; // z reference sepctrum

@@ -19,7 +19,8 @@ Hokuyo_lidar::Hokuyo_lidar()
     flag.outof_boundary = false;
     flag.printed_alt_mode = false;
     flag.alt = ROOF;
-
+    _tunnel_height = 0;
+    
     _init_alt_type();   // TODO: test open space init for alt type
 
 
@@ -153,7 +154,7 @@ void Hokuyo_lidar::calc_alt()
             for (float i=-ALT_ROOF_ANGLE_RANGE/2; i<=ALT_ROOF_ANGLE_RANGE/2; i+=0.25)
             {
                 int idx = _urg.rad2index(deg2r(i)-roll);
-                temp += ldata.range[idx] * cos(deg2r(i));
+                temp += fabs(ldata.range[idx] * cos(deg2r(i)));
                 n++;
             }
             break;
@@ -163,7 +164,10 @@ void Hokuyo_lidar::calc_alt()
             break;
     }
 
-    ldata.alt = temp/n;
+    ldata.alt = (unsigned int) temp/n;
+
+    if (flag.alt == ROOF)   ldata.alt = abs(_tunnel_height - ldata.alt);
+
     printf("alt: %d\n", ldata.alt);
 }
 
@@ -278,8 +282,8 @@ void Hokuyo_lidar::_init_alt_type()
     if (d45 > ROOF_THRESHOLD)    score++;
     if (d_45 > ROOF_THRESHOLD)    score++;
 
-    if (score >= 2) flag.alt = FLOOR;
-    else            flag.alt = ROOF;
+    if (score >= 2) set_alt_type(FLOOR);
+    else            set_alt_type(ROOF);
 
     flag.init_startup_block = false;
     print_alt_type();   // done
@@ -288,6 +292,15 @@ void Hokuyo_lidar::_init_alt_type()
 void Hokuyo_lidar::set_alt_type(lidar_alt_type dir)
 {
     flag.alt = dir;
+
+    if (dir == ROOF)
+    {
+        _tunnel_height = 0; // reset tunnel height
+        calc_alt();
+
+        _tunnel_height = abs(ldata.alt);
+        cout << "height " << _tunnel_height << endl;
+    }
 }
 
 void Hokuyo_lidar::wake()

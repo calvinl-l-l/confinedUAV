@@ -20,6 +20,7 @@ using namespace qrk;
 #define ALT_ROOF_ANGLE_RANGE    40      // in degree, total range
 #define ALT_FLOOR_ANGLE_RANGE   20      // in degree
 #define MAX_LDATA_QUEUE_SIZE    10
+#define FRAME_HEIGHT            120     // from ground to lidar height
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -57,7 +58,7 @@ struct lidar_data_t
     int dist2wallR;
     int dist2floor;
     int dist2ceiling;
-    unsigned int alt;
+    int alt;
 
 
     float area;
@@ -116,7 +117,7 @@ private:
     PH2_data_t _ph2_data;       // data from Pixhawk 2
 
     // altitude calc
-    unsigned int _tunnel_height;
+    int _tunnel_height;
 
     void _init_alt_type();
 

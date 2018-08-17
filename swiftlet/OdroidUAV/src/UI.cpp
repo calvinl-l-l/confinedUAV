@@ -204,6 +204,31 @@ void UI::run()
 
         cout << "done\n";
     }
+// set altitude type
+    else if (_input == "alt")
+    {
+        int n = 0;
+        cout << "Setting altitude type to:\n";
+        cout << "0 - floor\n";
+        cout << "1 - roof\n";
+        cout << "2 - both (not available yet)\n";
+        cin >> n;
+
+        switch(n)
+        {
+            case 0:
+                lidar_CMD.alt_type = FLOOR;
+                break;
+            case 1:
+                lidar_CMD.alt_type = ROOF;
+                break;
+            case 2:
+                lidar_CMD.alt_type = BOTH;
+                break;
+        }
+
+        lidar_CMD.set_type = true;
+    }
 // help: should always be last
     else if (_input == "help")
     {
@@ -221,6 +246,7 @@ void UI::_print_help()
             "sl: stop log",
             "sd, stop debug print",
             "s: stop all display",
+            "alt",
             "debug" //debug should always be last
     };
 

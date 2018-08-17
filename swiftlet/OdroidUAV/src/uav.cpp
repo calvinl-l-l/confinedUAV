@@ -50,13 +50,17 @@ int main()
 
 
 // lidar read ----------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp, &PH2]()
+    schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp, &PH2, &ui]()
     {
         while (lidar.flag.init_startup_block)   {}  // wait for lidar to initialise
 
         unsigned long t0 = millis();    // for debug use
 
         lidar.read();
+
+        lidar.get_ui_CMD(ui.lidar_CMD);
+        ui.lidar_CMD.set_type = false;      // reset the CMD flag
+
         lidar.get_PH2_data(PH2.ph2_data);
         lidar.pos_update();
         //FS_sp.puts("$0232-1089-0#");

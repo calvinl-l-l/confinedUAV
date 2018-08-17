@@ -83,6 +83,14 @@ struct lidar_flag_t
     enum lidar_alt_type alt;
 };
 
+struct UI_CMD_t
+{
+    enum lidar_alt_type alt_type;
+    bool set_type = false;
+
+    // future commands
+};
+
 // lidar class
 class Hokuyo_lidar
 {
@@ -100,6 +108,7 @@ public:
     void get_PH2_data(PH2_data_t data);
     void init_localisation();
 
+    void get_ui_CMD(UI_CMD_t in);
     void set_alt_type(lidar_alt_type dir);
     void print_alt_type();
     double deg2r(double degree);    // convert degree to radian;
@@ -115,6 +124,7 @@ private:
     unsigned int _ts_startup;
 
     PH2_data_t _ph2_data;       // data from Pixhawk 2
+    UI_CMD_t   _cmd;            // command/data from UI
 
     // altitude calc
     int _tunnel_height;

@@ -31,7 +31,7 @@ public:
     unsigned int data_log_density;  // from (highest) 1-4 (lowest): 1080 542 360 270 pts
     int nlog;
 
-
+    UI_CMD_t  lidar_CMD;
     UI_flag_t flag;
 
     UI();

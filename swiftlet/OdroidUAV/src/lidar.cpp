@@ -37,11 +37,13 @@ void Hokuyo_lidar::read()
     if (!_urg.get_distance(ldata.range, &ldata.ts_lidar))
     {
       flag.lidar_error  = true;
+      ldata.is_healthy  = false;
       cout << "Error reading lidar scan!" << endl;
     }
     else
     {
       flag.lidar_error = false;
+      ldata.is_healthy = true;
     }
 
     ldata.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
@@ -88,7 +90,7 @@ void Hokuyo_lidar::pos_update()
     // localisation algorithm
     calc_alt();
 
-    // TODO --> here
+    // TODO: add localisation
 
 
     // pushing lidar data to the queue
@@ -171,7 +173,7 @@ void Hokuyo_lidar::calc_alt()
 
     if (flag.alt == ROOF)   ldata.alt = abs(_tunnel_height - ldata.alt);
 
-    //printf("alt: %d, %d, diff: %d\n", ldata.alt, raw, diff);   // debug
+    //printf("alt: %d\n", ldata.alt);   // debug
 }
 
 vector<int> Hokuyo_lidar::_pt2spectrum(vector<double> point)

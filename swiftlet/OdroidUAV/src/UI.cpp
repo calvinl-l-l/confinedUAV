@@ -250,7 +250,7 @@ void UI::_print_help()
             "debug" //debug should always be last
     };
 
-    vector <string> debug_list; //TODO
+    vector <string> debug_list; //TODO: choose what to print
 
     cout << "******** list of commands ****************\n\n";
     for (int i=0; i<cmd_list.size(); i++)

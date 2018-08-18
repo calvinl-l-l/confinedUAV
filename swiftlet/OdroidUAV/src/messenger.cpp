@@ -1,6 +1,5 @@
 #include "messenger.h"
 
-
 messenger::messenger(cSerial sp)
 {
     _sp = sp;
@@ -41,6 +40,41 @@ void messenger::get_data()
     if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();
     ph2_data_q.push_back(ph2_data);
 }
+
+void messenger::send_pos_data(lidar_data_t ldata)
+{
+    _ldata = ldata;
+
+    string msg;
+    msg = _pos_msg_encoder();
+
+    for (int i=0; i<msg.length(); i++)
+    {
+        _sp.putchar(msg[i]);
+    }
+}
+
+string messenger::_pos_msg_encoder()
+{
+//=================================
+//********  MSG FORMAT  ***********
+//=================================
+//
+//  message:
+//  $ is_healthy pos_y pos_z alt #
+//  1       1      6     6    6  1 bytes, total = 18 bytes
+    string msg = "";
+
+    msg = "$" + to_string(_ldata.is_healthy);
+    msg += int2str_5digits(_ldata.pos_y);
+    msg += int2str_5digits(_ldata.pos_z);
+    msg += int2str_5digits(_ldata.alt);
+    msg += "#";
+
+    cout << "msg: " << msg.c_str() << '\n';
+    return msg;
+}
+
 
 
 void messenger::set_startup_time(unsigned int sys_time)

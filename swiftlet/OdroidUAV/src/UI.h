@@ -1,10 +1,9 @@
 #ifndef _UI_H_
 #define _UI_H_
 
-#include "utility.h"
+#include "common.h"
 #include "../lib/cserial/cSerial.h"
-#include "lidar.h"
-#include "messenger.h"
+
 
 struct UI_flag_t
 {

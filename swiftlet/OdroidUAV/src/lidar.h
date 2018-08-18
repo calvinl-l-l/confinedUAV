@@ -1,5 +1,5 @@
-#ifndef _LIDAR_
-#define _LIDAR_
+#ifndef _LIDAR_H_
+#define _LIDAR_H_
 
 #include <iostream>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include "urg_cpp/Lidar.h"
 #include "urg_cpp/Urg_driver.h"
 #include <iomanip>
-#include "utility.h"
+#include "common.h"
 #include "messenger.h"
 
 using namespace std;
@@ -25,73 +25,6 @@ using namespace qrk;
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
 
-// lidar data type
-struct lidar_data_t
-{
-//  scan orientation
-//
-//   *** top view ***
-//           *
-//           *
-//           *
-//        *     *
-//      *         *
-//    +ve         -ve
-//idx:1080          0
-//
-    unsigned int ts_odroid;    // odroid system timestamp
-    long         ts_lidar;     // lidar onboard ts
-
-    // units in mm and degree
-    vector<long> range;
-    vector<double> angle;   // angle in radian
-    vector<double> pc_y;
-    vector<double> pc_z;
-
-    int nyz;
-
-    int pos_y;  // in mm
-    int pos_z;  // in mm
-
-    // distance from boundaries, unit: mm
-    int dist2wallL;
-    int dist2wallR;
-    int dist2floor;
-    int dist2ceiling;
-    int alt;
-
-
-    float area;
-};
-
-// altitude location: from roof or from ground
-enum lidar_alt_type
-{
-    FLOOR = 0,
-    ROOF,
-    BOTH
-};
-
-// lidar flags
-struct lidar_flag_t
-{
-    bool lidar_error;
-    bool outof_boundary;
-    bool printed_alt_mode;        // whether alt mode is printed
-    bool init_startup_block;    // block lidar thread until false
-
-    enum lidar_alt_type alt;
-};
-
-struct UI_CMD_t
-{
-    enum lidar_alt_type alt_type;
-    bool set_type = false;
-
-    // TODO: use string as a command instead, then have a decoder
-    // TODO: command to set range
-    // future commands
-};
 
 // lidar class
 class Hokuyo_lidar
@@ -102,7 +35,7 @@ public:
 
     lidar_flag_t flag;
 
-    Hokuyo_lidar();
+    Hokuyo_lidar(); //TODO: need to inherent localisation class
     void set_startup_time(unsigned int sys_time);   // in ms
     void read();
     void pos_update();

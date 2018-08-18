@@ -1,11 +1,13 @@
 #include <iostream>
 #include "../lib/Scheduler/Scheduler.h"
-#include "utility.h"
+#include "common.h"
 #include "UI.h"
+#include "lidar.h"
+#include "messenger.h"
 
 using namespace std;
 
-#define PH2_MSG_LOOP_FREQ       120   // Hz
+#define PH2_MSG_LOOP_FREQ       10   // Hz
 #define LOGGING_LOOP_FREQ       10
 #define ARDUINO_COM_LOOP_FREQ   20
 
@@ -63,14 +65,15 @@ int main()
 
         lidar.get_PH2_data(PH2.ph2_data);
         lidar.pos_update();
-        //FS_sp.puts("$0232-1089-0#");
+
+        PH2.send_pos_data(lidar.ldata);  // send position data to Pixhawk 2
 
         unsigned long dt_lidar = millis() - t0; // for debug use
 
     });
 
 // Arduino com ---------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1000/ARDUINO_COM_LOOP_FREQ), [&Ardu_sp, &PH2]()
+    schedule.interval(std::chrono::milliseconds(1000/ARDUINO_COM_LOOP_FREQ), [&Ardu_sp, &PH2, &ui]()
     {
         Ardu_sp.putchar('m');
     });

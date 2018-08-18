@@ -1,4 +1,4 @@
-#include "utility.h"
+#include "common.h"
 
 void scan2pixelmap(vector<double> x, vector<double> y, double xc, double yc, int *map)
 {
@@ -59,4 +59,39 @@ int median(vector<long> in)
 long val_remap(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+string int2str_5digits(int value)
+{
+    string s = "";
+
+    unsigned int n = ndigit(value);
+
+    if (value>0)        s = "+";
+    else if (value<0)   s = "-";
+
+    if (n!=5)
+    {
+        for (int i=0; i<5-n; i++)
+        {
+            s += '0';
+        }
+    }
+
+    s += to_string(value);
+
+    return s;
+}
+
+unsigned int ndigit(int value)
+{
+    unsigned int n = 0;
+
+    while(value)
+    {
+        value /= 10;
+        n++;
+    }
+
+    return n;
 }

@@ -20,7 +20,7 @@ Hokuyo_lidar::Hokuyo_lidar()
     flag.printed_alt_mode = false;
     flag.alt = ROOF;
     _tunnel_height = 0;
-
+    _max_scan_range = 6*1000;   // default 6m scan range
     _init_alt_type();   // TODO: test open space init for alt type
 
 
@@ -51,6 +51,7 @@ void Hokuyo_lidar::pos_update()
 {
     int n = 0;
     double roll = _ph2_data.roll;   // in rad, roll angle from PH2
+    double pitch = _ph2_data.pitch;
 
     for (int i=0; i < 540*2; i++)
     {
@@ -60,10 +61,11 @@ void Hokuyo_lidar::pos_update()
 
         // from Polar to Cartesian
         if (!(fabs(ldata.angle[i]) > deg2r(80) && fabs(ldata.angle[i]) < deg2r(90)) && // position of props
-            !(fabs(ldata.angle[i]) > deg2r(130)))  // end 5 degree on both side
+            !(fabs(ldata.angle[i]) > deg2r(130)) &&  // end 5 degree on both side
+            ldata.range[i] <= _max_scan_range)
         {
             // for Swiftlet frame, skip 81.5 to 89.75 degree
-            ldata.pc_z.push_back((double) (ldata.range[i] * cos(rad)));
+            ldata.pc_z.push_back((double) (ldata.range[i] * cos(rad)) - _offset_z);
             ldata.pc_y.push_back((double) (ldata.range[i] * sin(rad)));
             n++;
         }
@@ -73,12 +75,11 @@ void Hokuyo_lidar::pos_update()
 
     _data_loss = (float) n/1080;  // calc data loss
 
-    // TODO: add proper rotation matrix later
-    // apply roll rotation
+    // applying transformation matrix
     for (int i=0; i < ldata.nyz; i++)
     {
-        double y_temp = cos(roll) * ldata.pc_y[i] - sin(roll) * ldata.pc_z[i];
-        double z_temp = sin(roll) * ldata.pc_y[i] + cos(roll) * ldata.pc_z[i];
+        double y_temp = cos(roll)*ldata.pc_y[i] - cos(pitch)*sin(roll)*ldata.pc_z[i] + _offset_x*sin(roll)*sin(pitch);
+        double z_temp = sin(roll)*ldata.pc_y[i] + cos(pitch)*cos(roll)*ldata.pc_z[i] - _offset_x*cos(roll)*sin(pitch);
 
         ldata.pc_y[i] = y_temp;
         ldata.pc_z[i] = z_temp;
@@ -164,11 +165,13 @@ void Hokuyo_lidar::calc_alt()
             break;
     }
 
+
     ldata.alt = (unsigned int) temp/n;
+    ldata.alt = (ldata.alt-_offset_z)*cos(pitch) - _offset_x*sin(pitch);
 
     if (flag.alt == ROOF)   ldata.alt = abs(_tunnel_height - ldata.alt);
 
-    //printf("alt: %d\n", ldata.alt);   // debug
+    //printf("alt: %d, %d, diff: %d\n", ldata.alt, raw, diff);   // debug
 }
 
 vector<int> Hokuyo_lidar::_pt2spectrum(vector<double> point)
@@ -312,6 +315,12 @@ void Hokuyo_lidar::set_alt_type(lidar_alt_type dir)
     print_alt_type();
 
     _cmd.set_type = false;  // reset flag
+}
+
+void Hokuyo_lidar::set_max_scan_range(unsigned int range)
+{
+    // range input in m
+    _max_scan_range = range*1000;
 }
 
 void Hokuyo_lidar::wake()

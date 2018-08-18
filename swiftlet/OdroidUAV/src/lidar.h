@@ -88,6 +88,8 @@ struct UI_CMD_t
     enum lidar_alt_type alt_type;
     bool set_type = false;
 
+    // TODO: use string as a command instead, then have a decoder
+    // TODO: command to set range
     // future commands
 };
 
@@ -108,6 +110,7 @@ public:
     void get_PH2_data(PH2_data_t data);
     void init_localisation();
 
+    void set_max_scan_range(unsigned int range);
     void get_ui_CMD(UI_CMD_t in);
     void set_alt_type(lidar_alt_type dir);
     void print_alt_type();
@@ -118,10 +121,15 @@ public:
     void close();
 
 private:
+    // general
     Urg_driver _urg;
+    unsigned int _max_scan_range;   // mm
     float _data_loss;
     float _start_area;
     unsigned int _ts_startup;
+
+    unsigned int _offset_x = 250;   // mm
+    unsigned int _offset_z = 30;
 
     PH2_data_t _ph2_data;       // data from Pixhawk 2
     UI_CMD_t   _cmd;            // command/data from UI

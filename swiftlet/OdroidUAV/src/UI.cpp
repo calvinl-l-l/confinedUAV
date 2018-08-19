@@ -120,9 +120,9 @@ void UI::set_startup_time(unsigned int sys_time)
     _ts_startup = sys_time;
 }
 
-void UI::DEBUG_PRINT()
+void UI::DEBUG_PRINT(lidar_data_t ldata, PH2_data_t pdata)
 {
-    printf("hello world %d\n", millis());
+    printf("DEBUG: climbRate %d, altTarget %f, roll: %f, %d\n", pdata.target_climb_rate, pdata.alt_target, pdata.roll, millis());
 }
 
 void UI::run()

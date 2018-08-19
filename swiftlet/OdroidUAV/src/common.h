@@ -101,7 +101,9 @@ struct PH2_data_t
     float pitch;
     float yaw;
 
-    // control output
+    // TEMP control output
+    float alt_target;
+    int target_climb_rate;
 };
 
 long val_remap(long x, long in_min, long in_max, long out_min, long out_max);

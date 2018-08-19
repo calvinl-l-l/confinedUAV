@@ -39,7 +39,7 @@ public:
     void start_log(deque<lidar_data_t> ldata_q, deque<PH2_data_t> ph2_data_q);
     void end_log();
     void run();
-    void DEBUG_PRINT();
+    void DEBUG_PRINT(lidar_data_t ldata, PH2_data_t pdata);
 
 private:
     string _input;

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define PH2_MSG_LOOP_FREQ       10   // Hz
+#define PH2_MSG_LOOP_FREQ       100   // Hz
 #define LOGGING_LOOP_FREQ       10
 #define ARDUINO_COM_LOOP_FREQ   20
 
@@ -96,7 +96,7 @@ int main()
         }
 
         // debug print
-        if (ui.flag.debug_print)    ui.DEBUG_PRINT();
+        if (ui.flag.debug_print)    ui.DEBUG_PRINT(lidar.ldata, PH2.ph2_data);
     });
 
 // UI -------------------------------------------------------------------------

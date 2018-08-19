@@ -4,7 +4,7 @@
 #include "common.h"
 #include "../lib/cserial/cSerial.h"
 
-#define DATA_MSG_BUF_SIZE 16    // number of variabale = 4
+#define DATA_MSG_BUF_SIZE 24    // number of variabale = 6
 #define MAX_MESSENGER_DATA_QUEUE_SIZE 50
 
 using namespace std;

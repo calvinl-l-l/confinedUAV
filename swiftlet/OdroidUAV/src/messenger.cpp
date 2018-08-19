@@ -33,8 +33,14 @@ void messenger::get_data()
     ph2_data.pitch  = (float) p/1000.0f;
     ph2_data.yaw    = (float) y/1000.0f;
 
+    ph2_data.target_climb_rate = (int) (_linebuf[16]<<24|_linebuf[17]<<16|_linebuf[18]<<8|_linebuf[19]);
+    int temp_alt_target        = (int) (_linebuf[20]<<24|_linebuf[21]<<16|_linebuf[22]<<8|_linebuf[23]);
+    ph2_data.alt_target = (float) temp_alt_target/1000.0f;
+
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
+
+    //printf("roll %f\n", ph2_data.roll);
 
     // pushing data to ring buffer
     if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();
@@ -71,7 +77,6 @@ string messenger::_pos_msg_encoder()
     msg += int2str_5digits(_ldata.alt);
     msg += "#";
 
-    cout << "msg: " << msg.c_str() << '\n';
     return msg;
 }
 

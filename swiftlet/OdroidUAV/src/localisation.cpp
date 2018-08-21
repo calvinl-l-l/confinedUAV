@@ -23,15 +23,16 @@ void localisation::run()
 	// TODO: should clean noise a bit during update pc
 
 	_update_pc();	// applied transform to point cloud
-
+	// TODO: command to start HSM, because code might break outdoor
+	// TEMP:  uncomment later
 	// Hough transform
-	vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
+	//vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
 
 	// T estimation
-	vector<unsigned int> xc = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
+	//vector<unsigned int> xc = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
 
-	data.pos.y = (xc[0] - MAX_dRHO) * STEP_RHO;	// dy
-	data.pos.z = (xc[1] - MAX_dRHO) * STEP_RHO;	// dz
+	data.pos.y = 0;//(xc[0] - MAX_dRHO) * STEP_RHO;	// dy
+	data.pos.z = 0;//(xc[1] - MAX_dRHO) * STEP_RHO;	// dz
 
 	calc_alt();
 

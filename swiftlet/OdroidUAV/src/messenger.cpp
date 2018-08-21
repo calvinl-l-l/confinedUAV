@@ -25,23 +25,24 @@ void messenger::get_data()
 
     lock_guard<mutex>   lock(_msg_mtx); // protecting data writing
     // decoding message
-    int r           = (int) (_linebuf[0]<<24|_linebuf[1]<<16|_linebuf[2]<<8|_linebuf[3]);
-    int p           = (int) (_linebuf[4]<<24|_linebuf[5]<<16|_linebuf[6]<<8|_linebuf[7]);
-    int y           = (int) (_linebuf[8]<<24|_linebuf[9]<<16|_linebuf[10]<<8|_linebuf[11]);
-    ph2_data.ts_PH2 = (int) (_linebuf[12]<<24|_linebuf[13]<<16|_linebuf[14]<<8|_linebuf[15]);
+    int r           = byte2int(_linebuf, 0);
+    int p           = byte2int(_linebuf, 1);
+    int y           = byte2int(_linebuf, 2);
+    ph2_data.ts_PH2 = byte2int(_linebuf, 3);
 
     ph2_data.roll   = (float) r/1000.0f;
     ph2_data.pitch  = (float) p/1000.0f;
     ph2_data.yaw    = (float) y/1000.0f;
 
-    ph2_data.target_climb_rate = (int) (_linebuf[16]<<24|_linebuf[17]<<16|_linebuf[18]<<8|_linebuf[19]);
-    int temp_alt_target        = (int) (_linebuf[20]<<24|_linebuf[21]<<16|_linebuf[22]<<8|_linebuf[23]);
+    ph2_data.my_cr = byte2int(_linebuf, 4);
+    ph2_data.ac_cr = byte2int(_linebuf, 5);
+    int temp_alt_target        = byte2int(_linebuf, 6);
     ph2_data.alt_target = (float) temp_alt_target/1000.0f;
-
+    int temp_alt        = byte2int(_linebuf, 7);
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
 
-    //printf("roll %f\n", ph2_data.roll);
+    printf("roll %.2f, myCR %d, acCR %d, alt_tar %.4f, alt_cm: %d, ts: %d \n", ph2_data.roll*180/M_PI, ph2_data.my_cr, ph2_data.ac_cr, ph2_data.alt_target, temp_alt, ph2_data.ts_PH2);
 
     // pushing data to ring buffer
     if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();

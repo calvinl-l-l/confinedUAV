@@ -23,7 +23,7 @@ void Hokuyo_lidar::lidar_init()
     _tunnel_height = 0;
     _max_scan_range = 6*1000;   // default 6m scan range
     _init_alt_type();   // TODO: test open space init for alt type
-
+    flag.alt = FLOOR;    // TEMP: for outdoor
     data.range.reserve(1080);
     data.angle.reserve(1080);
     data.pc_y.reserve(1080);
@@ -118,7 +118,7 @@ void Hokuyo_lidar::calc_alt()
 {
     // angle sign use right hand rule
     double pitch = -_ph2_data.pitch;    // TODO: add proper rotation matrix later
-    double roll  = -_ph2_data.roll;     // -ve due to lidar orientation
+    double roll  = _ph2_data.roll;     // -ve due to lidar orientation
 
     unsigned int temp = 0;
     int n = 0;

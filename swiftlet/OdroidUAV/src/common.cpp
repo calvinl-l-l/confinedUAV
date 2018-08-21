@@ -95,3 +95,9 @@ unsigned int ndigit(int value)
 
     return n;
 }
+
+int byte2int(char* buffer, int position)
+{
+    int value;
+    return value = (int) (buffer[position*4]<<24|buffer[position*4+1]<<16|buffer[position*4+2]<<8|buffer[position*4+3]);
+}

@@ -52,8 +52,8 @@ void Hokuyo_lidar::read()
 void Hokuyo_lidar::pos_update()
 {
     int n = 0;
-    double roll = _ph2_data.roll;   // in rad, roll angle from PH2
-    double pitch = _ph2_data.pitch;
+    double roll  = -_ph2_data.roll;     // in rad, roll angle from PH2
+    double pitch = -_ph2_data.pitch;    // -ve due to lidar orientation
 
     for (int i=0; i < 540*2; i++)
     {
@@ -75,7 +75,7 @@ void Hokuyo_lidar::pos_update()
 
     ldata.nyz = n;
 
-    _data_loss = (float) n/1080;  // calc data loss
+    _data_loss = (float) n/1000*100;  // calc data loss
 
     // applying transformation matrix
     for (int i=0; i < ldata.nyz; i++)
@@ -102,8 +102,8 @@ void Hokuyo_lidar::pos_update()
 void Hokuyo_lidar::calc_alt()
 {
     // angle sign use right hand rule
-    double pitch = _ph2_data.pitch;     // TODO: add proper rotation matrix later
-    double roll  = _ph2_data.roll;
+    double pitch = -_ph2_data.pitch;    // TODO: add proper rotation matrix later
+    double roll  = -_ph2_data.roll;     // -ve due to lidar orientation
 
     unsigned int temp = 0;
     int n = 0;

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define PH2_MSG_LOOP_FREQ       100   // Hz
+#define PH2_MSG_LOOP_FREQ       150   // Hz
 #define LOGGING_LOOP_FREQ       10
 #define ARDUINO_COM_LOOP_FREQ   20
 

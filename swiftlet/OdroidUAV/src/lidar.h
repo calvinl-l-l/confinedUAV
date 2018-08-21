@@ -30,18 +30,18 @@ const long connect_port = 10940;
 class Hokuyo_lidar
 {
 public:
-    lidar_data_t ldata;
-    deque<lidar_data_t> ldata_q;    // data ring buffer
+    pos_data_t data;
+    deque<pos_data_t> data_q;    // data ring buffer
 
     lidar_flag_t flag;
 
     Hokuyo_lidar(); //TODO: need to inherent localisation class
+    void lidar_init();
     void set_startup_time(unsigned int sys_time);   // in ms
-    void read();
-    void pos_update();
+    void read_scan();
+    void update_pc();   // update point cloud
     void calc_alt();
     void get_PH2_data(PH2_data_t data);
-    void init_localisation();
 
     void set_max_scan_range(unsigned int range);
     void get_ui_CMD(UI_CMD_t in);
@@ -53,7 +53,7 @@ public:
     void wake();
     void close();
 
-private:
+protected:
     // general
     Urg_driver _urg;
     unsigned int _max_scan_range;   // mm
@@ -67,20 +67,13 @@ private:
     PH2_data_t _ph2_data;       // data from Pixhawk 2
     UI_CMD_t   _cmd;            // command/data from UI
 
-    // altitude calc
+    // localisation
     int _tunnel_height;
-
     void _init_alt_type();
 
-    // spectrum localisation
-    vector<int> _specY_ref; // y reference spectrum
-    vector<int> _specZ_ref; // z reference sepctrum
-    vector<int> _specY_src; // y source spectrum
-    vector<int> _specZ_src; // z source spectrum
+    pos_data_t _data_ref;
 
-    vector<int> _pt2spectrum(vector<double> point); // converting point to spectrum
-    void _scan_matching_sptm(); //scan matching using spectrum analysis
-
+    void _save_ref_scan();
     // centroid localisation
     void _get_centroid2();
     //void _get_symmetry_pt();

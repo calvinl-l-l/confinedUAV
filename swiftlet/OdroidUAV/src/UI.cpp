@@ -20,7 +20,7 @@ void UI::init_log()
     flag.file_is_opened = false;
 }
 
-void UI::start_log(deque<lidar_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
+void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
 {
     flag.file_is_closed = false;
 
@@ -58,7 +58,7 @@ void UI::start_log(deque<lidar_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
     //=========================================================================
     // DATA INFO LOG
     //=========================================================================
-        lidar_data_t yzdata;
+        pos_data_t yzdata;
         yzdata = ldata_q.front();
 
         for (int i=0; i<yzdata.nyz; i++)
@@ -68,7 +68,7 @@ void UI::start_log(deque<lidar_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
     //=========================================================================
     // LIDAR SCAN DATA LOG - in binary
     //=========================================================================
-        lidar_data_t ldata;
+        pos_data_t ldata;
         while (!ldata_q.empty())
         {
             ldata = ldata_q.front();
@@ -120,7 +120,7 @@ void UI::set_startup_time(unsigned int sys_time)
     _ts_startup = sys_time;
 }
 
-void UI::DEBUG_PRINT(lidar_data_t ldata, PH2_data_t pdata)
+void UI::DEBUG_PRINT(pos_data_t ldata, PH2_data_t pdata)
 {
     printf("DEBUG: climbRate %d, altTarget %f, roll: %f, %d\n", pdata.target_climb_rate, pdata.alt_target, pdata.roll, millis());
 }

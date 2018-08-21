@@ -47,7 +47,7 @@ void messenger::get_data()
     ph2_data_q.push_back(ph2_data);
 }
 
-void messenger::send_pos_data(lidar_data_t ldata)
+void messenger::send_pos_data(pos_data_t ldata)
 {
     _ldata = ldata;
 

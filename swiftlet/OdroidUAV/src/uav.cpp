@@ -29,12 +29,14 @@ int main()
 
     // init class objects
     Bosma::Scheduler schedule(max_n_threads);
-    Hokuyo_lidar lidar;
+
+    localisation HSM;
+
     messenger PH2(FS_sp);
     UI ui;
 
     // initialise system time
-    lidar.set_startup_time(millis());
+    HSM.set_startup_time(millis());
     ui.set_startup_time(millis());
     PH2.set_startup_time(millis());
 
@@ -52,21 +54,21 @@ int main()
 
 
 // lidar read ----------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1), [&lidar, &FS_sp, &PH2, &ui]()
+    schedule.interval(std::chrono::milliseconds(1), [&HSM, &FS_sp, &PH2, &ui]()
     {
-        while (lidar.flag.init_startup_block)   {}  // wait for lidar to initialise
+        while (HSM.flag.init_startup_block)   {}  // wait for lidar to initialise
 
         unsigned long t0 = millis();    // for debug use
 
-        lidar.read();
+        HSM.read_scan();
 
-        lidar.get_ui_CMD(ui.lidar_CMD);
+        HSM.get_ui_CMD(ui.lidar_CMD);
         ui.lidar_CMD.set_type = false;      // reset the CMD flag
 
-        lidar.get_PH2_data(PH2.ph2_data);
-        lidar.pos_update();
+        HSM.get_PH2_data(PH2.ph2_data);
+        HSM.update_pc();
 
-        PH2.send_pos_data(lidar.ldata);  // send position data to Pixhawk 2
+        PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
 
         unsigned long dt_lidar = millis() - t0; // for debug use
 
@@ -79,12 +81,12 @@ int main()
     });
 
 // Logging + debug ------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &lidar, &PH2]()
+    schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2]()
     {
         // logging
         if (ui.flag.log_data)
         {
-            ui.start_log(lidar.ldata_q, PH2.ph2_data_q);
+            ui.start_log(HSM.data_q, PH2.ph2_data_q);
         }
         else
         {
@@ -96,7 +98,7 @@ int main()
         }
 
         // debug print
-        if (ui.flag.debug_print)    ui.DEBUG_PRINT(lidar.ldata, PH2.ph2_data);
+        if (ui.flag.debug_print)    ui.DEBUG_PRINT(HSM.data, PH2.ph2_data);
     });
 
 // UI -------------------------------------------------------------------------

@@ -18,10 +18,16 @@
 using namespace std;
 
 //=============================================================================
-// lidar struct
+// localisation + lidar struct
 //=============================================================================
+struct pos_t
+{
+    int y;	// mm
+    int z;	// mm
+};
+
 // lidar data type
-struct lidar_data_t
+struct pos_data_t
 {
 //  scan orientation
 //
@@ -40,13 +46,12 @@ struct lidar_data_t
     // units in mm and degree
     vector<long> range;
     vector<double> angle;   // angle in radian
-    vector<double> pc_y;
-    vector<double> pc_z;
+    vector<int> pc_y;
+    vector<int> pc_z;
 
     int nyz;
 
-    int pos_y;  // in mm
-    int pos_z;  // in mm
+    pos_t pos;
 
     // distance from boundaries, unit: mm
     int dist2wallL;     // unused

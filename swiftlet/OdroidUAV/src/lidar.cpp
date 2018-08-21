@@ -1,7 +1,8 @@
 #include "lidar.h"
 
+Hokuyo_lidar::Hokuyo_lidar() {}
 
-Hokuyo_lidar::Hokuyo_lidar()
+Hokuyo_lidar::lidar_init()
 {
     // open ethernet com
     if (!_urg.open(connect_address, connect_port, Urg_driver::Ethernet))
@@ -26,30 +27,30 @@ Hokuyo_lidar::Hokuyo_lidar()
 
 }
 
-void Hokuyo_lidar::read()
+void Hokuyo_lidar::read_scan()
 {
     // Clear old data vector
-    ldata.range.clear();
-    ldata.angle.clear();
-    ldata.pc_z.clear();
-    ldata.pc_y.clear();
+    data.range.clear();
+    data.angle.clear();
+    data.pc_z.clear();
+    data.pc_y.clear();
 
-    if (!_urg.get_distance(ldata.range, &ldata.ts_lidar))
+    if (!_urg.get_distance(data.range, &data.ts_lidar))
     {
       flag.lidar_error  = true;
-      ldata.is_healthy  = false;
+      data.is_healthy  = false;
       cout << "Error reading lidar scan!" << endl;
     }
     else
     {
       flag.lidar_error = false;
-      ldata.is_healthy = true;
+      data.is_healthy = true;
     }
 
-    ldata.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
+    data.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
 }
 
-void Hokuyo_lidar::pos_update()
+void Hokuyo_lidar::update_pc()
 {
     int n = 0;
     double roll  = -_ph2_data.roll;     // in rad, roll angle from PH2
@@ -59,43 +60,34 @@ void Hokuyo_lidar::pos_update()
     {
         // angle of the range
         double rad = _urg.index2rad(i);
-        ldata.angle.push_back(rad);
+        data.angle.push_back(rad);
 
         // from Polar to Cartesian
-        if (!(fabs(ldata.angle[i]) > deg2r(80) && fabs(ldata.angle[i]) < deg2r(90)) && // position of props
-            !(fabs(ldata.angle[i]) > deg2r(130)) &&  // end 5 degree on both side
-            ldata.range[i] <= _max_scan_range)
+        if (!(fabs(data.angle[i]) > deg2r(80) && fabs(data.angle[i]) < deg2r(90)) && // position of props
+            !(fabs(data.angle[i]) > deg2r(130)) &&  // end 5 degree on both side
+            data.range[i] <= _max_scan_range)
         {
             // for Swiftlet frame, skip 81.5 to 89.75 degree
-            ldata.pc_z.push_back((double) (ldata.range[i] * cos(rad)) - _offset_z);
-            ldata.pc_y.push_back((double) (ldata.range[i] * sin(rad)));
+            data.pc_z.push_back((int) (data.range[i] * cos(rad)) - _offset_z);
+            data.pc_y.push_back((int) (data.range[i] * sin(rad)));
             n++;
         }
     }
 
-    ldata.nyz = n;
+    data.nyz = n;
 
     _data_loss = (float) n/1000*100;  // calc data loss
 
     // applying transformation matrix
-    for (int i=0; i < ldata.nyz; i++)
+    for (int i=0; i < data.nyz; i++)
     {
-        double y_temp = cos(roll)*ldata.pc_y[i] - cos(pitch)*sin(roll)*ldata.pc_z[i] + _offset_x*sin(roll)*sin(pitch);
-        double z_temp = sin(roll)*ldata.pc_y[i] + cos(pitch)*cos(roll)*ldata.pc_z[i] - _offset_x*cos(roll)*sin(pitch);
+        double y_temp = cos(roll)*data.pc_y[i] - cos(pitch)*sin(roll)*data.pc_z[i] + _offset_x*sin(roll)*sin(pitch);
+        double z_temp = sin(roll)*data.pc_y[i] + cos(pitch)*cos(roll)*data.pc_z[i] - _offset_x*cos(roll)*sin(pitch);
 
-        ldata.pc_y[i] = y_temp;
-        ldata.pc_z[i] = z_temp;
+        data.pc_y[i] = y_temp;
+        data.pc_z[i] = z_temp;
     }
 
-    // localisation algorithm
-    calc_alt();
-
-    // TODO: add localisation
-
-
-    // pushing lidar data to the queue
-    if (ldata_q.size() >= MAX_LDATA_QUEUE_SIZE) ldata_q.pop_front();    // limit memory usage
-    ldata_q.push_back(ldata);
 }
 
 
@@ -117,7 +109,7 @@ void Hokuyo_lidar::calc_alt()
                 for (float i=135; i >= 135 - ALT_FLOOR_ANGLE_RANGE; i-=0.25)
                 {
                     int idx = _urg.deg2index(i);
-                    temp += ldata.range[idx] * cos(deg2r(i)+roll);
+                    temp += data.range[idx] * cos(deg2r(i)+roll);
                     n++;
                 }
             }
@@ -127,7 +119,7 @@ void Hokuyo_lidar::calc_alt()
                 for (float i=-135; i <= -135 + ALT_FLOOR_ANGLE_RANGE; i+=0.25)
                 {
                     int idx = _urg.deg2index(i);
-                    temp += ldata.range[idx] * cos(deg2r(i)+roll);
+                    temp += data.range[idx] * cos(deg2r(i)+roll);
                     n++;
                 }
             }
@@ -137,7 +129,7 @@ void Hokuyo_lidar::calc_alt()
                 for (float i=135; i >= 135 - ALT_FLOOR_ANGLE_RANGE/2 - fabs(r2deg(roll)); i-=0.25)
                 {
                     int idx = _urg.deg2index(i);
-                    temp += fabs(ldata.range[idx] * cos(deg2r(i)+roll));
+                    temp += fabs(data.range[idx] * cos(deg2r(i)+roll));
                     n++;
                 }
 
@@ -145,7 +137,7 @@ void Hokuyo_lidar::calc_alt()
                 for (float i=-135; i <= -135 + ALT_FLOOR_ANGLE_RANGE/2 + fabs(r2deg(roll)); i+=0.25)
                 {
                     int idx = _urg.deg2index(i);
-                    temp += fabs(ldata.range[idx] * cos(deg2r(i)+roll));
+                    temp += fabs(data.range[idx] * cos(deg2r(i)+roll));
                     n++;
                 }
 
@@ -157,7 +149,7 @@ void Hokuyo_lidar::calc_alt()
             for (float i=-ALT_ROOF_ANGLE_RANGE/2; i<=ALT_ROOF_ANGLE_RANGE/2; i+=0.25)
             {
                 int idx = _urg.rad2index(deg2r(i)-roll);
-                temp += fabs(ldata.range[idx] * cos(deg2r(i)));
+                temp += fabs(data.range[idx] * cos(deg2r(i)));
                 n++;
             }
             break;
@@ -168,26 +160,14 @@ void Hokuyo_lidar::calc_alt()
     }
 
 
-    ldata.alt = (unsigned int) temp/n;
-    ldata.alt = (ldata.alt-_offset_z)*cos(pitch) - _offset_x*sin(pitch);
+    data.alt = (unsigned int) temp/n;
+    data.alt = (data.alt-_offset_z)*cos(pitch) - _offset_x*sin(pitch);
 
-    if (flag.alt == ROOF)   ldata.alt = abs(_tunnel_height - ldata.alt);
+    if (flag.alt == ROOF)   data.alt = abs(_tunnel_height - data.alt);
 
-    //printf("alt: %d\n", ldata.alt);   // debug
+    //printf("alt: %d\n", data.alt);   // debug
 }
 
-vector<int> Hokuyo_lidar::_pt2spectrum(vector<double> point)
-{
-    _specY_src.clear();
-    _specZ_src.clear();
-
-}
-
-void Hokuyo_lidar::_scan_matching_sptm()
-{
-
-  // max = *max_element(vector.begin(), vector.end());
-}
 
 // to be removed
 void Hokuyo_lidar::_get_centroid2()
@@ -196,25 +176,25 @@ void Hokuyo_lidar::_get_centroid2()
     double cy = 0;
     double cz = 0;
 
-    for (int i=0; i <= ldata.nyz; i++)
+    for (int i=0; i <= data.nyz; i++)
     {
-        A +=  (ldata.pc_y[i] * ldata.pc_z[i+1]) - (ldata.pc_y[i+1] * ldata.pc_z[i]);
+        A +=  (data.pc_y[i] * data.pc_z[i+1]) - (data.pc_y[i+1] * data.pc_z[i]);
 
-        cy += (ldata.pc_y[i] + ldata.pc_y[i+1]) * (ldata.pc_y[i] * ldata.pc_z[i+1] - ldata.pc_y[i+1] * ldata.pc_z[i]);
-        cz += (ldata.pc_z[i] + ldata.pc_z[i+1]) * (ldata.pc_y[i] * ldata.pc_z[i+1] - ldata.pc_y[i+1] * ldata.pc_z[i]);
+        cy += (data.pc_y[i] + data.pc_y[i+1]) * (data.pc_y[i] * data.pc_z[i+1] - data.pc_y[i+1] * data.pc_z[i]);
+        cz += (data.pc_z[i] + data.pc_z[i+1]) * (data.pc_y[i] * data.pc_z[i+1] - data.pc_y[i+1] * data.pc_z[i]);
         //cout << cy << endl;
     }
 
     A /= 2.0f;
 
 
-    ldata.pos_y = cy/(6.0f * A);
-    ldata.pos_z = cz/(6.0f * A);
+    data.pos_y = cy/(6.0f * A);
+    data.pos_z = cz/(6.0f * A);
 
     //cout << pos_loc_y2 << endl;
 
     A /= -(1000.0f*1000.0f);
-    ldata.area = A;
+    data.area = A;
     //cout << pos_loc_y2 << ' ' <<  A << endl;
 }
 
@@ -243,6 +223,12 @@ void Hokuyo_lidar::print_alt_type()
     }
 }
 
+void Hokuyo_lidar::_save_ref_scan()
+{
+    read_scan();
+    _data_ref = data;
+}
+
 void Hokuyo_lidar::_init_alt_type()
 {
     cout << "Computing altitude type . . .\n";
@@ -251,15 +237,15 @@ void Hokuyo_lidar::_init_alt_type()
     int d45;
     int d_45;
 
-    deque<lidar_data_t> temp_q;
-    lidar_data_t temp;
+    deque<pos_data_t> temp_q;
+    pos_data_t temp;
 
     for (int i=0; i < 20; i++)
     {
         read();
         if (i >= 10)    // discard the first 10 scan just incase
         {
-            temp_q.push_back(ldata);
+            temp_q.push_back(data);
         }
     }
 
@@ -310,7 +296,7 @@ void Hokuyo_lidar::set_alt_type(lidar_alt_type dir)
         _tunnel_height = 0; // reset tunnel height
         calc_alt();
 
-        _tunnel_height = abs(ldata.alt);
+        _tunnel_height = abs(data.alt);
     }
 
     flag.printed_alt_mode = false;

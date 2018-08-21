@@ -21,6 +21,7 @@ using namespace qrk;
 #define ALT_FLOOR_ANGLE_RANGE   20      // in degree
 #define MAX_LDATA_QUEUE_SIZE    10
 #define FRAME_HEIGHT            120     // from ground to lidar height
+#define SCAN_DENSITY            3       // Npoint = 1080/SCAN_DENSITY, should only choose from 1 - 4
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -35,11 +36,10 @@ public:
 
     lidar_flag_t flag;
 
-    Hokuyo_lidar(); //TODO: need to inherent localisation class
+    Hokuyo_lidar();
     void lidar_init();
     void set_startup_time(unsigned int sys_time);   // in ms
     void read_scan();
-    void update_pc();   // update point cloud
     void calc_alt();
     void get_PH2_data(PH2_data_t data);
 
@@ -56,6 +56,7 @@ public:
 protected:
     // general
     Urg_driver _urg;
+    mutex _pos_mtx;
     unsigned int _max_scan_range;   // mm
     float _data_loss;
     float _start_area;
@@ -69,12 +70,11 @@ protected:
 
     // localisation
     int _tunnel_height;
-    void _init_alt_type();
-
     pos_data_t _data_ref;
 
+    void _init_alt_type();
+    void _update_pc();   // update point cloud
     void _save_ref_scan();
-    // centroid localisation
     void _get_centroid2();
     //void _get_symmetry_pt();
     //vector<int> lonely_pts_detector();

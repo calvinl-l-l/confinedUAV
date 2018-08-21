@@ -39,10 +39,10 @@ public:
     void start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q);
     void end_log();
     void run();
-    void DEBUG_PRINT(pos_data_t ldata, PH2_data_t pdata);
 
 private:
     string _input;
+    mutex _ui_mtx;
 
     unsigned int _ts_startup;
     UI_flag_t _flag;

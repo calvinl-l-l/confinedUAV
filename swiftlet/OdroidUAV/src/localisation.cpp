@@ -19,12 +19,16 @@ void localisation::init()
 
 void localisation::run()
 {
+	lock_guard<mutex> lock(_pos_mtx);	// protect localisation data
+	// TODO: should clean noise a bit during update pc
+
+	_update_pc();	// applied transform to point cloud
+
 	// Hough transform
 	vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
 
-
 	// T estimation
-	vector<unsigned int> xc  = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
+	vector<unsigned int> xc = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
 
 	data.pos.y = (xc[0] - MAX_dRHO) * STEP_RHO;	// dy
 	data.pos.z = (xc[1] - MAX_dRHO) * STEP_RHO;	// dz
@@ -68,7 +72,6 @@ vector<int> localisation::_DHT(vector<int> y, vector<int> z)
 			}
 		}
 	}
-	cout << "size " << HT.size() << '\n';
 
 	return HT;
 }

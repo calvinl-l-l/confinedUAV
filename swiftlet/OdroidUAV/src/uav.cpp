@@ -12,6 +12,7 @@ using namespace std;
 #define LOGGING_LOOP_FREQ       10
 #define ARDUINO_COM_LOOP_FREQ   20
 
+
 int main()
 {
     // init variables
@@ -20,7 +21,7 @@ int main()
     int arduino_BAUD = 57600;
     int FS_BAUD = 921600;
 
-    unsigned int max_n_threads = 4; // max number of concurrent tasks
+    unsigned int max_n_threads = 5; // max number of concurrent tasks
 
     // init serial communicaitons
     cSerial FS_sp(FS_PORT, FS_BAUD);
@@ -63,15 +64,19 @@ int main()
 
         HSM.read_scan();
 
+        unsigned long t1 = millis();    // for debug use
+
         HSM.get_ui_CMD(ui.lidar_CMD);
         ui.lidar_CMD.set_type = false;      // reset the CMD flag
 
         HSM.get_PH2_data(PH2.ph2_data);
-        HSM.update_pc();
+
+        HSM.run();
 
         PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
 
         unsigned long dt_lidar = millis() - t0; // for debug use
+        //cout << "dt " << dt_lidar << " HSM dt " << millis() - t1 << '\n';
 
     });
 
@@ -81,7 +86,7 @@ int main()
         Ardu_sp.putchar('m');
     });
 
-// Logging + debug ------------------------------------------------------------
+// Logging ------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2]()
     {
         // logging
@@ -97,9 +102,6 @@ int main()
                 ui.flag.file_is_closed = true;
             }
         }
-
-        // debug print
-        if (ui.flag.debug_print)    ui.DEBUG_PRINT(HSM.data, PH2.ph2_data);
     });
 
 // UI -------------------------------------------------------------------------
@@ -121,7 +123,12 @@ int main()
 // main while loop
     while (1)
     {
-        delay(2000);
+        // debug print
+        if (ui.flag.debug_print)
+        {
+            cout << "alt: " << HSM.data.alt << " roll " << PH2.ph2_data.roll << " pos " << HSM.data.pos.y << '\n';
+        }
+        delay(1000/LOGGING_LOOP_FREQ);
     }
 
     cout << "Hello world! This is the end gg!" << endl;

@@ -24,16 +24,16 @@ void Hokuyo_lidar::lidar_init()
     _max_scan_range = 6*1000;   // default 6m scan range
     _init_alt_type();   // TODO: test open space init for alt type
 
-
+    data.range.reserve(1080);
+    data.angle.reserve(1080);
+    data.pc_y.reserve(1080);
+    data.pc_z.reserve(1080);
 }
 
 void Hokuyo_lidar::read_scan()
 {
     // Clear old data vector
     data.range.clear();
-    data.angle.clear();
-    data.pc_z.clear();
-    data.pc_y.clear();
 
     if (!_urg.get_distance(data.range, &data.ts_lidar))
     {
@@ -50,13 +50,24 @@ void Hokuyo_lidar::read_scan()
     data.ts_odroid = millis() - _ts_startup;    // NULL = no geting time stamp
 }
 
-void Hokuyo_lidar::update_pc()
+void Hokuyo_lidar::_update_pc()
 {
+    // clear old array
+    data.pc_z.clear();
+    data.pc_y.clear();
+    data.angle.clear();
+
     int n = 0;
     double roll  = -_ph2_data.roll;     // in rad, roll angle from PH2
     double pitch = -_ph2_data.pitch;    // -ve due to lidar orientation
 
-    for (int i=0; i < 540*2; i++)
+    // create tri func lookup
+    double cos_roll  = cos(roll);
+    double sin_roll  = sin(roll);
+    double cos_pitch = cos(pitch);
+    double sin_pitch = sin(pitch);
+
+    for (int i=0; i < 540*2; i+=SCAN_DENSITY)
     {
         // angle of the range
         double rad = _urg.index2rad(i);
@@ -68,8 +79,20 @@ void Hokuyo_lidar::update_pc()
             data.range[i] <= _max_scan_range)
         {
             // for Swiftlet frame, skip 81.5 to 89.75 degree
-            data.pc_z.push_back((int) (data.range[i] * cos(rad)) - _offset_z);
-            data.pc_y.push_back((int) (data.range[i] * sin(rad)));
+            // TODO: check this is ok
+            //data.pc_z.push_back((int) (data.range[i] * cos(rad)) - _offset_z);
+            //data.pc_y.push_back((int) (data.range[i] * sin(rad)));
+
+            // raw
+            double temp_y = data.range[i] * cos(rad) - _offset_z;
+            double temp_z = data.range[i] * sin(rad);
+
+            // transformed
+            double yt = cos_roll*temp_y - cos_pitch*sin_roll*temp_z + _offset_x*sin_roll*sin_pitch;
+            double zt = sin_roll*temp_y + cos_pitch*cos_roll*temp_z - _offset_x*cos_roll*sin_pitch;
+
+            data.pc_y.push_back((int) yt);
+            data.pc_z.push_back((int) zt);
             n++;
         }
     }
@@ -77,17 +100,17 @@ void Hokuyo_lidar::update_pc()
     data.nyz = n;
 
     _data_loss = (float) n/1000*100;  // calc data loss
-
+/*
     // applying transformation matrix
     for (int i=0; i < data.nyz; i++)
     {
-        double y_temp = cos(roll)*data.pc_y[i] - cos(pitch)*sin(roll)*data.pc_z[i] + _offset_x*sin(roll)*sin(pitch);
-        double z_temp = sin(roll)*data.pc_y[i] + cos(pitch)*cos(roll)*data.pc_z[i] - _offset_x*cos(roll)*sin(pitch);
+        double y_temp = cos_roll*data.pc_y[i] - cos_pitch*sin_roll*data.pc_z[i] + _offset_x*sin_roll*sin_pitch;
+        double z_temp = sin_roll*data.pc_y[i] + cos_pitch*cos_roll*data.pc_z[i] - _offset_x*cos_roll*sin_pitch;
 
         data.pc_y[i] = y_temp;
         data.pc_z[i] = z_temp;
     }
-
+*/
 }
 
 

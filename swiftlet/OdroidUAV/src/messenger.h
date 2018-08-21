@@ -28,6 +28,8 @@ private:
 
     pos_data_t _ldata;
 
+    mutex _msg_mtx;
+
     string _pos_msg_encoder();
 };
 #endif

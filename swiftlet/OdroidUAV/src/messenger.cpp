@@ -23,6 +23,7 @@ void messenger::get_data()
         }
     }
 
+    lock_guard<mutex>   lock(_msg_mtx); // protecting data writing
     // decoding message
     int r           = (int) (_linebuf[0]<<24|_linebuf[1]<<16|_linebuf[2]<<8|_linebuf[3]);
     int p           = (int) (_linebuf[4]<<24|_linebuf[5]<<16|_linebuf[6]<<8|_linebuf[7]);

@@ -71,6 +71,8 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
         pos_data_t ldata;
         while (!ldata_q.empty())
         {
+            lock_guard<mutex>   lock(_ui_mtx);  // protecting queue pop in this scope
+
             ldata = ldata_q.front();
             ldata_q.pop_front();
 
@@ -118,11 +120,6 @@ void UI::_set_log_num(int num)
 void UI::set_startup_time(unsigned int sys_time)
 {
     _ts_startup = sys_time;
-}
-
-void UI::DEBUG_PRINT(pos_data_t ldata, PH2_data_t pdata)
-{
-    printf("DEBUG: climbRate %d, altTarget %f, roll: %f, %d\n", pdata.target_climb_rate, pdata.alt_target, pdata.roll, millis());
 }
 
 void UI::run()

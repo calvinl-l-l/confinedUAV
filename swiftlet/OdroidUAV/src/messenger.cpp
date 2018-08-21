@@ -67,13 +67,13 @@ string messenger::_pos_msg_encoder()
 //=================================
 //
 //  message:
-//  $ is_healthy pos_y pos_z alt #
+//  $ is_healthy pos.y pos.z alt #
 //  1       1      6     6    6  1 bytes, total = 18 bytes
     string msg = "";
 
     msg = "$" + to_string(_ldata.is_healthy);
-    msg += int2str_5digits(_ldata.pos_y);
-    msg += int2str_5digits(_ldata.pos_z);
+    msg += int2str_5digits(_ldata.pos.y);
+    msg += int2str_5digits(_ldata.pos.z);
     msg += int2str_5digits(_ldata.alt);
     msg += "#";
 

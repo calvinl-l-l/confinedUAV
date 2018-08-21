@@ -2,7 +2,7 @@
 
 Hokuyo_lidar::Hokuyo_lidar() {}
 
-Hokuyo_lidar::lidar_init()
+void Hokuyo_lidar::lidar_init()
 {
     // open ethernet com
     if (!_urg.open(connect_address, connect_port, Urg_driver::Ethernet))
@@ -188,8 +188,8 @@ void Hokuyo_lidar::_get_centroid2()
     A /= 2.0f;
 
 
-    data.pos_y = cy/(6.0f * A);
-    data.pos_z = cz/(6.0f * A);
+    data.pos.y = cy/(6.0f * A);
+    data.pos.z = cz/(6.0f * A);
 
     //cout << pos_loc_y2 << endl;
 
@@ -242,7 +242,7 @@ void Hokuyo_lidar::_init_alt_type()
 
     for (int i=0; i < 20; i++)
     {
-        read();
+        read_scan();
         if (i >= 10)    // discard the first 10 scan just incase
         {
             temp_q.push_back(data);
@@ -511,8 +511,8 @@ void Hokuyo_lidar::_get_centroid1()
 
     // centroid of the local scan, also equal to the position of the quad relative
     // to local scan
-    ldata.pos_y = (cy/Area);//(cy/A);
-    ldata.pos_z = (cz/Area);
+    ldata.pos.y = (cy/Area);//(cy/A);
+    ldata.pos.z = (cz/Area);
 
     ldata.area = Area / (1000*1000);
 

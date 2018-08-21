@@ -13,7 +13,7 @@ void localisation::init()
 
 	// TODO: get reference scan first
 
-	_Href = _DHT(_data_ref.pc_y, _data.ref.pc_z);
+	_Href = _DHT(_data_ref.pc_y, _data_ref.pc_z);
 
 }
 
@@ -24,16 +24,16 @@ void localisation::run()
 
 
 	// T estimation
-	vector<unsigned int> xc  = _xcorr(Href, Hsrc, MAX_dRHO);
+	vector<unsigned int> xc  = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
 
-	pos.y = (xc[0] - MAX_dRHO) * STEP_RHO;	// dy
-	pos.z = (xc[1] - MAX_dRHO) * STEP_RHO;	// dz
+	data.pos.y = (xc[0] - MAX_dRHO) * STEP_RHO;	// dy
+	data.pos.z = (xc[1] - MAX_dRHO) * STEP_RHO;	// dz
 
 	calc_alt();
 
 	// pushing position data to the queue
 	if (data_q.size() >= MAX_LDATA_QUEUE_SIZE) data_q.pop_front();    // limit memory usage
-	data_q.push_back(ldata);
+	data_q.push_back(data);
 }
 
 // discrete hough transform
@@ -88,7 +88,7 @@ vector<unsigned int> localisation::_xcorr_fast(vector<int> s1, vector<int> s2, i
 	unsigned int max_idx0  = 0;
 	unsigned int max_idx90 = 0;
 	int idx = 0;	// index counter
-	int n = s1.size();
+	int n = (int) s1.size()/2;
 
 	//vector<int> r;
 	//r.reserve(n);	// init size of vector

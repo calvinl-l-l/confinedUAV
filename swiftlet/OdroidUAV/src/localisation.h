@@ -21,8 +21,8 @@ class localisation: public Hokuyo_lidar
 public:
 
 	localisation();
-	void init(vector<int> y, vector<int> z);
-	void run(vector<int> y, vector<int> z);	// Hough scan matching: return (dy, dz)
+	void init();
+	void run();	// Hough scan matching: return (dy, dz)
 
 private:
 

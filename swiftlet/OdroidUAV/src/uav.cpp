@@ -4,6 +4,7 @@
 #include "UI.h"
 #include "lidar.h"
 #include "messenger.h"
+#include "localisation.h"
 
 using namespace std;
 

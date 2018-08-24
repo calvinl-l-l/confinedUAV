@@ -31,11 +31,11 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
 
         // file for control data
         filename = dir + "control_" + to_string(nlog) + ".txt";
-        info_log.open(filename);
+        control_log.open(filename);
         filename = "";
 
         control_log << "Control data log\n";
-        control_log << "pos_y z alt roll ch1 ch3 ch5 thr_hover thr_avg_max thr_in u1 ez iez dez tsO tsPH2\n";
+        control_log << "pos_y z alt roll ch1 ch3 ch5 thr_hover thr_avg_max thr_in u1 ez iez dez AC_alt_tar AC_cr tsO tsPH2\n";
 
         // file for info data
         filename = dir + "info_" + to_string(nlog) + ".txt";
@@ -88,6 +88,8 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
         control_log << cdata.perr.ez << ',';
         control_log << cdata.perr.iterm_z << ',';
         control_log << cdata.perr.dterm_z << ',';
+        control_log << cdata.AC_alt_target << ',';
+        control_log << cdata.AC_cr << ',';
         control_log << loc_data.ts_odroid << ',';
         control_log << cdata.ts_PH2;
         control_log << '\n';
@@ -151,6 +153,7 @@ void UI::end_log()
     {
         info_log.close();
         lscan_log.close();
+        control_log.close();
 
         // update log number
         _log_list.open("../data/log_list.txt", ios::out);

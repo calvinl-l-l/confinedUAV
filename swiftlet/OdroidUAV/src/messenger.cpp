@@ -45,7 +45,8 @@ void messenger::get_data()
     ph2_data.perr.ez            = byte2float(_linebuf, 16);
     ph2_data.perr.dterm_z       = byte2float(_linebuf, 17);
     ph2_data.perr.iterm_z       = byte2float(_linebuf, 18);
-
+    ph2_data.AC_alt_target      = byte2float(_linebuf, 19);
+    ph2_data.AC_cr              = byte2float(_linebuf, 20);
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
 

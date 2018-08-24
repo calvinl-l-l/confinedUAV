@@ -138,6 +138,8 @@ struct PH2_data_t
     float throttle_avg_max;
     float thr_hover;
     pos_error_t perr;
+    float AC_alt_target;
+    float AC_cr;
 
 };
 

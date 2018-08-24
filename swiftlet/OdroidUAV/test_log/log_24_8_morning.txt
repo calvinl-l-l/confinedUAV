@@ -1,0 +1,37 @@
+test log
+
+set 1:
+drift up down a lot bit
+u1 should be able to be -ve
+
+incomplete "set2"
+segment fault 
+stable then drop down
+
+
+set 2 and 3
+stable -> some drift, at higher alt more drift
+init takeoff over shoot a bit
+
+set 1-3 using lidar alt hold
+
+
+set 4 normal alt hold
+seems more stable wtf?
+
+set6 lid alt
+overshoot high
+stable at low alt 
+drift up down
+
+
+set7 less drift, kinda stable
+stick neutral position needs to be slightly lower than mid?
+
+set 8 seems stable
+note: roll trim needs to be 7% to right?
+
+set 9 mode switch ok!!
+sligh drift
+
+note: need to log insdie ranger_alt_targert, not just the pos_control->alt_target

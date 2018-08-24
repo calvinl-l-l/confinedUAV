@@ -25,24 +25,29 @@ void messenger::get_data()
 
     lock_guard<mutex>   lock(_msg_mtx); // protecting data writing
     // decoding message
-    int r           = byte2int(_linebuf, 0);
-    int p           = byte2int(_linebuf, 1);
-    int y           = byte2int(_linebuf, 2);
-    ph2_data.ts_PH2 = byte2int(_linebuf, 3);
 
-    ph2_data.roll   = (float) r/1000.0f;
-    ph2_data.pitch  = (float) p/1000.0f;
-    ph2_data.yaw    = (float) y/1000.0f;
+    ph2_data.ts_PH2     = byte2int  (_linebuf, 0);
+    ph2_data.roll       = byte2float(_linebuf, 1);
+    ph2_data.pitch      = byte2float(_linebuf, 2);
+    ph2_data.yaw        = byte2float(_linebuf, 3);
+    ph2_data.ch.roll    = byte2int  (_linebuf, 4);
+    ph2_data.ch.pitch   = byte2int  (_linebuf, 5);
+    ph2_data.ch.thr     = byte2int  (_linebuf, 6);
+    ph2_data.ch.yaw     = byte2int  (_linebuf, 7);
+    ph2_data.ch.aux5    = byte2int  (_linebuf, 8);
+    ph2_data.ch.aux6    = byte2int  (_linebuf, 9);
+    ph2_data.ch.aux7    = byte2int  (_linebuf, 10);
+    ph2_data.ch.aux8    = byte2int  (_linebuf, 11);
+    ph2_data.u1         = byte2float(_linebuf, 12);
+    ph2_data.throttle_in        = byte2float(_linebuf, 13);
+    ph2_data.throttle_avg_max   = byte2float(_linebuf, 14);
+    ph2_data.thr_hover          = byte2float(_linebuf, 15);
+    ph2_data.perr.ez            = byte2float(_linebuf, 16);
+    ph2_data.perr.dterm_z       = byte2float(_linebuf, 17);
+    ph2_data.perr.iterm_z       = byte2float(_linebuf, 18);
 
-    ph2_data.my_cr = byte2int(_linebuf, 4);
-    ph2_data.ac_cr = byte2int(_linebuf, 5);
-    int temp_alt_target        = byte2int(_linebuf, 6);
-    ph2_data.alt_target = (float) temp_alt_target/1000.0f;
-    int temp_alt        = byte2int(_linebuf, 7);
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
-
-    printf("roll %.2f, myCR %d, acCR %d, alt_tar %.4f, alt_cm: %d, ts: %d \n", ph2_data.roll*180/M_PI, ph2_data.my_cr, ph2_data.ac_cr, ph2_data.alt_target, temp_alt, ph2_data.ts_PH2);
 
     // pushing data to ring buffer
     if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();

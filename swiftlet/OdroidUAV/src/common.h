@@ -98,6 +98,29 @@ struct UI_CMD_t
 //=============================================================================
 // messenger struct
 //=============================================================================
+// control output
+struct pos_error_t
+{
+    float ez;
+    float dterm_z;
+    float iterm_z;
+};
+
+struct rc_channel_t
+{
+    int roll  = 1500;
+    int pitch = 1500;
+    int yaw   = 1500;
+    int thr   = 0;
+    int aux5  = 0;
+    int aux6  = 0;
+    int aux7  = 0;
+    int aux8  = 0;
+    int aux9  = 0;
+
+};
+
+
 struct PH2_data_t
 {
     unsigned int ts_PH2;
@@ -107,10 +130,24 @@ struct PH2_data_t
     float pitch;
     float yaw;
 
-    // TEMP control output
-    float alt_target;
-    int my_cr;
-    int ac_cr;
+    rc_channel_t ch;
+
+    // control data
+    float u1;
+    float throttle_in;
+    float throttle_avg_max;
+    float thr_hover;
+    pos_error_t perr;
+
+};
+
+//============================================================================
+// common
+//============================================================================
+union float_num
+{
+    unsigned char buf[4];
+    float num;
 };
 
 long val_remap(long x, long in_min, long in_max, long out_min, long out_max);
@@ -119,5 +156,6 @@ void scan2pixelmap(vector<double> x, vector<double> y, double pos_x, double pos_
 string int2str_5digits(int value);
 unsigned int ndigit(int value);
 int byte2int(char* buffer, int position);
+float byte2float(char* buffer, int position);
 
 #endif

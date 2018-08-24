@@ -29,10 +29,21 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
         string filename;
         string dir = "../data/";
 
+        // file for control data
+        filename = dir + "control_" + to_string(nlog) + ".txt";
+        info_log.open(filename);
+        filename = "";
+
+        control_log << "Control data log\n";
+        control_log << "pos_y z alt roll ch1 ch3 ch5 thr_hover thr_avg_max thr_in u1 ez iez dez tsO tsPH2\n";
+
         // file for info data
         filename = dir + "info_" + to_string(nlog) + ".txt";
         info_log.open(filename);
         filename = "";
+
+        info_log << "Pixhawk 2 data log\n";
+        info_log << "r p y ch1 2 3 4 5 6 7 8 thr_hover u1 PH2_ts\n";
 
         // file for lidar scan
         filename = dir + "lscan_" + to_string(nlog) + ".dat";
@@ -56,15 +67,58 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
     {
 
     //=========================================================================
+    // CONTROL LOG
+    //=========================================================================
+        pos_data_t loc_data;
+        PH2_data_t cdata;
+        loc_data = ldata_q.back();
+        cdata    = ph2_data_q.back();
+
+        control_log << loc_data.pos.y << ',';
+        control_log << loc_data.pos.y << ',';
+        control_log << loc_data.alt << ',';
+        control_log << cdata.roll << ',';
+        control_log << cdata.ch.roll << ',';
+        control_log << cdata.ch.thr << ',';
+        control_log << cdata.ch.aux5 << ',';
+        control_log << cdata.thr_hover << ',';
+        control_log << cdata.throttle_avg_max << ',';
+        control_log << cdata.throttle_in << ',';
+        control_log << cdata.u1 << ',';
+        control_log << cdata.perr.ez << ',';
+        control_log << cdata.perr.iterm_z << ',';
+        control_log << cdata.perr.dterm_z << ',';
+        control_log << loc_data.ts_odroid << ',';
+        control_log << cdata.ts_PH2;
+        control_log << '\n';
+    //=========================================================================
     // DATA INFO LOG
     //=========================================================================
-        pos_data_t yzdata;
-        yzdata = ldata_q.front();
-
-        for (int i=0; i<yzdata.nyz; i++)
+        PH2_data_t pdata;
+        while (!ph2_data_q.empty())
         {
-            info_log << i+1 << ',' << yzdata.pc_y[i] << ',' << yzdata.pc_z[i] << '\n';
+            lock_guard<mutex>   lock(_ui_mtx);
+
+            pdata = ph2_data_q.front();
+            ph2_data_q.pop_front();
+
+            info_log << pdata.roll << ',';
+            info_log << pdata.pitch << ',';
+            info_log << pdata.yaw << ',';
+            info_log << pdata.ch.roll << ',';
+            info_log << pdata.ch.pitch << ',';
+            info_log << pdata.ch.thr << ',';
+            info_log << pdata.ch.yaw << ',';
+            info_log << pdata.ch.aux5 << ',';
+            info_log << pdata.ch.aux6 << ',';
+            info_log << pdata.ch.aux7 << ',';
+            info_log << pdata.ch.aux8 << ',';
+            info_log << pdata.thr_hover << ',';
+            info_log << pdata.u1 << ',';
+            info_log << pdata.ts_PH2;
+            info_log << '\n';
         }
+
     //=========================================================================
     // LIDAR SCAN DATA LOG - in binary
     //=========================================================================

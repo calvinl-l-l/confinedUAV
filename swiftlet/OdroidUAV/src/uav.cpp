@@ -102,6 +102,7 @@ int main()
                 ui.flag.file_is_closed = true;
             }
         }
+
     });
 
 // UI -------------------------------------------------------------------------
@@ -119,14 +120,29 @@ int main()
 
 
 
-
-// main while loop
+// TODO: memory issue doing debug print
+// main while loop - handles debug print
     while (1)
     {
         // debug print
         if (ui.flag.debug_print)
         {
-            cout << "alt: " << HSM.data.alt << " roll " << PH2.ph2_data.roll << " pos " << HSM.data.pos.y << '\n';
+            cout << "alt ";
+            cout << HSM.data.alt << ',';
+            cout << " thrH ";
+            cout << PH2.ph2_data.thr_hover << ',';
+            cout << " thrIn ";
+            cout << PH2.ph2_data.throttle_in << ',';
+            cout << " u1 ";
+            cout << PH2.ph2_data.u1 << ',';
+            cout << " ez ";
+            cout << PH2.ph2_data.perr.ez << ',';
+            cout << " d ";
+            cout << PH2.ph2_data.perr.dterm_z << ',';
+            cout << " ts ";
+            cout << PH2.ph2_data.ts_odroid;
+
+            cout << '\n';
         }
         delay(1000/LOGGING_LOOP_FREQ);
     }

@@ -23,7 +23,8 @@ void Hokuyo_lidar::lidar_init()
     _tunnel_height = 0;
     _max_scan_range = 6*1000;   // default 6m scan range
     _init_alt_type();   // TODO: test open space init for alt type
-    flag.alt = FLOOR;    // TEMP: for outdoor
+    set_alt_type(FLOOR);    // TEMP
+
     data.range.reserve(1080);
     data.angle.reserve(1080);
     data.pc_y.reserve(1080);

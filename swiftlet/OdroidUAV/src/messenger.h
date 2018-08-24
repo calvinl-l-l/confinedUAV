@@ -4,7 +4,7 @@
 #include "common.h"
 #include "../lib/cserial/cSerial.h"
 
-#define N_MSG_VARIABLE                  8   // number of variabale in the messeage
+#define N_MSG_VARIABLE                  19   // number of variabale in the messeage
 #define DATA_MSG_BUF_SIZE               N_MSG_VARIABLE*4
 #define MAX_MESSENGER_DATA_QUEUE_SIZE   50
 

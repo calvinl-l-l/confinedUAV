@@ -101,3 +101,15 @@ int byte2int(char* buffer, int position)
     int value;
     return value = (int) (buffer[position*4]<<24|buffer[position*4+1]<<16|buffer[position*4+2]<<8|buffer[position*4+3]);
 }
+
+float byte2float(char* buffer, int position)
+{
+    float_num f;
+
+    f.buf[0] = buffer[position*4+0];
+    f.buf[1] = buffer[position*4+1];
+    f.buf[2] = buffer[position*4+2];
+    f.buf[3] = buffer[position*4+3];
+
+    return f.num;
+}

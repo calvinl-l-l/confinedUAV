@@ -8,8 +8,8 @@
 
 using namespace std;
 
-#define PH2_MSG_LOOP_FREQ       150   // Hz
-#define LOGGING_LOOP_FREQ       10
+#define PH2_MSG_LOOP_FREQ       180   // Hz
+#define LOGGING_LOOP_FREQ       20
 #define ARDUINO_COM_LOOP_FREQ   20
 
 
@@ -89,8 +89,21 @@ int main()
 // Logging ------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2]()
     {
+        // get ch7 switch
+
+        bool start_log = false;
+
+        if (!ui.flag.log_data)
+        {
+            bool temp = PH2.get_log_switch();
+
+            if (temp)   start_log = true;
+            else                        start_log = false;
+        }
+        else start_log = true;
+
         // logging
-        if (ui.flag.log_data)
+        if (start_log)
         {
             ui.start_log(HSM.data_q, PH2.ph2_data_q);
         }
@@ -137,8 +150,8 @@ int main()
             cout << PH2.ph2_data.u1 << ',';
             cout << " ez ";
             cout << PH2.ph2_data.perr.ez << ',';
-            cout << " d ";
-            cout << PH2.ph2_data.perr.dterm_z << ',';
+            cout << " rngfnd_alt ";
+            cout << fixed << setprecision(5) << PH2.ph2_data.target_rangefinder_alt << ',';
             cout << " ts ";
             cout << PH2.ph2_data.ts_odroid;
 

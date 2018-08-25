@@ -4,7 +4,6 @@
 #include "common.h"
 #include "../lib/cserial/cSerial.h"
 
-
 struct UI_flag_t
 {
     bool startup = false;
@@ -26,7 +25,7 @@ public:
     ofstream info_log;
     ofstream lscan_log;
     ofstream control_log;
-    
+
     unsigned int ts_PH2;
     unsigned int data_log_density;  // from (highest) 1-4 (lowest): 1080 542 360 270 pts
     int nlog;

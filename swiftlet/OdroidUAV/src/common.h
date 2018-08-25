@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <deque>
 #include <mutex>
+#include <iomanip>
 
 #define LED_LOGIC_A 5
 #define LED_LOGIC_B 27
@@ -140,7 +141,8 @@ struct PH2_data_t
     pos_error_t perr;
     float AC_alt_target;
     float AC_cr;
-
+    float dist_err;
+    float target_rangefinder_alt;
 };
 
 //============================================================================

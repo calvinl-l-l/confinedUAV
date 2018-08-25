@@ -47,6 +47,9 @@ void messenger::get_data()
     ph2_data.perr.iterm_z       = byte2float(_linebuf, 18);
     ph2_data.AC_alt_target      = byte2float(_linebuf, 19);
     ph2_data.AC_cr              = byte2float(_linebuf, 20);
+    ph2_data.dist_err           = byte2float(_linebuf, 21);
+    ph2_data.target_rangefinder_alt = byte2float(_linebuf, 22);
+
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
 
@@ -88,7 +91,11 @@ string messenger::_pos_msg_encoder()
     return msg;
 }
 
-
+bool messenger::get_log_switch()
+{
+    if (ph2_data.ch.aux7 > 1500)    return true;
+    else return false;
+}
 
 void messenger::set_startup_time(unsigned int sys_time)
 {

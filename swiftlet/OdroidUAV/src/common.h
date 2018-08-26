@@ -44,6 +44,7 @@ struct pos_data_t
 //
     unsigned int ts_odroid;    // odroid system timestamp
     long         ts_lidar;     // lidar onboard ts
+    int nset = 0;         // nth data set
 
     // units in mm and degree
     vector<long> range;
@@ -104,6 +105,7 @@ struct pos_error_t
 {
     float ez;
     float dterm_z;
+    float dtermfil_z;
     float iterm_z;
 };
 
@@ -157,7 +159,7 @@ union float_num
 long val_remap(long x, long in_min, long in_max, long out_min, long out_max);
 int median(vector<long> in);
 void scan2pixelmap(vector<double> x, vector<double> y, double pos_x, double pos_y, int *map);
-string int2str_5digits(int value);
+string int2str_ndigits(int value, int nd);
 unsigned int ndigit(int value);
 int byte2int(char* buffer, int position);
 float byte2float(char* buffer, int position);

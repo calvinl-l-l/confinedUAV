@@ -73,11 +73,12 @@ int main()
 
         HSM.run();
 
+        HSM.data.nset++;
         PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
 
         unsigned long dt_lidar = millis() - t0; // for debug use
         //cout << "dt " << dt_lidar << " HSM dt " << millis() - t1 << '\n';
-
+        //cout << "nset odroid " << HSM.data.nset << "  PH2 " << PH2.ph2_data.ts_PH2 << '\n';
     });
 
 // Arduino com ---------------------------------------------------------------

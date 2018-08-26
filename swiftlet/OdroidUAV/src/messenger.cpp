@@ -49,6 +49,7 @@ void messenger::get_data()
     ph2_data.AC_cr              = byte2float(_linebuf, 20);
     ph2_data.dist_err           = byte2float(_linebuf, 21);
     ph2_data.target_rangefinder_alt = byte2float(_linebuf, 22);
+    ph2_data.perr.dtermfil_z       = byte2float(_linebuf, 23);
 
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;
@@ -71,6 +72,7 @@ void messenger::send_pos_data(pos_data_t ldata)
     }
 }
 
+
 string messenger::_pos_msg_encoder()
 {
 //=================================
@@ -83,13 +85,15 @@ string messenger::_pos_msg_encoder()
     string msg = "";
 
     msg = "$" + to_string(_ldata.is_healthy);
-    msg += int2str_5digits(_ldata.pos.y);
-    msg += int2str_5digits(_ldata.pos.z);
-    msg += int2str_5digits(_ldata.alt);
+    msg += int2str_ndigits(_ldata.pos.y, 5);
+    msg += int2str_ndigits(_ldata.pos.z, 5);
+    msg += int2str_ndigits(_ldata.alt, 5);
+    msg += int2str_ndigits(_ldata.nset, 6);
     msg += "#";
 
     return msg;
 }
+
 
 bool messenger::get_log_switch()
 {

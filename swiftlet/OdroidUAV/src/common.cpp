@@ -61,7 +61,7 @@ long val_remap(long x, long in_min, long in_max, long out_min, long out_max)
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-string int2str_5digits(int value)
+string int2str_ndigits(int value, int nd)   // nd = number of digits
 {
     string s = "";
 
@@ -70,9 +70,9 @@ string int2str_5digits(int value)
     if (value>0)        s = "+";
     else if (value<0)   s = "-";
 
-    if (n!=5)
+    if (n!=nd)
     {
-        for (int i=0; i<5-n; i++)
+        for (int i=0; i<nd-n; i++)
         {
             s += '0';
         }

@@ -151,8 +151,8 @@ int main()
             cout << PH2.ph2_data.u1 << ',';
             cout << " ez ";
             cout << PH2.ph2_data.perr.ez << ',';
-            cout << " rngfnd_alt ";
-            cout << fixed << setprecision(5) << PH2.ph2_data.target_rangefinder_alt << ',';
+            cout << " dez ";
+            cout << PH2.ph2_data.perr.dterm_z << ',';
             cout << " ts ";
             cout << PH2.ph2_data.ts_odroid;
 

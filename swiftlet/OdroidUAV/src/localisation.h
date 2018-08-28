@@ -30,11 +30,15 @@ private:
 
 	vector<int> _Href;	// HT of reference scan
 
+	vector<int>::const_iterator _bref;
+	vector<int>::const_iterator _lref;
 
 	// HSM
+	unsigned int _xcorr_cv(vector<int> sref, vector<int> ssrc);
 	vector<unsigned int> _xcorr_fast(vector<int> s1, vector<int> s2, int max_delay);
 	unsigned int _xcorr(vector<int> s1, vector<int> s2, int max_delay); // only returns index of max r
 	vector<int> _DHT(vector<int> y, vector<int> z);
+	Mat _vector_int2mat(vector<int> in);
 
 };
 

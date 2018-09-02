@@ -8,6 +8,7 @@
 #include <math.h>
 #include <iostream>
 #include "lidar.h"
+#include <opencv2/opencv.hpp>
 
 #define MAX_RHO 	5000 	// sufficient for container case
 #define STEP_THETA 	0.5		// 0.5 degree step size

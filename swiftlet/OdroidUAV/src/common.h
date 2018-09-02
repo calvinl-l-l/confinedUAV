@@ -24,8 +24,8 @@ using namespace std;
 //=============================================================================
 struct pos_t
 {
-    int y;	// mm
-    int z;	// mm
+    int y = 0;	// mm
+    int z = 0;	// mm
 };
 
 // lidar data type
@@ -52,7 +52,7 @@ struct pos_data_t
     vector<int> pc_y;
     vector<int> pc_z;
 
-    int nyz;
+    int nyz = 0;
 
     pos_t pos;
 
@@ -61,9 +61,9 @@ struct pos_data_t
     int dist2wallR;     // unused
     int dist2floor;     // unused
     int dist2ceiling;   // unused
-    int alt;
+    int alt = 0;
 
-    float area;
+    float area = 0;
 
     bool is_healthy = true;
 };
@@ -103,10 +103,10 @@ struct UI_CMD_t
 // control output
 struct pos_error_t
 {
-    float ez;
-    float dterm_z;
-    float dtermfil_z;
-    float iterm_z;
+    float ez = 0;
+    float dterm_z = 0;
+    float dtermfil_z = 0;
+    float iterm_z = 0;
 };
 
 struct rc_channel_t
@@ -129,17 +129,17 @@ struct PH2_data_t
     unsigned int ts_PH2;
     unsigned int ts_odroid;
 
-    float roll;  // in rad
-    float pitch;
-    float yaw;
+    float roll = 0;  // in rad
+    float pitch = 0;
+    float yaw = 0;
 
     rc_channel_t ch;
 
     // control data
-    float u1;
-    float throttle_in;
-    float throttle_avg_max;
-    float thr_hover;
+    float u1 = 0;
+    float throttle_in = 0;
+    float throttle_avg_max = 0;
+    float thr_hover = 0;
     pos_error_t perr;
     float AC_alt_target;
     float AC_cr;

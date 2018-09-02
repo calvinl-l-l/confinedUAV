@@ -80,13 +80,10 @@ void Hokuyo_lidar::_update_pc()
             data.range[i] <= _max_scan_range)
         {
             // for Swiftlet frame, skip 81.5 to 89.75 degree
-            // TODO: check this is ok
-            //data.pc_z.push_back((int) (data.range[i] * cos(rad)) - _offset_z);
-            //data.pc_y.push_back((int) (data.range[i] * sin(rad)));
 
             // raw
-            double temp_y = data.range[i] * cos(rad) - _offset_z;
-            double temp_z = data.range[i] * sin(rad);
+            double temp_z = data.range[i] * cos(rad) - _offset_z;
+            double temp_y = data.range[i] * sin(rad);
 
             // transformed
             double yt = cos_roll*temp_y - cos_pitch*sin_roll*temp_z + _offset_x*sin_roll*sin_pitch;
@@ -178,7 +175,7 @@ void Hokuyo_lidar::calc_alt()
             }
             break;
 
-        case BOTH:
+        case TUNNEL:
             cout << "Not available yet!!\n";
             break;
     }
@@ -194,32 +191,33 @@ void Hokuyo_lidar::calc_alt()
 
 
 // to be removed
-void Hokuyo_lidar::_get_centroid2()
+void Hokuyo_lidar::_get_centroid()
 {
     double A = 0;
     double cy = 0;
     double cz = 0;
 
-    for (int i=0; i <= data.nyz; i++)
+    for (int i=0; i <= data.nyz-1; i++)
     {
         A +=  (data.pc_y[i] * data.pc_z[i+1]) - (data.pc_y[i+1] * data.pc_z[i]);
 
         cy += (data.pc_y[i] + data.pc_y[i+1]) * (data.pc_y[i] * data.pc_z[i+1] - data.pc_y[i+1] * data.pc_z[i]);
         cz += (data.pc_z[i] + data.pc_z[i+1]) * (data.pc_y[i] * data.pc_z[i+1] - data.pc_y[i+1] * data.pc_z[i]);
-        //cout << cy << endl;
     }
 
-    A /= 2.0f;
+    A = fabs(0.5f * A);
 
 
-    data.pos.y = cy/(6.0f * A);
-    data.pos.z = cz/(6.0f * A);
+    //data.pos.y = cy/(6.0f * A);
+    //data.pos.z = cz/(6.0f * A);
 
-    //cout << pos_loc_y2 << endl;
+    float pyc = cy/(6.0f * A);
+    float pzc = cz/(6.0f * A);
 
-    A /= -(1000.0f*1000.0f);
-    data.area = A;
-    //cout << pos_loc_y2 << ' ' <<  A << endl;
+    cout << "y " << pyc << " z " << pzc << " pcy " << data.pc_y[500] << " pcz " << data.pc_z[500] << endl;
+
+    A /= 1000.0f*1000.0f;
+    data.area = A;  // m^2
 }
 
 void Hokuyo_lidar::print_alt_type()

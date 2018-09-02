@@ -1,3 +1,4 @@
-*.C linguist-language=C++
-*.CPP linguist-language=C++
-*.H linguist-language=C++
+static/* linguist-vendored
+*.c linguist-language=C++
+*.cpp linguist-language=C++
+*.h linguist-language=C++

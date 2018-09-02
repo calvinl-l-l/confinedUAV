@@ -16,7 +16,7 @@ using namespace std;
 int main()
 {
     // init variables
-    const char* FS_PORT = "/dev/ttySAC0";         // fake sensor
+    const char* FS_PORT = "/dev/ttyUSB0"; //"/dev/ttySAC0";         // fake sensor
     const char* arudino_PORT = "/dev/ttySAC2";    // Arduino
     int arduino_BAUD = 57600;
     int FS_BAUD = 921600;

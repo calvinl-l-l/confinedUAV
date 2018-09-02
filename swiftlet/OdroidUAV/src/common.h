@@ -163,5 +163,7 @@ string int2str_ndigits(int value, int nd);
 unsigned int ndigit(int value);
 int byte2int(char* buffer, int position);
 float byte2float(char* buffer, int position);
+int fsgn(float in);
+int isgn(int in);
 
 #endif

@@ -39,34 +39,19 @@ void localisation::run()
 	vector<int> Hsrc90(bsrc+_n_rho, lsrc);
 
 	// T estimation
-	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0);
-	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90);
+	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0, 'y');
+	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90, 'z');
 
 	data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
 	data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
 
 	calc_alt();
 
+	_prev_pos = data.pos;
+
 	// pushing position data to the queue
 	if (data_q.size() >= MAX_LDATA_QUEUE_SIZE) data_q.pop_front();    // limit memory usage
 	data_q.push_back(data);
-}
-
-void localisation::_get_ref_scan()
-{
-	read_scan();
-
-	_update_pc();
-
-	_data_ref = data;
-
-	_get_centroid();
-
-	// translate scan to lateral centroid
-	for (int i=0; i<_data_ref.nyz; i++)
-	{
-		_data_ref.pc_y[i] += _ref_yc;
-	}
 }
 
 // discrete hough transform
@@ -105,18 +90,29 @@ vector<int> localisation::_DHT(vector<int> y, vector<int> z)
 	return HT;
 }
 
-unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc)
+unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc, char yz)
 {
 	Mat ccorr;
 	float max = 0;
-	unsigned int idx;
+	int prev_pt = 0;
+	//unsigned int idx; TEMP
+	if (yz == 'y')
+	{
+		prev_pt = _prev_pos.y;
+	}
+	else if (yz == 'z')
+	{
+		prev_pt = _prev_pos.z;
+	}
 
 	Mat ref = _vector_int2mat(sref);
 	Mat src = _vector_int2mat(ssrc);
 
+	// compute cross correlation with opencv
 	copyMakeBorder(ref, ref, src.rows - 1, src.rows - 1, src.cols - 1, src.cols - 1, BORDER_CONSTANT);
 	matchTemplate(ref, src, ccorr, CV_TM_CCORR);
 
+/*
 	for (int i = 0; i < ccorr.cols; i++)
 	{
 		if (ccorr.at<float>(0, i) > max)
@@ -125,8 +121,32 @@ unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc)
 			idx = i;
 		}
 	}
+*/
 
-	return idx;
+	vector<int> idx;
+	vector<float> xcr = _mat_int2vector(ccorr);
+
+	findPeaks(xcr, idx);
+
+	if (!idx.size())	cout << "I am lost!!\n";	//TODO: add flag to signal outside world to use prev data
+
+	// peak selection
+	unsigned int idx_out = 0;
+	int min_pt = 1000000;
+
+	for (int i=0; i<idx.size(); i++)
+	{
+		int pt = (idx[i] - (_n_rho-1))*STEP_RHO;	// temp point to check 1D distance
+
+		if (abs(pt - prev_pt) < min_pt)
+		{
+			min_pt = abs(pt - prev_pt);
+
+			idx_out = (unsigned int) idx[i];
+		}
+	}
+
+	return idx_out;
 }
 
 Mat localisation::_vector_int2mat(vector<int> in)
@@ -141,6 +161,37 @@ Mat localisation::_vector_int2mat(vector<int> in)
 
 	return out;
 }
+
+vector<float> localisation::_mat_int2vector(Mat in)
+{
+	vector<float> out;
+
+	//memcpy(out.data, (float) in.data(), in.size()*sizeof(int));
+	for (int i=0; i < in.cols; i++)
+	{
+		out.push_back(in.at<float>(0, i));
+	}
+
+	return out;
+}
+
+void localisation::_get_ref_scan()
+{
+	read_scan();
+
+	_update_pc();
+
+	_data_ref = data;
+
+	_get_centroid();
+
+	// translate scan to lateral centroid
+	for (int i=0; i<_data_ref.nyz; i++)
+	{
+		_data_ref.pc_y[i] += _ref_yc;
+	}
+}
+
 vector<unsigned int> localisation::_xcorr_fast(vector<int> s1, vector<int> s2, int max_delay)
 {
 	// faster version of xcorr:

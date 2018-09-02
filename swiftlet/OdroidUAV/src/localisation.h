@@ -7,8 +7,9 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
-#include "lidar.h"
 #include <opencv2/opencv.hpp>
+#include "lidar.h"
+#include "../lib/findpeaks/findpeaks.h"
 
 #define MAX_RHO 	5000 	// sufficient for container case
 #define STEP_THETA 	0.5		// 0.5 degree step size
@@ -35,12 +36,18 @@ private:
 	vector<int>::const_iterator _bref;
 	vector<int>::const_iterator _lref;
 
+	pos_t _prev_pos;
+
 	// HSM
 	void _get_ref_scan();
-	unsigned int _xcorr_cv(vector<int> sref, vector<int> ssrc);
-	vector<unsigned int> _xcorr_fast(vector<int> s1, vector<int> s2, int max_delay);
+
+	unsigned int _xcorr_cv(vector<int> sref, vector<int> ssrc, char yz);
 	unsigned int _xcorr(vector<int> s1, vector<int> s2, int max_delay); // only returns index of max r
+	vector<unsigned int> _xcorr_fast(vector<int> s1, vector<int> s2, int max_delay);
+
 	vector<int> _DHT(vector<int> y, vector<int> z);
+
+	vector<float> _mat_int2vector(Mat in);
 	Mat _vector_int2mat(vector<int> in);
 
 };

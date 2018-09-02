@@ -65,8 +65,8 @@ protected:
     unsigned int _offset_x = 250;   // mm
     unsigned int _offset_z = 30;
 
-    float _sinLUT[1080];    // sine look up table
-    float _cosLUT[1080];    // cosine look up table
+    float _sinLUT[1080];
+    float _cosLUT[1080];
 
     PH2_data_t _ph2_data;       // data from Pixhawk 2
     UI_CMD_t   _cmd;            // command/data from UI

@@ -77,7 +77,7 @@ int main()
         PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
 
         //cout << "li dt " << t1 - t0 << " HSM dt " << millis() - t0 << '\n';
-        //cout << "nset odroid " << HSM.data.nset << "  PH2 " << PH2.ph2_data.ts_PH2 << '\n';
+        cout << "pos y " << HSM.data.pos.y << " z " << HSM.data.pos.z << " dt " << millis() - t0 << '\n';
     });
 
 // Arduino com ---------------------------------------------------------------

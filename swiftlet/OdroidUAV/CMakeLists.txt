@@ -14,8 +14,7 @@ file(
   "${PROJECT_SOURCE_DIR}/src/*.cpp"
   "${PROJECT_SOURCE_DIR}/lib/cserial/*.cpp"
   "${PROJECT_SOURCE_DIR}/lib/Scheduler/*.cpp"
-  "${PROJECT_SOURCE_DIR}/lib/reckless/src/*.cpp"
-
+  "${PROJECT_SOURCE_DIR}/lib/findpeaks/*.cpp"
   )
 
 file(
@@ -38,7 +37,7 @@ find_package(OpenCV REQUIRED)
 include_directories("${PROJECT_SOURCE_DIR}/src/")
 include_directories("${PROJECT_SOURCE_DIR}/lib/cserial")
 include_directories("${PROJECT_SOURCE_DIR}/lib/Scheduler")
-include_directories("${PROJECT_SOURCE_DIR}/lib/reckless/include")
+include_directories("${PROJECT_SOURCE_DIR}/lib/findPeaks")
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIRS})
 

@@ -113,3 +113,14 @@ float byte2float(char* buffer, int position)
 
     return f.num;
 }
+
+
+int fsgn(float in)
+{
+    return round(in/fabs(in));
+}
+
+int isgn(int in)
+{
+    return in/abs(in);
+}

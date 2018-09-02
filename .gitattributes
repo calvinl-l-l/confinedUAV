@@ -1,6 +1,3 @@
-* linguist-vendored
-*.js linguist-vendored=false
-*.html linguist-vendored=false
 *.C linguist-language=C++
 *.CPP linguist-language=C++
 *.H linguist-language=C++

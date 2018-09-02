@@ -11,10 +11,12 @@ void localisation::init()
 {
 	_Href.clear();
 
-	// TODO: get reference scan first
+	_get_ref_scan();
 
 	_Href = _DHT(_data_ref.pc_y, _data_ref.pc_z);
 
+	_bref = _Href.begin();
+	_lref = _Href.begin() + _Href.size();
 }
 
 void localisation::run()
@@ -36,7 +38,6 @@ void localisation::run()
 	vector<int> Href90(_bref+_n_rho, _lref);
 	vector<int> Hsrc90(bsrc+_n_rho, lsrc);
 
-
 	// T estimation
 	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0);
 	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90);
@@ -49,6 +50,23 @@ void localisation::run()
 	// pushing position data to the queue
 	if (data_q.size() >= MAX_LDATA_QUEUE_SIZE) data_q.pop_front();    // limit memory usage
 	data_q.push_back(data);
+}
+
+void localisation::_get_ref_scan()
+{
+	read_scan();
+
+	_update_pc();
+
+	_data_ref = data;
+
+	_get_centroid();
+
+	// translate scan to lateral centroid
+	for (int i=0; i<_data_ref.nyz; i++)
+	{
+		_data_ref.pc_y[i] += _ref_yc;
+	}
 }
 
 // discrete hough transform
@@ -71,7 +89,7 @@ vector<int> localisation::_DHT(vector<int> y, vector<int> z)
 
 				// histogram
 				int idx =  round((rho + MAX_RHO)/STEP_RHO);
-				HT[idx]++;
+				if (idx < _n_rho)	HT[idx]++;	// bound check
 			}
 			else if (t==90)
 			{
@@ -79,7 +97,7 @@ vector<int> localisation::_DHT(vector<int> y, vector<int> z)
 
 				// histogram
 				int idx =  round((rho + MAX_RHO)/STEP_RHO);
-				HT[idx + _n_rho]++;	// offset for 2nd column
+				if (idx < _n_rho)	HT[idx + _n_rho]++;	// offset for 2nd column + bound check
 			}
 		}
 	}

@@ -16,6 +16,7 @@
 #define MAX_dRHO	500		// sufficient for container
 
 using namespace std;
+using namespace cv;
 
 class localisation: public Hokuyo_lidar
 {
@@ -35,6 +36,7 @@ private:
 	vector<int>::const_iterator _lref;
 
 	// HSM
+	void _get_ref_scan();
 	unsigned int _xcorr_cv(vector<int> sref, vector<int> ssrc);
 	vector<unsigned int> _xcorr_fast(vector<int> s1, vector<int> s2, int max_delay);
 	unsigned int _xcorr(vector<int> s1, vector<int> s2, int max_delay); // only returns index of max r

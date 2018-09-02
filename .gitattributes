@@ -1,2 +1,9 @@
+<<<<<<< HEAD
 * linguist-vendored
 *.cpp linguist-vendored=false
+=======
+static/* linguist-vendored
+*.c linguist-language=C++
+*.cpp linguist-language=C++
+*.h linguist-language=C++
+>>>>>>> 787e85574198e2fb40833bffffeb69f363b8d4a0

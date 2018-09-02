@@ -26,31 +26,32 @@ void localisation::run()
 
 	_update_pc();	// applied transform to point cloud
 
-	// Hough transform
-	vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
-
-	// breaking the 1D vector into the 0 and 90 degree column
-	vector<int>::const_iterator bsrc = Hsrc.begin();
-	vector<int>::const_iterator lsrc = Hsrc.begin() + Hsrc.size();
-
-	vector<int> Href0(_bref, _bref+_n_rho);
-	vector<int> Hsrc0(bsrc, bsrc+_n_rho);
-	vector<int> Href90(_bref+_n_rho, _lref);
-	vector<int> Hsrc90(bsrc+_n_rho, lsrc);
-
-	// T estimation
-	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0, 'y');
-	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90, 'z');
-
-	// position z selection
+	// localisation selection
 	if (flag.alt != TUNNEL)
 	{
 		calc_alt();
 		data.pos.z = data.alt;
-		data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
+		data.pos.y = 0;
 	}
 	else if (flag.alt == TUNNEL)
 	{
+		// Hough transform
+		vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
+
+		// breaking the 1D vector into the 0 and 90 degree column
+		vector<int>::const_iterator bsrc = Hsrc.begin();
+		vector<int>::const_iterator lsrc = Hsrc.begin() + Hsrc.size();
+
+		vector<int> Href0(_bref, _bref+_n_rho);
+		vector<int> Hsrc0(bsrc, bsrc+_n_rho);
+		vector<int> Href90(_bref+_n_rho, _lref);
+		vector<int> Hsrc90(bsrc+_n_rho, lsrc);
+
+		// T estimation
+		unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0, 'y');
+		unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90, 'z');
+
+
 		data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
 		data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
 	}

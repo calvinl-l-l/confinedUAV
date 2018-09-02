@@ -23,16 +23,26 @@ void localisation::run()
 	// TODO: should clean noise a bit during update pc
 
 	_update_pc();	// applied transform to point cloud
-	// TODO: command to start HSM, because code might break outdoor
-	// TEMP:  uncomment later
+
 	// Hough transform
-	//vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
+	vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
+
+	// breaking the 1D vector into the 0 and 90 degree column
+	vector<int>::const_iterator bsrc = Hsrc.begin();
+	vector<int>::const_iterator lsrc = Hsrc.begin() + Hsrc.size();
+
+	vector<int> Href0(_bref, _bref+_n_rho);
+	vector<int> Hsrc0(bsrc, bsrc+_n_rho);
+	vector<int> Href90(_bref+_n_rho, _lref);
+	vector<int> Hsrc90(bsrc+_n_rho, lsrc);
+
 
 	// T estimation
-	//vector<unsigned int> xc = _xcorr_fast(_Href, Hsrc, MAX_dRHO);
+	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0);
+	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90);
 
-	data.pos.y = 0;//(xc[0] - MAX_dRHO) * STEP_RHO;	// dy
-	data.pos.z = 0;//(xc[1] - MAX_dRHO) * STEP_RHO;	// dz
+	data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
+	data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
 
 	calc_alt();
 
@@ -77,7 +87,42 @@ vector<int> localisation::_DHT(vector<int> y, vector<int> z)
 	return HT;
 }
 
+unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc)
+{
+	Mat ccorr;
+	float max = 0;
+	unsigned int idx;
 
+	Mat ref = _vector_int2mat(sref);
+	Mat src = _vector_int2mat(ssrc);
+
+	copyMakeBorder(ref, ref, src.rows - 1, src.rows - 1, src.cols - 1, src.cols - 1, BORDER_CONSTANT);
+	matchTemplate(ref, src, ccorr, CV_TM_CCORR);
+
+	for (int i = 0; i < ccorr.cols; i++)
+	{
+		if (ccorr.at<float>(0, i) > max)
+		{
+			max = ccorr.at<float>(0, i);
+			idx = i;
+		}
+	}
+
+	return idx;
+}
+
+Mat localisation::_vector_int2mat(vector<int> in)
+{
+	Mat out = Mat(1, in.size(), CV_32F);
+
+	//memcpy(out.data, (float) in.data(), in.size()*sizeof(int));
+	for (int i=0; i < in.size(); i++)
+	{
+		out.at<float>(0, i) = (float) in[i];
+	}
+
+	return out;
+}
 vector<unsigned int> localisation::_xcorr_fast(vector<int> s1, vector<int> s2, int max_delay)
 {
 	// faster version of xcorr:

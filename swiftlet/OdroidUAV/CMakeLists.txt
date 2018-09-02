@@ -32,6 +32,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 find_package(Threads REQUIRED)
 find_package(Boost 1.6 COMPONENTS program_options thread system REQUIRED)
+find_package(OpenCV REQUIRED)
 
 # include
 include_directories("${PROJECT_SOURCE_DIR}/src/")
@@ -39,8 +40,9 @@ include_directories("${PROJECT_SOURCE_DIR}/lib/cserial")
 include_directories("${PROJECT_SOURCE_DIR}/lib/Scheduler")
 include_directories("${PROJECT_SOURCE_DIR}/lib/reckless/include")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 
-target_link_libraries(swiftlet ${Boost_LIBRARIES} ${swiftlet_SLIB} -lpthread -lwiringPi -lrt -lcrypt)
+target_link_libraries(swiftlet ${OpenCV_LIBS} ${Boost_LIBRARIES} ${swiftlet_SLIB} -lpthread -lwiringPi -lrt -lcrypt)
 
 #target_compile_options(swiftlet -std=c++11)

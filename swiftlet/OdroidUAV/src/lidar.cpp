@@ -234,7 +234,7 @@ void Hokuyo_lidar::print_alt_type()
                 break;
             case 1:  a = "roof";
                 break;
-            case 2:  a = "both";
+            case 2:  a = "tunnel";
                 break;
         }
 

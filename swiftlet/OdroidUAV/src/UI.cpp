@@ -279,7 +279,7 @@ void UI::run()
         cout << "Setting altitude type to:\n";
         cout << "0 - floor\n";
         cout << "1 - roof\n";
-        cout << "2 - both (not available yet)\n";
+        cout << "2 - tunnel\n";
         cin >> n;
 
         switch(n)
@@ -291,7 +291,7 @@ void UI::run()
                 lidar_CMD.alt_type = ROOF;
                 break;
             case 2:
-                lidar_CMD.alt_type = BOTH;
+                lidar_CMD.alt_type = TUNNEL;
                 break;
         }
 

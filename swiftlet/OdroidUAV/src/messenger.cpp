@@ -97,7 +97,7 @@ string messenger::_pos_msg_encoder()
 
 bool messenger::get_log_switch()
 {
-    if (ph2_data.ch.aux7 > 1500)    return true;
+    if ((ph2_data.ch.aux7 > 1500) && (ph2_data.ch.aux7 < 2100))    return true;
     else return false;
 }
 

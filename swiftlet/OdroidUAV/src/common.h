@@ -73,7 +73,7 @@ enum lidar_alt_type
 {
     FLOOR = 0,
     ROOF,
-    BOTH
+    TUNNEL
 };
 
 // lidar flags

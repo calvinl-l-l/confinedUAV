@@ -99,7 +99,7 @@ int main()
             bool temp = PH2.get_log_switch();
 
             if (temp)   start_log = true;
-            else                        start_log = false;
+            else        start_log = false;
         }
         else start_log = true;
 

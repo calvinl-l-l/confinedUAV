@@ -42,10 +42,18 @@ void localisation::run()
 	unsigned int rho_dy = _xcorr_cv(Href0, Hsrc0, 'y');
 	unsigned int rho_dz = _xcorr_cv(Href90, Hsrc90, 'z');
 
-	data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
-	data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
-
-	calc_alt();
+	// position z selection
+	if (flag.alt != TUNNEL)
+	{
+		calc_alt();
+		data.pos.z = data.alt;
+		data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
+	}
+	else if (flag.alt == TUNNEL)
+	{
+		data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
+		data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
+	}
 
 	_prev_pos = data.pos;
 
@@ -95,7 +103,7 @@ unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc, char yz
 	Mat ccorr;
 	float max = 0;
 	int prev_pt = 0;
-	//unsigned int idx; TEMP
+
 	if (yz == 'y')
 	{
 		prev_pt = _prev_pos.y;
@@ -111,17 +119,6 @@ unsigned int localisation::_xcorr_cv(vector<int> sref, vector<int> ssrc, char yz
 	// compute cross correlation with opencv
 	copyMakeBorder(ref, ref, src.rows - 1, src.rows - 1, src.cols - 1, src.cols - 1, BORDER_CONSTANT);
 	matchTemplate(ref, src, ccorr, CV_TM_CCORR);
-
-/*
-	for (int i = 0; i < ccorr.cols; i++)
-	{
-		if (ccorr.at<float>(0, i) > max)
-		{
-			max = ccorr.at<float>(0, i);
-			idx = i;
-		}
-	}
-*/
 
 	vector<int> idx;
 	vector<float> xcr = _mat_int2vector(ccorr);

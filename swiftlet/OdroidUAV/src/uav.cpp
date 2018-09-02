@@ -77,7 +77,7 @@ int main()
         PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
 
         //cout << "li dt " << t1 - t0 << " HSM dt " << millis() - t0 << '\n';
-        cout << "pos y " << HSM.data.pos.y << " z " << HSM.data.pos.z << " dt " << millis() - t0 << '\n';
+        //cout << "pos y " << HSM.data.pos.y << " z " << HSM.data.pos.z << " dt " << millis() - t0 << '\n';
     });
 
 // Arduino com ---------------------------------------------------------------
@@ -133,27 +133,22 @@ int main()
 
 
 
-// TODO: memory issue doing debug print
 // main while loop - handles debug print
     while (1)
     {
         // debug print
         if (ui.flag.debug_print)
         {
-            cout << "alt ";
-            cout << HSM.data.alt << ',';
+            cout << "y ";
+            cout << HSM.data.pos.y;
+            cout << " z ";
+            cout << HSM.data.pos.z << ',';
             cout << " thrH ";
-            cout << PH2.ph2_data.thr_hover << ',';
-            cout << " thrIn ";
             cout << PH2.ph2_data.throttle_in << ',';
             cout << " u1 ";
             cout << PH2.ph2_data.u1 << ',';
-            cout << " ez ";
-            cout << PH2.ph2_data.perr.ez << ',';
-            cout << " dez ";
-            cout << PH2.ph2_data.perr.dterm_z << ',';
-            cout << " ts ";
-            cout << PH2.ph2_data.ts_odroid;
+            cout << " r ";
+            cout << PH2.ph2_data.roll;
 
             cout << '\n';
         }

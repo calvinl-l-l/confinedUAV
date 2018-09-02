@@ -110,7 +110,7 @@ void Hokuyo_lidar::_update_pc()
 void Hokuyo_lidar::calc_alt()
 {
     // angle sign use right hand rule
-    double pitch = -_ph2_data.pitch;    // TODO: add proper rotation matrix later
+    double pitch = -_ph2_data.pitch;
     double roll  = _ph2_data.roll;     // -ve due to lidar orientation
 
     unsigned int temp = 0;
@@ -171,7 +171,7 @@ void Hokuyo_lidar::calc_alt()
             break;
 
         case TUNNEL:
-            cout << "Not available yet!!\n";
+            cout << "Stop using alt calculation\n";
             break;
     }
 

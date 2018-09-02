@@ -20,8 +20,11 @@ void Hokuyo_lidar::lidar_init()
     flag.outof_boundary = false;
     flag.printed_alt_mode = false;
     flag.alt = ROOF;
+
+    // init variables
     _tunnel_height = 0;
     _max_scan_range = 6*1000;   // default 6m scan range
+
     _init_alt_type();   // TODO: test open space init for alt type
     //set_alt_type(FLOOR);    // TEMP
 
@@ -29,6 +32,9 @@ void Hokuyo_lidar::lidar_init()
     data.angle.reserve(1080);
     data.pc_y.reserve(1080);
     data.pc_z.reserve(1080);
+
+    // init sin and cos look up table
+    _init_tri_LUT();
 }
 
 void Hokuyo_lidar::read_scan()
@@ -82,8 +88,8 @@ void Hokuyo_lidar::_update_pc()
             // for Swiftlet frame, skip 81.5 to 89.75 degree
 
             // raw
-            double temp_z = data.range[i] * cos(rad) - _offset_z;
-            double temp_y = data.range[i] * sin(rad);
+            double temp_z = data.range[i] * _cosLUT[i] - _offset_z;
+            double temp_y = data.range[i] * _sinLUT[i];
 
             // transformed
             double yt = cos_roll*temp_y - cos_pitch*sin_roll*temp_z + _offset_x*sin_roll*sin_pitch;
@@ -97,18 +103,7 @@ void Hokuyo_lidar::_update_pc()
 
     data.nyz = n;
 
-    _data_loss = (float) n/1000*100;  // calc data loss
-/*
-    // applying transformation matrix
-    for (int i=0; i < data.nyz; i++)
-    {
-        double y_temp = cos_roll*data.pc_y[i] - cos_pitch*sin_roll*data.pc_z[i] + _offset_x*sin_roll*sin_pitch;
-        double z_temp = sin_roll*data.pc_y[i] + cos_pitch*cos_roll*data.pc_z[i] - _offset_x*cos_roll*sin_pitch;
-
-        data.pc_y[i] = y_temp;
-        data.pc_z[i] = z_temp;
-    }
-*/
+    _data_loss = (float) n/1000*100;  // calc data loss, only 100
 }
 
 
@@ -207,17 +202,13 @@ void Hokuyo_lidar::_get_centroid()
 
     A = fabs(0.5f * A);
 
-
-    //data.pos.y = cy/(6.0f * A);
-    //data.pos.z = cz/(6.0f * A);
-
-    float pyc = cy/(6.0f * A);
-    float pzc = cz/(6.0f * A);
-
-    cout << "y " << pyc << " z " << pzc << " pcy " << data.pc_y[500] << " pcz " << data.pc_z[500] << endl;
+    _ref_yc = cy/(6.0f * A);
+    _ref_zc = cz/(6.0f * A);
 
     A /= 1000.0f*1000.0f;
     data.area = A;  // m^2
+
+    cout << "Initial ground location is " << round(_ref_yc) << "mm of cetre horizontally\n";
 }
 
 void Hokuyo_lidar::print_alt_type()
@@ -243,12 +234,6 @@ void Hokuyo_lidar::print_alt_type()
 
         flag.printed_alt_mode = true; // reset flag
     }
-}
-
-void Hokuyo_lidar::_save_ref_scan()
-{
-    read_scan();
-    _data_ref = data;
 }
 
 void Hokuyo_lidar::_init_alt_type()
@@ -369,176 +354,13 @@ double Hokuyo_lidar::r2deg(double radian)
     return radian*M_PI/180;
 }
 
-/*
-// to be removed/updated
-void Hokuyo_lidar::_get_symmetry_pt()
+void Hokuyo_lidar::_init_tri_LUT()
 {
-    yz_start_pt = 0;
-    yz_end_pt = ldata.nyz - 1;
-
-    // check if points are connected
-    // left side
-    for (int i = 20; i > 0; i--)
+    for (int i=0; i<1080; i++)
     {
-        // 86mm is threshold, max vertical distance between points, assuming 10m range
-        if (fabs(ldata.pc_z[i] - ldata.pc_z[i-1]) <= 86)
-        {
-            yz_start_pt = i - 1;
-        }
-        else    {break;}
-    }
+        double rad = _urg.index2rad(i);
 
-    // right side
-    for (int i = ldata.nyz-21; i < ldata.nyz - 1; i++)
-    {
-        // 86mm is threshold, max vertical distance between points, assuming 10m range
-        if (fabs(ldata.pc_z[i] - ldata.pc_z[i+1]) <= 86)
-        {
-            yz_end_pt = i + 1;
-        }
-        else    {break;}
-    }
-
-    // compare which side is lower
-    if (ldata.pc_z[yz_start_pt] > ldata.pc_z[yz_end_pt])
-    {
-        for (int i=ldata.nyz-1; i > (int) ldata.nyz/2; i--)
-        {
-            if ((ldata.pc_z[i] >= ldata.pc_z[yz_start_pt]) && (ldata.pc_z[i-1] >= ldata.pc_z[yz_start_pt]))
-            {
-                yz_end_pt = i;
-                break;
-            }
-        }
-    }
-    else if (ldata.pc_z[yz_start_pt] < ldata.pc_z[yz_end_pt])
-    {
-        for (int i=0; i < (int) ldata.nyz/2; i++)
-        {
-            if ((ldata.pc_z[i] >= ldata.pc_z[yz_end_pt]) && (ldata.pc_z[i+1] >= ldata.pc_z[yz_end_pt]))
-            {
-                yz_start_pt = i;
-
-  break;
-            }
-        }
+        _sinLUT[i] = sin(rad);
+        _cosLUT[i] = cos(rad);
     }
 }
-
-
-bool Hokuyo_lidar::_lidar_check_flag.outof_boundary()
-{
-
-    //TODO:
-        extra condition on the huge change in centroid
-
-
-    // trigger flag (flag=1) when out of boundary
-
-    return false;
-}
-
-
-vector<int> Hokuyo_lidar::lonely_pts_detector()
-{
-  // output
-  vector<int> I;
-
-  // finding quantiles
-  int m = median(range);
-
-  vector<long> temp = range;
-
-  sort(temp.begin(), temp.end());
-
-  int m_idx = 0;
-
-  for (int i=0;i<range.size();i++)
-  {
-    if (abs(temp[i]-m) < 10)  m_idx = i;// 10 is threshold
-  }
-
-  vector<long> v2(temp.begin(), temp.begin() + m_idx);
-  vector<long> v3(temp.begin() + m_idx + 1, temp.end());
-
-  int q2 = median(v2);
-  int q3 = median(v3);
-  int IQR = q3 - q2;
-
-  int rmax = 1.5 * IQR + q3;
-  int rmin = q2 - 1.5 * IQR;
-
-  // removing the lonely points
-  int c = 0;
-
-  for (int i=0;i<range.size();i++)
-  {
-    if (ldata.range[i] > rmax || ldata.range[i] < rmin) I.push_back(i);
-  }
-
-  return I;
-}
-
-
-// old centroid - to be removed
-void Hokuyo_lidar::_get_centroid1()
-{
-    float ciy = 0;
-    float ciz = 0;
-    float cy = 0;
-    float cz = 0;
-    float temp = 0;
-    float Area = 0;
-    int n = ldata.nyz;
-
-
-    // compute total area
-    for (int i=0;i<=n-1;i++)
-    {
-        if (i<n-1)
-            temp += ldata.pc_y[i] * ldata.pc_z[i+1] - ldata.pc_y[i+1] * ldata.pc_z[i];
-        else
-            temp += ldata.pc_y[i] * ldata.pc_z[0] - ldata.pc_y[0] * ldata.pc_z[i];
-    }
-    float A = fabs(0.5*temp);
-
-    temp = 0; //reset temp variable
-
-    int nTri = n-2;
-
-    // compute centre of area
-
-    for (int i=0;i<=nTri-1;i++)
-    {
-
-        temp = ldata.pc_y[0]*ldata.pc_z[i+1] - ldata.pc_y[i+1]*ldata.pc_z[0] + ldata.pc_y[i+1]*ldata.pc_z[i+2] - ldata.pc_y[i+2]*ldata.pc_z[i+1] + ldata.pc_y[i+2]*ldata.pc_z[0] - ldata.pc_y[0]*ldata.pc_z[i+2];
-
-        ciy = ldata.pc_y[0] + ldata.pc_y[i+1] + ldata.pc_y[i+2];
-        ciz = ldata.pc_z[0] + ldata.pc_z[i+1] + ldata.pc_z[i+2];
-
-        ciy /= 3;
-        ciz /= 3;
-
-        float iTriA = fabs(0.5*temp);
-
-        cy += ciy*iTriA;
-        cz += ciz*iTriA;
-
-        temp = 0;
-        ciy = 0;
-        ciz = 0;
-
-        Area += iTriA;
-    }
-
-    // centroid of the local scan, also equal to the position of the quad relative
-    // to local scan
-    ldata.pos.y = (cy/Area);//(cy/A);
-    ldata.pos.z = (cz/Area);
-
-    ldata.area = Area / (1000*1000);
-
-
-
-} // end centroid
-*/

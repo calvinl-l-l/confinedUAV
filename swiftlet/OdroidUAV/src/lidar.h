@@ -21,7 +21,7 @@ using namespace qrk;
 #define ALT_FLOOR_ANGLE_RANGE   20      // in degree
 #define MAX_LDATA_QUEUE_SIZE    10
 #define FRAME_HEIGHT            120     // from ground to lidar height
-#define SCAN_DENSITY            3       // Npoint = 1080/SCAN_DENSITY, should only choose from 1 - 4
+#define SCAN_DENSITY            1       // Npoint = 1080/SCAN_DENSITY, should only choose from 1 - 4
 
 const char connect_address[] = "192.168.0.10";
 const long connect_port = 10940;
@@ -65,20 +65,21 @@ protected:
     unsigned int _offset_x = 250;   // mm
     unsigned int _offset_z = 30;
 
+    float _sinLUT[1080];    // sine look up table
+    float _cosLUT[1080];    // cosine look up table
+
     PH2_data_t _ph2_data;       // data from Pixhawk 2
     UI_CMD_t   _cmd;            // command/data from UI
 
     // localisation
     int _tunnel_height;
     pos_data_t _data_ref;
+    float _ref_yc = 0;  // reference scan centroid
+    float _ref_zc = 0;
 
+    void _init_tri_LUT();
     void _init_alt_type();
     void _update_pc();   // update point cloud
-    void _save_ref_scan();
-    void _get_centroid2();
-    //void _get_symmetry_pt();
-    //vector<int> lonely_pts_detector();
-    //void _get_centroid1();
-    //bool _lidar_check_flag.outof_boundary();
+    void _get_centroid();
 };
 #endif

@@ -147,8 +147,8 @@ int main()
             cout << PH2.ph2_data.throttle_in << ',';
             cout << " u1 ";
             cout << PH2.ph2_data.u1 << ',';
-            cout << " r ";
-            cout << PH2.ph2_data.roll;
+            cout << " area ";
+            cout << HSM.data.area;
 
             cout << '\n';
         }

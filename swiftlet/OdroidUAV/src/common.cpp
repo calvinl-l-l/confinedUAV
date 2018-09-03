@@ -78,7 +78,7 @@ string int2str_ndigits(int value, int nd)   // nd = number of digits
         }
     }
 
-    s += to_string(value);
+    s += to_string(abs(value));
 
     return s;
 }
@@ -87,7 +87,7 @@ unsigned int ndigit(int value)
 {
     unsigned int n = 0;
 
-    while(value)
+    while(abs(value))
     {
         value /= 10;
         n++;

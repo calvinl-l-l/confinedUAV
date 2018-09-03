@@ -135,6 +135,8 @@ struct PH2_data_t
 
     rc_channel_t ch;
 
+    pos_t kf_pos;
+
     // control data
     float u1 = 0;
     float throttle_in = 0;

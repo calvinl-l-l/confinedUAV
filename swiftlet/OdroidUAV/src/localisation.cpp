@@ -17,6 +17,8 @@ void localisation::init()
 
 	_bref = _Href.begin();
 	_lref = _Href.begin() + _Href.size();
+
+	cout << "\n\n<> Initial ground location is " << round(_ref_yc) << "mm off centre horizontally\n\n";
 }
 
 void localisation::run()
@@ -25,6 +27,8 @@ void localisation::run()
 	// TODO: should clean noise a bit during update pc
 
 	_update_pc();	// applied transform to point cloud
+
+	_get_centroid();
 
 	// localisation selection
 	if (flag.alt != TUNNEL)

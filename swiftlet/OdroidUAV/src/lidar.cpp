@@ -207,8 +207,6 @@ void Hokuyo_lidar::_get_centroid()
 
     A /= 1000.0f*1000.0f;
     data.area = A;  // m^2
-
-    cout << "Initial ground location is " << round(_ref_yc) << "mm of cetre horizontally\n";
 }
 
 void Hokuyo_lidar::print_alt_type()

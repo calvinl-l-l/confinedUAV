@@ -63,34 +63,61 @@ void messenger::send_pos_data(pos_data_t ldata)
 {
     _ldata = ldata;
 
-    string msg;
+    vector<unsigned char> msg;
     msg = _pos_msg_encoder();
 
-    for (int i=0; i<msg.length(); i++)
+    for (int i=0; i<msg.size(); i++)
     {
         _sp.putchar(msg[i]);
     }
 }
 
 
-string messenger::_pos_msg_encoder()
+vector<unsigned char> messenger::_pos_msg_encoder()
 {
 //=================================
 //********  MSG FORMAT  ***********
 //=================================
 //
 //  message:
-//  $ is_healthy pos.y pos.z #
-//  1       1      6     6    6  1 bytes, total = 18 bytes
-    string msg = "";
+//  $ is_healthy pos.y pos.z nset
 
-    msg = "$";
-    if (_ldata.is_healthy) msg += "1";
-    else                   msg += "0";
-    msg += int2str_ndigits(_ldata.pos.y, 5);
-    msg += int2str_ndigits(_ldata.pos.z, 5);
-    msg += int2str_ndigits(_ldata.nset, 6);
-    msg += "#";
+    int_num value;
+
+    vector<unsigned char> msg;
+    msg.reserve(13);
+
+    msg.push_back('$');
+
+    // is_healthy
+    if (_ldata.is_healthy)  value.num = 1;
+    else                    value.num = 0;
+
+    for (int i=0; i<4; i++)
+    {
+        msg.push_back(value.buf[i]);
+    }
+
+    // pos y
+    value.num = _ldata.pos.y;
+    for (int i=0; i<4; i++)
+    {
+        msg.push_back(value.buf[i]);
+    }
+
+    // pos z
+    value.num = _ldata.pos.z;
+    for (int i=0; i<4; i++)
+    {
+        msg.push_back(value.buf[i]);
+    }
+
+    // nset
+    value.num = _ldata.nset;
+    for (int i=0; i<4; i++)
+    {
+        msg.push_back(value.buf[i]);
+    }
 
     //cout << "msg: " << msg << '\n';   // debug
 

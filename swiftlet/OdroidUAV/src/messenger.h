@@ -32,7 +32,7 @@ private:
 
     mutex _msg_mtx;
 
-    string _pos_msg_encoder();
+    vector<unsigned char> _pos_msg_encoder();
 
 };
 #endif

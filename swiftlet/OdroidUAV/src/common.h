@@ -158,6 +158,12 @@ union float_num
     float num;
 };
 
+union int_num
+{
+    unsigned char buf[4];
+    int num;
+};
+
 long val_remap(long x, long in_min, long in_max, long out_min, long out_max);
 int median(vector<long> in);
 void scan2pixelmap(vector<double> x, vector<double> y, double pos_x, double pos_y, int *map);

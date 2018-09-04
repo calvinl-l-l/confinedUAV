@@ -43,13 +43,9 @@ void messenger::get_data()
     ph2_data.throttle_avg_max   = byte2float(_linebuf, 14);
     ph2_data.thr_hover          = byte2float(_linebuf, 15);
     ph2_data.perr.ez            = byte2float(_linebuf, 16);
-    ph2_data.perr.dterm_z       = byte2float(_linebuf, 17);
-    ph2_data.perr.iterm_z       = byte2float(_linebuf, 18);
-    ph2_data.AC_alt_target      = byte2float(_linebuf, 19);
-    ph2_data.AC_cr              = byte2float(_linebuf, 20);
-    ph2_data.dist_err           = byte2float(_linebuf, 21);
-    ph2_data.target_rangefinder_alt = byte2float(_linebuf, 22);
-    ph2_data.perr.dtermfil_z       = byte2float(_linebuf, 23);
+    ph2_data.perr.iterm_z       = byte2float(_linebuf, 17);
+    ph2_data.perr.dterm_z       = byte2float(_linebuf, 18);
+
 
     // assign timestamp to data
     ph2_data.ts_odroid = millis() - _ts_startup;

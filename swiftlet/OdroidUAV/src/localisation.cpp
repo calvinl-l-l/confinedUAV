@@ -39,6 +39,12 @@ void localisation::run()
 	}
 	else if (flag.alt == TUNNEL)
 	{
+		if (!flag.tunnel_init)
+		{
+			init();
+			flag.tunnel_init = true;
+		}
+
 		// Hough transform
 		vector<int> Hsrc = _DHT(data.pc_y, data.pc_z);
 

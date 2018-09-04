@@ -205,7 +205,7 @@ void Hokuyo_lidar::_get_centroid()
     _ref_yc = cy/(6.0f * A);
     _ref_zc = cz/(6.0f * A);
 
-    A /= 1000.0f*1000.0f;
+    A *= 0.001f*0.001f;
     data.area = A;  // m^2
 }
 
@@ -278,8 +278,11 @@ void Hokuyo_lidar::_init_alt_type()
     if (d45 > ROOF_THRESHOLD)    score++;
     if (d_45 > ROOF_THRESHOLD)    score++;
 
-    if (score >= 2) set_alt_type(FLOOR);
+    if (data.area <= 9.0f)  set_alt_type(TUNNEL);
+    else if (score >= 2) set_alt_type(FLOOR);
     else            set_alt_type(ROOF);
+
+
 
     flag.init_startup_block = false;
     print_alt_type();   // done
@@ -307,7 +310,10 @@ void Hokuyo_lidar::set_alt_type(lidar_alt_type dir)
     flag.printed_alt_mode = false;
     print_alt_type();
 
-    _cmd.set_type = false;  // reset flag
+    // reset flag
+    if (flag.alt != TUNNEL) flag.tunnel_init = false;
+
+    _cmd.set_type = false;
 }
 
 void Hokuyo_lidar::set_max_scan_range(unsigned int range)

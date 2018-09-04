@@ -42,8 +42,6 @@ int main()
     ui.set_startup_time(millis());
     PH2.set_startup_time(millis());
 
-    HSM.init();
-
 
 //**************************************************************************
 // scheduling tasks

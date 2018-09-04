@@ -83,7 +83,8 @@ struct lidar_flag_t
     bool outof_boundary;
     bool printed_alt_mode;        // whether alt mode is printed
     bool init_startup_block;    // block lidar thread until false
-
+    bool tunnel_init;
+    
     enum lidar_alt_type alt;
 };
 

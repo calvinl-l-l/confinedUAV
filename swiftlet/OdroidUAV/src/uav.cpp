@@ -10,22 +10,27 @@ using namespace std;
 
 #define PH2_MSG_LOOP_FREQ       180   // Hz
 #define LOGGING_LOOP_FREQ       20
-#define ARDUINO_COM_LOOP_FREQ   20
+#define TX2_COM_LOOP_FREQ   100
 
+char ab = 0;
 
 int main()
 {
     // init variables
     const char* FS_PORT = "/dev/ttyUSB0"; //"/dev/ttySAC0";         // fake sensor
     const char* arudino_PORT = "/dev/ttySAC2";    // Arduino
+    const char* TX2_PORT = "/dev/ttyUSB1";
     int arduino_BAUD = 57600;
     int FS_BAUD = 921600;
+    int TX2_BAUD = 115200;
 
     unsigned int max_n_threads = 5; // max number of concurrent tasks
 
     // init serial communicaitons
     cSerial FS_sp(FS_PORT, FS_BAUD);
     cSerial Ardu_sp(arudino_PORT, arduino_BAUD);
+    cSerial TX2_sp(TX2_PORT, TX2_BAUD);
+    TX2_sp.flush();
     FS_sp.flush();
     Ardu_sp.flush();
 
@@ -35,6 +40,7 @@ int main()
     localisation HSM;
 
     messenger PH2(FS_sp);
+    messenger TX2(TX2_sp);
     UI ui;
 
     // initialise system time
@@ -54,7 +60,7 @@ int main()
 
 
 // lidar read ----------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1), [&HSM, &FS_sp, &PH2, &ui]()
+    schedule.interval(std::chrono::milliseconds(1), [&TX2, &HSM, &FS_sp, &PH2, &ui]()
     {
         while (HSM.flag.init_startup_block)   {}  // wait for lidar to initialise
 
@@ -73,19 +79,21 @@ int main()
 
         HSM.data.nset++;
         PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
-
+        TX2.get_pos(HSM.data);
+        
         //cout << "li dt " << t1 - t0 << " HSM dt " << millis() - t0 << '\n';
         //cout << "pos y " << HSM.data.pos.y << " z " << HSM.data.pos.z << " dt " << millis() - t0 << '\n';
     });
 
-// Arduino com ---------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1000/ARDUINO_COM_LOOP_FREQ), [&Ardu_sp, &PH2, &ui]()
+// TX2 com ---------------------------------------------------------------
+    schedule.interval(std::chrono::milliseconds(1000/TX2_COM_LOOP_FREQ), [&TX2, &PH2, &ui, &TX2_sp]()
     {
-        Ardu_sp.putchar('m');
+        TX2.get_OA_status(ui.flag.OA_status);
+        TX2.get_tx2_data();
     });
 
 // Logging ------------------------------------------------------------
-    schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2]()
+    schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2, &TX2]()
     {
         // get ch7 switch
 
@@ -93,13 +101,13 @@ int main()
 
         if (!ui.flag.log_data)
         {
-            bool temp = PH2.get_log_switch();
+            bool temp = false; //PH2.get_log_switch();
 
             if (temp)   start_log = true;
             else        start_log = false;
         }
         else start_log = true;
-
+        start_log = false;
         // logging
         if (start_log)
         {
@@ -141,12 +149,12 @@ int main()
             cout << HSM.data.pos.y;
             cout << " z ";
             cout << HSM.data.pos.z << ',';
-            cout << " thrH ";
-            cout << PH2.ph2_data.throttle_in << ',';
-            cout << " u1 ";
-            cout << PH2.ph2_data.u1 << ',';
-            cout << " area ";
-            cout << HSM.data.area;
+            cout << " roll ";
+            cout << PH2.ph2_data.roll << ',';
+            cout << " yd ";
+            cout << TX2.pos_d.y << ',';
+            cout << " zd ";
+            cout << TX2.pos_d.z;
 
             cout << '\n';
         }

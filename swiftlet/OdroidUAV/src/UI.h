@@ -11,6 +11,8 @@ struct UI_flag_t
     bool file_is_closed = true;
     bool log_data = false;
     bool reboot_PH2 = false;    // TODO: reboot pixhawk command
+    bool OA_status = false;
+
 
     // debug flags
     bool debug_print = false;

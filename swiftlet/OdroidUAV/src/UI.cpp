@@ -231,6 +231,7 @@ void UI::run()
     {
         flag.log_data = false;
         flag.debug_print = false;
+        flag.OA_status = false;
     }
 // set log number
     else if (_input == "set_log")
@@ -296,6 +297,10 @@ void UI::run()
         }
 
         lidar_CMD.set_type = true;
+    }
+    else if (_input == "oa")
+    {
+        flag.OA_status = true;
     }
 // help: should always be last
     else if (_input == "help")

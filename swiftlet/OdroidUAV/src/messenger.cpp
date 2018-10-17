@@ -7,7 +7,7 @@ messenger::messenger(cSerial sp)
     _pID = 0;
 
     pos_d.y = 0;
-    pos_d.z = 300;
+    pos_d.z = 500;
 
     flag_start_OA = false;
 }
@@ -100,8 +100,8 @@ void messenger::get_tx2_data()
 
         if ((temp_target.y != prev_target.y) || (temp_target.z != prev_target.z))
         {
-            pos_d.y = temp_target.y + _ldata.pos.y;
-            pos_d.z = temp_target.z + _ldata.pos.z;
+            pos_d.y = 1.3*temp_target.y + _ldata.pos.y;
+            pos_d.z = 1.3*temp_target.z + _ldata.pos.z;
         }
 
         prev_target.y = temp_target.y;
@@ -109,7 +109,7 @@ void messenger::get_tx2_data()
     }
 
 
-    cout << "yd " << pos_d.y << " zd " << pos_d.z << " y " << _ldata.pos.y << " z " << _ldata.pos.z << '\n';
+    //cout << "yd " << pos_d.y << " zd " << pos_d.z << " y " << _ldata.pos.y << " z " << _ldata.pos.z << '\n';
 }
 
 void messenger::get_pos(pos_data_t ldata)
@@ -177,38 +177,21 @@ vector<unsigned char> messenger::_pos_msg_encoder()
         msg.push_back(value.buf[i]);
     }
 
-    if (flag_start_OA)
+    // target y
+    value.num = pos_d.y;
+    for (int i=0; i<4; i++)
     {
-        // target y
-        value.num = pos_d.y;
-        for (int i=0; i<4; i++)
-        {
-            msg.push_back(value.buf[i]);
-        }
-
-        // target z
-        value.num = pos_d.z;
-        for (int i=0; i<4; i++)
-        {
-            msg.push_back(value.buf[i]);
-        }
+        msg.push_back(value.buf[i]);
     }
-    else
+
+    // target z
+    value.num = pos_d.z;
+    for (int i=0; i<4; i++)
     {
-        // target y
-        value.num = 0;
-        for (int i=0; i<4; i++)
-        {
-            msg.push_back(value.buf[i]);
-        }
-
-        // target z
-        value.num = 300;
-        for (int i=0; i<4; i++)
-        {
-            msg.push_back(value.buf[i]);
-        }
+        msg.push_back(value.buf[i]);
     }
+
+
     //cout << "msg: " << msg << '\n';   // debug
 
     return msg;

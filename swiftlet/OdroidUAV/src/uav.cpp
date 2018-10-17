@@ -78,9 +78,13 @@ int main()
         HSM.run();
 
         HSM.data.nset++;
-        PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
+
         TX2.get_pos(HSM.data);
-        
+        PH2.pos_d = TX2.pos_d;
+
+        PH2.send_pos_data(HSM.data);  // send position data to Pixhawk 2
+
+
         //cout << "li dt " << t1 - t0 << " HSM dt " << millis() - t0 << '\n';
         //cout << "pos y " << HSM.data.pos.y << " z " << HSM.data.pos.z << " dt " << millis() - t0 << '\n';
     });
@@ -111,7 +115,7 @@ int main()
         // logging
         if (start_log)
         {
-            ui.start_log(HSM.data_q, PH2.ph2_data_q);
+            ui.start_log(HSM.data_q, PH2.ph2_data_q, TX2.pos_d);
         }
         else
         {

@@ -20,7 +20,7 @@ void UI::init_log()
     flag.file_is_opened = false;
 }
 
-void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
+void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q, pos_t pos_d)
 {
     flag.file_is_closed = false;
 
@@ -44,9 +44,9 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
         info_log.open(filename);
         filename = "";
 
-        info_log << "Pixhawk 2 data log\n";
+        info_log << "Position log\n";
 //        info_log << "r p y ch1 2 3 4 5 6 7 8 thr_hover thr_avg_max thr_in u1 ez iez dez AC_alt_tar AC_cr dist_err rngAlt_target tsO tsPH2 PH2_ts\n";
-        info_log << "r p y ch1 2 3 4 5 6 7 8 thr_hover thr_avg_max thr_in u1 ez iez dez tsPH2 PH2_ts\n";
+        info_log << "target_y target_z pos_y pos_z\n";
 
         // file for lidar scan
         filename = dir + "lscan_" + to_string(nlog) + ".dat";
@@ -68,92 +68,15 @@ void UI::start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q)
     }
     else
     {
-
-    //=========================================================================
-    // CONTROL LOG
-    //=========================================================================
-        pos_data_t loc_data;
-        PH2_data_t cdata;
-        loc_data = ldata_q.back();
-        cdata    = ph2_data_q.back();
-
-        control_log << loc_data.pos.y << ',';
-        control_log << loc_data.pos.z << ',';
-        control_log << loc_data.alt << ',';
-        control_log << cdata.roll << ',';
-        control_log << cdata.ch.roll << ',';
-        control_log << cdata.ch.thr << ',';
-        control_log << cdata.ch.aux5 << ',';
-        control_log << cdata.thr_hover << ',';
-        control_log << cdata.throttle_avg_max << ',';
-        control_log << cdata.throttle_in << ',';
-        control_log << fixed << setprecision(6) << cdata.u1 << ',';
-        control_log << fixed << setprecision(6) << cdata.perr.ez << ',';
-        control_log << fixed << setprecision(6) << cdata.perr.iterm_z << ',';
-        control_log << fixed << setprecision(6) << cdata.perr.dterm_z << ',';
-        //control_log << fixed << setprecision(6) << cdata.AC_alt_target << ',';
-        //control_log << fixed << setprecision(6) << cdata.AC_cr << ',';
-        //control_log << fixed << setprecision(6) << cdata.dist_err << ',';
-        //control_log << fixed << setprecision(6) << cdata.target_rangefinder_alt << ',';
-        control_log << loc_data.ts_odroid << ',';
-        control_log << cdata.ts_PH2;
-        control_log << '\n';
-    //=========================================================================
-    // DATA INFO LOG
-    //=========================================================================
-        PH2_data_t pdata;
-        while (!ph2_data_q.empty())
-        {
-            lock_guard<mutex>   lock(_ui_mtx);
-
-            pdata = ph2_data_q.front();
-            ph2_data_q.pop_front();
-
-            info_log << pdata.roll << ',';
-            info_log << pdata.pitch << ',';
-            info_log << pdata.yaw << ',';
-            info_log << pdata.ch.roll << ',';
-            info_log << pdata.ch.pitch << ',';
-            info_log << pdata.ch.thr << ',';
-            info_log << pdata.ch.yaw << ',';
-            info_log << pdata.ch.aux5 << ',';
-            info_log << pdata.ch.aux6 << ',';
-            info_log << pdata.ch.aux7 << ',';
-            info_log << pdata.ch.aux8 << ',';
-            info_log << pdata.thr_hover << ',';
-            info_log << pdata.throttle_avg_max << ',';
-            info_log << pdata.throttle_in << ',';
-            info_log << fixed << setprecision(6) << pdata.u1 << ',';
-            info_log << fixed << setprecision(6) << pdata.perr.ez << ',';
-            info_log << fixed << setprecision(6) << pdata.perr.iterm_z << ',';
-            info_log << fixed << setprecision(6) << pdata.perr.dterm_z << ',';
-            //info_log << fixed << setprecision(6) << pdata.AC_alt_target << ',';
-            //info_log << fixed << setprecision(6) << pdata.AC_cr << ',';
-            //info_log << fixed << setprecision(6) << pdata.dist_err << ',';
-            //info_log << fixed << setprecision(6) << pdata.target_rangefinder_alt << ',';
-            info_log << pdata.ts_PH2;
-            info_log << '\n';
-        }
-
-    //=========================================================================
-    // LIDAR SCAN DATA LOG - in binary
-    //=========================================================================
         pos_data_t ldata;
-        while (!ldata_q.empty())
-        {
-            lock_guard<mutex>   lock(_ui_mtx);  // protecting queue pop in this scope
+        lock_guard<mutex>   lock(_ui_mtx);
+        ldata = ldata_q.back();
 
-            ldata = ldata_q.front();
-            ldata_q.pop_front();
-
-            lscan_log.write((char*) &ldata.ts_odroid, sizeof(int));
-            lscan_log.write((char*) &ldata.ts_lidar, sizeof(int));
-
-            for (int i=0;i<540*2;i+=data_log_density)
-            {
-                lscan_log.write((char*) &ldata.range[i] , sizeof(int));
-            }
-        }
+        info_log << pos_d.y << ',';
+        info_log << pos_d.z << ',';
+        info_log << ldata.pos.y << ',';
+        info_log << ldata.pos.z;
+        info_log << '\n';
     }
 }
 

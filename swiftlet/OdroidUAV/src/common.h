@@ -26,6 +26,8 @@ struct pos_t
 {
     int y = 0;	// mm
     int z = 0;	// mm
+    long ts_usec = 0;
+    long ts_sec = 0;
 };
 
 // lidar data type
@@ -84,7 +86,7 @@ struct lidar_flag_t
     bool printed_alt_mode;        // whether alt mode is printed
     bool init_startup_block;    // block lidar thread until false
     bool tunnel_init;
-    
+
     enum lidar_alt_type alt;
 };
 

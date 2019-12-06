@@ -9,7 +9,7 @@
 using namespace std;
 
 #define PH2_MSG_LOOP_FREQ       180   // Hz
-#define LOGGING_LOOP_FREQ       20
+#define LOGGING_LOOP_FREQ       75
 #define ARDUINO_COM_LOOP_FREQ   20
 
 
@@ -93,12 +93,14 @@ int main()
 
         if (!ui.flag.log_data)
         {
-            bool temp = PH2.get_log_switch();
+        //    bool temp = PH2.get_log_switch();
 
-            if (temp)   start_log = true;
-            else        start_log = false;
+        //    if (temp)   start_log = true;
+        //    else        start_log = false;
         }
         else start_log = true;
+
+        //start_log = false; // permenantly disable logging
 
         // logging
         if (start_log)

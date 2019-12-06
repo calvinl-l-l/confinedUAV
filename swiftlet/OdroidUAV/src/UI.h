@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include "../lib/cserial/cSerial.h"
+#include <sys/time.h>
+#include <unistd.h>
 
 struct UI_flag_t
 {
@@ -32,6 +34,8 @@ public:
 
     UI_CMD_t  lidar_CMD;
     UI_flag_t flag;
+
+    struct timeval sysTimestamp;
 
     UI();
     void set_startup_time(unsigned int sys_time);

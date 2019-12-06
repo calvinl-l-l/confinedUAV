@@ -1,4 +1,5 @@
 #include "localisation.h"
+#include <time.h>
 
 localisation::localisation()
 {
@@ -64,6 +65,12 @@ void localisation::run()
 
 		data.pos.y = (rho_dy - (_n_rho-1))*STEP_RHO;
 		data.pos.z = (rho_dz - (_n_rho-1))*STEP_RHO;
+
+		struct timespec ts_pos;
+		clock_gettime(CLOCK_MONOTONIC, &ts_pos);
+
+		data.pos.ts_sec = ts_pos.tv_sec;
+		data.pos.ts_usec = ts_pos.tv_nsec/1000;
 	}
 
 	_prev_pos = data.pos;

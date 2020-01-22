@@ -9,9 +9,10 @@
 using namespace std;
 
 #define PH2_MSG_LOOP_FREQ       180   // Hz
-#define LOGGING_LOOP_FREQ       20
+#define LOGGING_LOOP_FREQ       50
 #define ARDUINO_COM_LOOP_FREQ   20
 
+mutex ui_mtx;
 
 int main()
 {
@@ -87,23 +88,82 @@ int main()
 // Logging ------------------------------------------------------------
     schedule.interval(std::chrono::milliseconds(1000/LOGGING_LOOP_FREQ), [&ui, &HSM, &PH2]()
     {
-        // get ch7 switch
-
         bool start_log = false;
 
-        if (!ui.flag.log_data)
-        {
-            bool temp = PH2.get_log_switch();
-
-            if (temp)   start_log = true;
-            else        start_log = false;
-        }
-        else start_log = true;
+        if (ui.flag.log_data)   start_log = true;
 
         // logging
         if (start_log)
         {
-            ui.start_log(HSM.data_q, PH2.ph2_data_q);
+            ui.flag.file_is_closed = false;
+
+            if (!ui.flag.file_is_opened)
+            {
+                string filename;
+                string dir = "../data/";
+
+                // file for control data
+                filename = dir + "control_" + to_string(ui.nlog) + ".txt";
+                ui.control_log.open(filename);
+                filename = "";
+
+                ui.control_log << "Control data log\n";
+                ui.control_log << "pos_y z alt roll pitch yaw ch1 ch3 ch5  tsO tsPH2\n";
+
+                // file for lidar scan
+                filename = dir + "lscan_" + to_string(ui.nlog) + ".dat";
+                ui.lscan_log.open(filename, ios::out | ios::binary);
+
+                //*********************************************************************
+                // file format
+                //*********************************************************************
+                /*  data oder for one set:
+                 *  ts_odroid ts_lidar angle1 range1 angle2 range2 . . . angle1080 range1080
+                 *
+                 *  note: angle is in degree, need to divide stored value by 100
+                 *        angle_real = angle/100
+                */
+
+                ui.flag.file_is_opened = true;
+
+                cout << "starting to log ...\n";
+
+            }
+            else
+            {
+            //=========================================================================
+            // CONTROL LOG
+            //=========================================================================
+
+                ui.control_log << HSM.data.pos.y << ',';
+                ui.control_log << HSM.data.pos.z << ',';
+                ui.control_log << HSM.data.alt << ',';
+                ui.control_log << PH2.ph2_data.roll << ',';
+                ui.control_log << PH2.ph2_data.pitch << ',';
+                ui.control_log << PH2.ph2_data.yaw << ',';
+                ui.control_log << PH2.ph2_data.ch.roll << ',';
+                ui.control_log << PH2.ph2_data.ch.thr << ',';
+                ui.control_log << PH2.ph2_data.ch.aux5 << ',';
+                ui.control_log << HSM.data.ts_odroid << ',';
+                ui.control_log << PH2.ph2_data.ts_PH2;
+                ui.control_log << '\n';
+
+
+            //=========================================================================
+            // LIDAR SCAN DATA LOG - in binary
+            //=========================================================================
+
+                lock_guard<mutex>   lock(ui_mtx);  // protecting queue pop in this scope
+
+                ui.lscan_log.write((char*) &HSM.data.ts_odroid, sizeof(int));
+                ui.lscan_log.write((char*) &HSM.data.ts_lidar, sizeof(int));
+
+                for (int i=0;i<540*2;i+=ui.data_log_density)
+                {
+                    ui.lscan_log.write((char*) &HSM.data.range[i] , sizeof(int));
+                }
+
+            }
         }
         else
         {

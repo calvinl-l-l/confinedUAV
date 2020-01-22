@@ -69,8 +69,8 @@ void localisation::run()
 	_prev_pos = data.pos;
 
 	// pushing position data to the queue
-	if (data_q.size() >= MAX_LDATA_QUEUE_SIZE) data_q.pop_front();    // limit memory usage
-	data_q.push_back(data);
+	//if (data_q.size() >= MAX_LDATA_QUEUE_SIZE) data_q.pop_front();    // limit memory usage
+	//data_q.push_back(data);
 }
 
 // discrete hough transform

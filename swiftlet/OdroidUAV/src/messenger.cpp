@@ -51,8 +51,8 @@ void messenger::get_data()
     ph2_data.ts_odroid = millis() - _ts_startup;
 
     // pushing data to ring buffer
-    if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();
-    ph2_data_q.push_back(ph2_data);
+    //if (ph2_data_q.size() >= MAX_MESSENGER_DATA_QUEUE_SIZE) ph2_data_q.pop_front();
+    //ph2_data_q.push_back(ph2_data);
 }
 
 void messenger::send_pos_data(pos_data_t ldata)

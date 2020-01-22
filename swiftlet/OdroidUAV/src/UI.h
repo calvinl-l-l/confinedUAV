@@ -36,13 +36,13 @@ public:
     UI();
     void set_startup_time(unsigned int sys_time);
     void init_log();
-    void start_log(deque<pos_data_t> ldata_q, deque<PH2_data_t> ph2_data_q);
+
     void end_log();
     void run();
 
 private:
     string _input;
-    mutex _ui_mtx;
+    
 
     unsigned int _ts_startup;
     UI_flag_t _flag;
